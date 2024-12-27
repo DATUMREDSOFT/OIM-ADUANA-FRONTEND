@@ -1,0 +1,133 @@
+<mat-card class="cardWithShadow">
+  <mat-card-header>
+    <mat-card-title>Nueva Solicitud</mat-card-title>
+  </mat-card-header>
+  <br/>
+  <mat-card-content>
+    <form [formGroup]="solicitudForm">
+      <div class="row">
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Seleccione el tipo de solicitud</mat-label>
+            <mat-select formControlName="userType" placeholder="Seleccione una opción" (selectionChange)="onUserTypeChange($event)">
+              <mat-option value="digitador">Nuevo usuario Digitador</mat-option>
+              <mat-option value="webservice">Nuevo usuario Webservice</mat-option>
+              <mat-option value="webservice">Activacion de usuario</mat-option>
+              <mat-option value="webservice">Desactivacion de usuario</mat-option>
+              <mat-option value="webservice">Modificacion de usuario</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-6 d-flex align-items-center">
+          <div *ngIf="isLoading" class="ml-2 d-flex align-items-center">
+            <mat-spinner diameter="24"></mat-spinner>
+            <span *ngIf="userType === 'digitador'" class="ml-2">Consultando usuarios digitadores</span>
+            <span *ngIf="userType === 'webservice'" class="ml-2">Consultando usuarios WebService</span>
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Proceso a Seguir</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-stepper [linear]="false" #stepper>
+
+      <!-- Step 1: Usuarios -->
+      <mat-step [stepControl]="usuariosFormGroup">
+        <form [formGroup]="usuariosFormGroup">
+          <ng-template matStepLabel>Usuarios</ng-template>
+
+          <div class="row">
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <input matInput [value]="afpaData.nombre" disabled placeholder="Nombre" />
+              </mat-form-field>
+            </div>
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <input matInput [value]="afpaData.direccion" disabled placeholder="Dirección" />
+              </mat-form-field>
+            </div>
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <input matInput [value]="afpaData.telefono" disabled placeholder="Teléfono" />
+              </mat-form-field>
+            </div>
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <input matInput [value]="afpaData.correo" disabled placeholder="Correo Electrónico" />
+              </mat-form-field>
+            </div>
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline" class="w-100" color="primary">
+                <input type="text" matInput formControlName="generatedUser" placeholder="Generated User" readonly />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row m-t-16">
+            <div class="col-lg-12">
+              <mat-form-field appearance="outline" class="w-100">
+                <textarea matInput formControlName="requestReason" placeholder="Justificacion"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row m-t-16" *ngIf="!isFirstRequest">
+            <div class="col-lg-12">
+              <mat-form-field appearance="outline" class="w-100">
+                <input type="file" matInput formControlName="attachment" />
+              </mat-form-field>
+              <small class="text-muted">* Attach file to justify this request.</small>
+            </div>
+          </div>
+
+          <div class="row m-t-24">
+            <div class="col-lg-12 d-flex justify-content-end">
+              <button mat-flat-button color="primary" class="m-r-8" (click)="addUserRequest()">
+                Agregar usuario
+              </button>
+              <button mat-flat-button color="primary" class="m-l-8" matStepperNext>
+                Siguiente
+              </button>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Step 2: Revision -->
+      <mat-step >
+        <form [formGroup]="revisionFormGroup">
+          <ng-template matStepLabel>Revision</ng-template>
+          <mat-card class="m-b-16">
+            <mat-card-header>
+              <mat-card-title>Resumen de Usuarios</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div *ngFor="let user of userRequests">
+                <p>Tipo de Usuario: {{ user.userType }}</p>
+                <p>Usuario Generado: {{ user.generatedUser }}</p>
+                <p>Justificación: {{ user.requestReason }}</p>
+                <p *ngIf="user.attachment">Archivo Adjunto: {{ user.attachment }}</p>
+                <hr>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <div class="col-lg-12 d-flex justify-content-end">
+            <div class="col-lg-12 d-flex justify-content-between">
+              <button mat-flat-button color="warn" matStepperPrevious class="m-r-8" (click)="resetForm()">Anterior</button>
+              <div>
+              <button mat-flat-button color="primary" class="m-r-8" (click)="saveAsDraft()">Guardar</button>
+              <button mat-flat-button color="accent" class="m-l-8" (click)="sendRequest()">Enviar solicitud</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+    </mat-stepper>
+  </mat-card-content>
+</mat-card>

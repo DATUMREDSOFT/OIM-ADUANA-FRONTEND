@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>{{ data.action }}</h2>
+<mat-dialog-content>
+  <p>¿Está seguro de {{ data.action === 'Solicitud desactivacion de usuario' ? 'desactivar' : 'activar' }} este usuario?</p>
+</mat-dialog-content>
+<mat-dialog-actions class="p-x-24 p-b-24" style="display: flex; justify-content: flex-end;">
+  <button mat-flat-button color="warn" (click)="confirm()">Sí, estoy seguro</button>
+  <button mat-stroked-button color="primary" (click)="cancel()">Cancelar</button>
+</mat-dialog-actions>

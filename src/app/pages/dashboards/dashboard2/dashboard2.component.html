@@ -1,0 +1,63 @@
+<mat-card class="cardWithShadow">
+  <mat-card-header>
+    <mat-card-title>Solicitudes</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-tab-group>
+      <mat-tab label="Borradores">
+        <ng-template mat-tab-label>
+          <mat-icon>drafts</mat-icon>
+          <span class="m-l-8">Borradores</span>
+        </ng-template>
+        <div class="card-container">
+          <div *ngFor="let draft of drafts$ | async" class="card-item">
+            <mat-card class="m-2 p-2 mat-elevation-z3 bg-light">
+              <mat-card-header>
+                <mat-card-title class="mat-body-2">Borrador</mat-card-title>
+                <mat-card-subtitle class="mat-caption">{{ draft.date | date:'short' }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p class="mat-body-1">{{ draft.reason }}</p>
+              </mat-card-content>
+              <mat-card-actions class="d-flex align-items-center justify-content-end">
+                <div class="m-r-8">
+                  <button mat-flat-button color="primary">Editar</button>
+                </div>
+                <div>
+                  <button mat-flat-button color="warn">Borrar</button>
+                </div>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Enviados">
+        <ng-template mat-tab-label>
+          <mat-icon>send</mat-icon>
+          <span class="m-l-8">Enviados</span>
+        </ng-template>
+        <div class="card-container">
+          <div *ngFor="let sent of sentRequests$ | async" class="card-item">
+            <mat-card class="m-2 p-2 mat-elevation-z3 bg-light">
+              <mat-card-header>
+                <mat-card-title class="mat-body-2">Enviado</mat-card-title>
+                <mat-card-subtitle class="mat-caption">{{ sent.date | date:'short' }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p class="mat-body-1">{{ sent.reason }}</p>
+              </mat-card-content>
+              <mat-card-actions class="d-flex align-items-center justify-content-end">
+                <div class="m-r-8">
+                  <button mat-flat-button color="primary">Revisar</button>
+                </div>
+                <div>
+                  <button mat-flat-button color="warn">Borrar</button>
+                </div>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+</mat-card>

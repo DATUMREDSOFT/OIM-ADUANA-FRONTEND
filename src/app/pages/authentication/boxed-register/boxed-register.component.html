@@ -1,0 +1,197 @@
+<div class="blank-layout-container justify-content-center align-items-center">
+  <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+    <div class="col-lg-8 d-flex align-items-center">
+      <mat-card
+        class="cardWithShadow w-100"
+        [ngClass]="{ 'boxed-auth': !searchCompleted, 'boxed-auth-expanded': searchCompleted }"
+      >
+        <mat-card-content class="p-32 h-100 d-flex flex-column">
+          <div class="text-center">
+            <img
+              src="./assets/images/logos/logo.png"
+              class="align-middle m-2"
+              alt="logo"
+            />
+          </div>
+
+          <!-- Input Section -->
+          <div *ngIf="!searchCompleted" class="m-t-30 flex-grow-1 overflow-y-auto">
+            <div class="or-border m-t-30">Inserte documento</div>
+            <br />
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <input
+                matInput
+                placeholder="DUI/NIT"
+                [formControl]="documentControl"
+                (keyup.enter)="onSearch()"
+                (input)="formatDocument()"
+                maxlength="17"
+              />
+              <button mat-icon-button matSuffix (click)="onSearch()">
+                <mat-icon>search</mat-icon>
+              </button>
+            </mat-form-field>
+            <div
+              *ngIf="documentControl.invalid && documentControl.touched"
+              class="text-error"
+            >
+              Formato no válido de documento
+            </div>
+            <div *ngIf="loading" class="text-center m-t-16">
+              <mat-spinner diameter="30"></mat-spinner>
+            </div>
+            <span class="d-block f-w-500 text-center m-t-24">
+              ¿Ya tienes usuario?
+              <a
+                [routerLink]="['/authentication/boxed-login']"
+                class="text-decoration-none text-primary f-w-500 f-s-14"
+              >
+                Inicia sesión
+              </a>
+            </span>
+          </div>
+
+          <!-- User Type Forms -->
+          <div *ngIf="searchCompleted" class="m-t-30 flex-grow-1 overflow-y-auto scrollable-container">
+            <p>
+              El DUI/NIT insertado no tiene cuenta. Por favor complete el
+              siguiente formulario.
+            </p>
+            <form class="m-t-30">
+              <div class="form-grid-2-columns">
+                <div
+                  *ngIf="userType === 'naturalPerson' || userType === 'company' || userType === 'customsAgent'"
+                >
+                  <mat-label
+                    class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block"
+                    >Nombre</mat-label
+                  >
+                  <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput [value]="userData.nombre" disabled />
+                  </mat-form-field>
+                </div>
+                <div *ngIf="userType === 'company'">
+                  <mat-label
+                    class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block"
+                    >Dirección</mat-label
+                  >
+                  <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput [value]="userData.direccion" disabled />
+                  </mat-form-field>
+                </div>
+                <div
+                  *ngIf="userType === 'naturalPerson' || userType === 'company' || userType === 'customsAgent'"
+                >
+                  <mat-label
+                    class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block"
+                    >Correo</mat-label
+                  >
+                  <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput [value]="userData.correo" disabled />
+                  </mat-form-field>
+                </div>
+                <div
+                  *ngIf="userType === 'naturalPerson' || userType === 'company' || userType === 'customsAgent'"
+                >
+                  <mat-label
+                    class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block"
+                    >Teléfono</mat-label
+                  >
+                  <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput [value]="userData.telefono" disabled />
+                  </mat-form-field>
+                </div>
+                <div *ngIf="userType === 'customsAgent'">
+                  <mat-label
+                    class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block"
+                    >Código Declarante</mat-label
+                  >
+                  <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput [value]="userData.codigoDeclarante" disabled />
+                  </mat-form-field>
+                </div>
+              </div>
+            </form>
+            <p>Listado de personal autorizado</p>
+            <div *ngFor="let authorized of authorizedList; let i = index" class="m-t-16">
+              <div class="d-flex justify-content-between align-items-center">
+                <span>Persona {{ i + 1 }}</span>
+                <button mat-icon-button (click)="toggleCollapse(i)">
+                  <mat-icon id="icon-{{i}}">expand_more</mat-icon>
+                </button>
+              </div>
+              <div id="content-{{i}}" style="display: none;">
+                <div class="form-grid-2-columns">
+                  <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput [(ngModel)]="authorized.nombre" name="nombre{{i}}" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <mat-label>Correo electronico</mat-label>
+                    <input matInput [(ngModel)]="authorized.correo" name="correo{{i}}" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <mat-label>Telefono</mat-label>
+                    <input matInput [(ngModel)]="authorized.telefono" name="telefono{{i}}" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <mat-label>Direccion</mat-label>
+                    <input matInput [(ngModel)]="authorized.direccion" name="direccion{{i}}" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <mat-label>DUI</mat-label>
+                    <input matInput [(ngModel)]="authorized.dui" name="dui{{i}}" />
+                  </mat-form-field>
+                </div>
+                <button mat-raised-button color="warn" (click)="confirmDelete(i)">Eliminar</button>
+              </div>
+            </div>
+            <br>
+            <button mat-raised-button color="primary" (click)="addPersonal()">Agregar item</button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+
+
+<style>
+  .form-grid-2-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .scrollable-container {
+  max-height: 400px; /* Adjust the height as needed */
+  overflow-y: auto;
+  padding-right: 25px; /* Adds space between the scrollbar and content */
+
+  /* Scrollbar styles */
+  &::-webkit-scrollbar {
+    width: 8px; /* Increases scrollbar width */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f3f4f6; /* bg-gray-100 */
+    border-radius: 9999px; /* rounded-full */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d1d5db; /* bg-gray-300 */
+    border-radius: 9999px; /* rounded-full */
+  }
+
+  /* Dark mode styles */
+  .dark &::-webkit-scrollbar-track {
+    background: #374151; /* bg-neutral-700 */
+  }
+
+  .dark &::-webkit-scrollbar-thumb {
+    background: #6b7280; /* bg-neutral-500 */
+  }
+}
+
+
+</style>

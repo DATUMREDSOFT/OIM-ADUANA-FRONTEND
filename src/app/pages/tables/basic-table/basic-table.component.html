@@ -1,0 +1,72 @@
+<mat-card class="cardWithShadow">
+  <mat-card-header class="d-flex justify-content-between align-items-center p-24">
+    <mat-card-title class="title">Estado de solicitudes</mat-card-title>
+    <div class="d-flex align-items-center">
+      <mat-form-field appearance="outline" class="w-100 hide-hint mr-4">
+        <input matInput placeholder="Buscar solicitud" (keyup)="applyFilter($any($event.target).value)" />
+        <mat-icon matSuffix>
+          <i-tabler name="search" class="icon-20"></i-tabler>
+        </mat-icon>
+      </mat-form-field>
+    </div>
+    <div class="col-lg-4 d-flex align-items-center justify-content-end">
+      <button mat-flat-button (click)="redirectToSolicitudNuevoAfpa()" color="primary">
+        Nueva solicitud
+      </button>
+    </div>
+  </mat-card-header>
+  <mat-card-content class="p-24">
+    <div class="table-responsive">
+      <table mat-table [dataSource]="dataSource" class="w-100">
+        <!-- DGA Column -->
+        <ng-container matColumnDef="dga">
+          <th mat-header-cell *matHeaderCellDef class="f-s-16 f-w-600 text-center">DGA</th>
+          <td mat-cell *matCellDef="let element" class="text-center">{{ element.dga }}</td>
+        </ng-container>
+
+        <!-- Tipo de solicitud Column -->
+        <ng-container matColumnDef="tipoSolicitud">
+          <th mat-header-cell *matHeaderCellDef class="f-s-16 f-w-600 text-center">Tipo de solicitud</th>
+          <td mat-cell *matCellDef="let element" class="text-center">{{ element.tipoSolicitud }}</td>
+        </ng-container>
+
+        <!-- DUI/NIT Column -->
+        <ng-container matColumnDef="duiNit">
+          <th mat-header-cell *matHeaderCellDef class="f-s-16 f-w-600 text-center">DUI/NIT</th>
+          <td mat-cell *matCellDef="let element" class="text-center">{{ element.duiNit }}</td>
+        </ng-container>
+
+        <!-- Estado de solicitud Column -->
+        <ng-container matColumnDef="estadoSolicitud">
+          <th mat-header-cell *matHeaderCellDef class="f-s-16 f-w-600 text-center">Estado de solicitud</th>
+          <td mat-cell *matCellDef="let element" class="text-center">
+            <span *ngIf="element.estadoSolicitud === 'aprobada'"
+              class="bg-light-accent text-accent rounded f-w-600 p-2 f-s-12 d-inline-flex align-items-center">
+              <i-tabler name="check" class="icon-18 mr-2"></i-tabler> {{ element.estadoSolicitud }}
+            </span>
+            <span *ngIf="element.estadoSolicitud === 'rechazada'"
+              class="bg-light-error text-error rounded f-w-600 p-2 f-s-12 d-inline-flex align-items-center">
+              <i-tabler name="x" class="icon-18 mr-2"></i-tabler> {{ element.estadoSolicitud }}
+            </span>
+            <span *ngIf="element.estadoSolicitud === 'finalizado'"
+              class="bg-light-primary text-primary rounded f-w-600 p-2 f-s-12 d-inline-flex align-items-center">
+              <i-tabler name="flag" class="icon-18 mr-2"></i-tabler> {{ element.estadoSolicitud }}
+            </span>
+            <span *ngIf="element.estadoSolicitud === 'pendiente'"
+              class="bg-light-warning text-warning rounded f-w-600 p-2 f-s-12 d-inline-flex align-items-center">
+              <i-tabler name="clock" class="icon-18 mr-2"></i-tabler> {{ element.estadoSolicitud }}
+            </span>
+            <span *ngIf="element.estadoSolicitud === 'no iniciado'"
+              class="bg-light-secondary text-secondary rounded f-w-600 p-2 f-s-12 d-inline-flex align-items-center">
+              <i-tabler name="minus" class="icon-18 mr-2"></i-tabler> {{ element.estadoSolicitud }}
+            </span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    </div>
+  </mat-card-content>
+</mat-card>

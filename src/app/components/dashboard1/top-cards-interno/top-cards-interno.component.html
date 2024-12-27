@@ -1,0 +1,64 @@
+<!-- top-cards.component.html -->
+
+<div class="row" style="display: flex; margin-right: 0px; margin-left: 0px;">
+  <!-- <h1 class="mat-title-1 m-t-4 f-w-600" style="width: 100%; text-align: left; font-size: 40px;">Resumen de usuarios</h1> -->
+
+  <mat-card class="shadow-none bg-light-primary overflow-hidden" style="flex-grow: 1;">
+    <mat-card-content class="p-32 p-b-0">
+      <h1 class="mat-title-1 m-t-4 f-w-600" style="width: 100%; text-align: left;">Resumen general</h1>
+      <br />
+      <div class="row justify-content-between">
+        <div class="col-lg-4 col-sm-6 col-12" (click)="onCardClick('users')">
+          <mat-card class="cardWithShadow clickable-card" style="flex-grow: 1;">
+            <mat-card-content class="d-flex align-items-center justify-content-start" style="height: 100%; padding: 16px;">
+                <span class="bg-light-primary rounded d-flex align-items-center justify-content-center" style="margin-right: 16px; width: 60px !important; height: 60px !important;">
+                <img src="assets/images/svgs/users-square.svg" alt="icon" />
+              </span>
+              <div class="d-flex flex-column">
+                <div class="user-details">
+                  <p class="mb-1"><strong>Usuarios: {{ usersCount }}</strong></p>
+                  <p class="mb-1">Digitadores: <strong>4</strong></p>
+                  <p class="mb-0">WebService: <strong>8</strong></p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <div class="col-lg-4 col-sm-6 col-12" (click)="onCardClick('digitadores')">
+          <mat-card class="cardWithShadow clickable-card" style="flex-grow: 1;">
+            <mat-card-content class="d-flex align-items-center justify-content-start" style="height: 100%; padding: 16px;">
+              <span class="bg-light-primary rounded icon-40 d-flex align-items-center justify-content-center" style="margin-right: 16px;">
+                <img src="assets/images/svgs/traslados.svg" alt="icon" />
+              </span>
+              <div class="d-flex flex-column">
+                <div class="user-details">
+                  <p class="mb-1"><strong>Traslados: 4</strong></p>
+                  <p class="mb-1">Activos: <strong>2</strong></p>
+                  <p class="mb-0">Inactivos: <strong>2</strong></p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <div class="col-lg-4 col-sm-6 col-12" (click)="onCardClick('webService')">
+          <mat-card class="cardWithShadow clickable-card" style="flex-grow: 1;">
+            <mat-card-content class="d-flex align-items-center justify-content-start" style="height: 100%; padding: 16px;">
+              <span class="bg-light-primary rounded icon-40 d-flex align-items-center justify-content-center" style="margin-right: 16px;">
+                <img src="assets/images/svgs/externas.svg" alt="icon" />
+              </span>
+              <div class="d-flex flex-column">
+                <div class="user-details">
+                  <p class="mb-1"><strong>Externas: 8</strong></p>
+                  <p class="mb-1">Activos: <strong>4</strong></p>
+                  <p class="mb-0">Inactivos: <strong>4</strong></p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
