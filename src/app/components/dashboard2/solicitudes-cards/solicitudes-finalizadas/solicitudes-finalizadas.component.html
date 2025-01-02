@@ -1,14 +1,18 @@
-<mat-card class="cardWithShadow">
-  <mat-card-content class="p-t-32">
-    <span class="bg-light-primary rounded icon-40 d-flex align-items-center justify-content-center">
-      <img src="assets/images/svgs/finalizadas.svg" alt="paypal" />
-    </span>
-
-    <mat-card-subtitle class="mat-body-1 p-b-4 m-t-24"
-      >Finalizadas</mat-card-subtitle
-    >
-    <h5 class="mat-subtitle-1 m-t-4 f-w-600">20</h5>
-
+<mat-card class="cardWithShadow" style="height: 297.719px;">
+  <mat-card-content class="p-y-30">
+    <mat-card-subtitle class="mat-body-1 p-b-6">Estado</mat-card-subtitle>
+    <div class="mat-caption f-w-300">Final</div>
+    <h5 class="mat-subtitle-1 f-w-300 m-b-30">Solicitudes</h5>
+    <apx-chart
+    [series]="totalEarnChart.series"
+    [chart]="totalEarnChart.chart"
+    [labels]="totalEarnChart.labels"
+    [legend]="totalEarnChart.legend"
+    [title]="totalEarnChart.title"
+    [theme]="totalEarnChart.theme"
+    [colors]="totalEarnChart.colors"
+    [responsive]="totalEarnChart.responsive"
     
+    ></apx-chart>
   </mat-card-content>
 </mat-card>

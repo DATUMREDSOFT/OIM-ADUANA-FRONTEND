@@ -37,58 +37,60 @@ export class AppPendingRequestsComponent {
 
   constructor() {
     this.totalEarnChart = {
-      series: [3, 2],
+      series: [10, 20, 10],
       chart: {
-      fontFamily: "'Plus Jakarta Sans', sans-serif;", 
-      width: 200,
-      height: 200,
-      type: "pie",
-      offsetX: -40,  // This will move the chart to the left
-      // This will move the chart to the top
-          },
-          colors: ["#7869cd", "#e3e1f6", "#a3d2ca"],
-          theme: {
-          monochrome: {
-            enabled: false
-          }
-          },
-          dataLabels: {
+        fontFamily: "'Plus Jakarta Sans', sans-serif;",
+
+        width: 200,
+        height: 200,
+        type: "pie",
+        offsetX: -40,  // This will move the chart to the left
+        offsetY: -10// This will move the chart to the top
+      },
+      colors: ["#7869cd", "#e3e1f6", "#EFB6C8"],
+      theme: {
+        monochrome: {
           enabled: false
-          },
-          legend: {
-          position: "bottom",
-          offsetX: -23  // This will also move the legend to the left
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      legend: {
+        fontSize: '10px',
+        position: "bottom",
+        offsetX: -23  // This will also move the legend to the left
       },
       responsive: [
-      {
-        breakpoint: 1279,
-        options: {
-        chart: {
-          width: '100%',
-          offsetX: 0  // Adjust the chart position
+        {
+          breakpoint: 1279,
+          options: {
+            chart: {
+              width: '100%',
+              offsetX: 0  // Adjust the chart position
+            },
+            legend: {
+              offsetX: 0  // Adjust the legend position
+            }
+          }
         },
-        legend: {
-          offsetX: 0  // Adjust the legend position
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: '100%',
+              offsetX: 0  // Center the chart horizontally
+            },
+            legend: {
+              offsetX: 0  // Center the legend horizontally
+            }
+          }
         }
-        }
-      },
-      {
-        breakpoint: 480,
-        options: {
-        chart: {
-          width: '100%',
-          offsetX: 0  // Center the chart horizontally
-        },
-        legend: {
-          offsetX: 0  // Center the legend horizontally
-        }
-        }
-      }
       ],
       labels: [
-      "Pendientes",
-      "Finalizadas",
-      "No iniciadas",
+        "Pendientes",
+        "Finalizadas",
+        "No iniciadas",
       ]
     };
   }

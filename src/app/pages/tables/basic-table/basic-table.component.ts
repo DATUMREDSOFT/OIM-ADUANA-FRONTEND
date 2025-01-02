@@ -11,7 +11,35 @@ import { TablerIconsModule } from 'angular-tabler-icons';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ConfirmationDialogComponent } from '../basic-table/confirmation/confirmation-dialog.component';
 import { Router } from '@angular/router';
+import {
+  ApexChart,
+  ChartComponent,
+  ApexTooltip,
+  ApexAxisChartSeries,
+  ApexFill,
+  ApexDataLabels,
+  ApexResponsive,
+  NgApexchartsModule,
+  ApexTitleSubtitle,
+  ApexPlotOptions,
+  ApexYAxis,
+  ApexXAxis,
+  ApexStroke,
+  ApexLegend,
+} from 'ng-apexcharts';
 
+export interface ChartOptions {
+  series: ApexAxisChartSeries;
+  chart: ApexChart;
+  dataLabels: ApexDataLabels;
+  plotOptions: ApexPlotOptions;
+  yaxis: ApexYAxis;
+  xaxis: ApexXAxis;
+  fill: ApexFill;
+  tooltip: ApexTooltip;
+  stroke: ApexStroke;
+  legend: ApexLegend;
+}
 export interface Element {
   dga: string;
   tipoSolicitud: string;
@@ -49,13 +77,17 @@ const BASIC_DATA: Element[] = [
     FormsModule,
     ReactiveFormsModule,
     TablerIconsModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    NgApexchartsModule,
+    
   ],
   providers: [DatePipe],
 })
-export class AppBasicTableComponent implements AfterViewInit {
+export class AppBasicTableComponent {
   @ViewChild(MatTable, { static: true }) table: MatTable<any> = Object.create(null);
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator = Object.create(null);
+  @ViewChild("chart") chart: ChartComponent;
+  public chartOptions: Partial<ChartOptions>;
 
   searchText: any;
   displayedColumns: string[] = [
@@ -64,83 +96,69 @@ export class AppBasicTableComponent implements AfterViewInit {
   isFirstRequest: boolean = false;
   dataSource = new MatTableDataSource(BASIC_DATA);
 
-  constructor(public dialog: MatDialog, public datePipe: DatePipe, private router: Router) { }
-
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-  }
-
-  applyFilter(filterValue: string): void {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
-  openDialog(action: string, obj: any): void {
-    obj.action = action;
-    const dialogRef = this.dialog.open(AppEmployeeDialogContentComponent, {
-      data: obj,
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result.event === 'Add') {
-        this.addRowData(result.data);
-      } else if (result.event === 'Update') {
-        this.updateRowData(result.data);
-      } else if (result.event === 'Delete') {
-        this.deleteRowData(result.data);
-      }
-    });
-  }
-
-  openConfirmationDialog(action: string, obj: any): void {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: { action, obj },
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result === 'confirm') {
-        if (action === 'Solicitud desactivacion de usuario') {
-          this.updateRowData({ ...obj, estadoCuenta: 'Inactiva' });
-        } else if (action === 'Solicitud activacion de usuario') {
-          this.updateRowData({ ...obj, estadoCuenta: 'Activa' });
+  constructor() {
+    this.chartOptions = {
+      series: [
+        {
+          name: "Aprobadas",
+          data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+          color: "#7869cd"
+        },
+        {
+          name: "Rechazadas",
+          data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+          color: "#CDC1FF"
+        },
+      ],
+      chart: {
+        type: "bar",
+        height: 350,
+        fontFamily: "'Plus Jakarta Sans', sans-serif;",
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: "55%",
+          borderRadius: 5,
+          borderRadiusApplication: "end"
         }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        show: true,
+        width: 2,
+        colors: ["transparent"]
+      },
+      xaxis: {
+        categories: [
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct"
+        ]
+      },
+      yaxis: {
+        title: {
+          text: "Cantidad de solicitudes"
+        }
+      },
+      fill: {
+        opacity: 1
+      },
+      tooltip: {
+        
       }
-    });
-  }
-
-  addRowData(row_obj: Element): void {
-    this.dataSource.data.unshift({
-      dga: row_obj.dga,
-      tipoSolicitud: row_obj.tipoSolicitud,
-      duiNit: row_obj.duiNit,
-      nombre: row_obj.nombre,
-      apellido: row_obj.apellido,
-      correo: row_obj.correo,
-      estadoSolicitud: row_obj.estadoSolicitud
-    });
-    this.dialog.open(AppAddUserComponent);
-    this.table.renderRows();
-  }
-
-  updateRowData(row_obj: Element): boolean | any {
-    this.dataSource.data = this.dataSource.data.map((value: Element) => {
-      if (value.duiNit === row_obj.duiNit) {
-        value.nombre = row_obj.nombre;
-        value.apellido = row_obj.apellido;
-        value.correo = row_obj.correo;
-        value.estadoSolicitud = row_obj.estadoSolicitud;
-      }
-      return value;
-    });
-  }
-
-  deleteRowData(row_obj: Element): boolean | any {
-    this.dataSource.data = this.dataSource.data.filter((value: Element) => {
-      return value.duiNit !== row_obj.duiNit;
-    });
-  }
-
-  redirectToSolicitudNuevoAfpa() {
-    this.router.navigate(['/dashboards/solicitudes-interno']);
+    };
   }
 }
+
 
 
 
