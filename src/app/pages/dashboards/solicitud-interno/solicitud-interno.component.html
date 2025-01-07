@@ -8,7 +8,7 @@
         <mat-card-content>
           <ul>
             <li *ngFor="let user of userRequests; let i = index" (click)="scrollToForm(i)">
-              Formulario {{ i + 1 }}
+              Usuario {{ i + 1 }}
             </li>
           </ul>
         </mat-card-content>
@@ -22,7 +22,7 @@
           </mat-card-header>
           <mat-card-content>
             <div *ngFor="let user of userRequests; let i = index" class="form-card" [id]="'form-' + i">
-              <h3>Formulario {{ i + 1 }}</h3>
+              <h3>Usuario {{ i + 1 }}</h3>
               <form [formGroup]="userForm">
                 <div class="row">
                   <div class="col-lg-6">
