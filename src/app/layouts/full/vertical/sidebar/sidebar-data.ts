@@ -12,21 +12,21 @@ export const navItems: NavItem[] = [
     },
     route: '/dashboards/dashboard1',
   },
-  {
-    displayName: 'Nueva solicitud',
-    iconName: 'file',
-    route: '/dashboards/solicitud-nuevo-afpa',
-  },
-  {
-    displayName: 'Mis solicitudes',
-    iconName: 'checklist',
-    route: '/dashboards/dashboard2',
-  },
-  {
-    displayName: 'Dashboard Interno',
-    iconName: 'dashboard',
-    route: '/dashboards/dashboard-interno',
-  },
+//  {
+//    displayName: 'Nueva solicitud',
+//    iconName: 'file',
+//    route: '/dashboards/solicitud-nuevo-afpa',
+//  },
+//  {
+//    displayName: 'Mis solicitudes',
+//    iconName: 'checklist',
+//    route: '/dashboards/dashboard2',
+//  },
+//  {
+//    displayName: 'Dashboard Interno',
+//    iconName: 'dashboard',
+//    route: '/dashboards/dashboard-interno',
+//  },
   {
     displayName: 'Solicitudes Interno',
     iconName: 'file',
