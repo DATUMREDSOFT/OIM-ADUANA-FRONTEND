@@ -18,7 +18,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": ["apexcharts", "bezier-easing","sweetalert2"],
-            "outputPath": "dist/Modernize",
+            "outputPath": "dist/aduana-sv",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": ["zone.js"],
