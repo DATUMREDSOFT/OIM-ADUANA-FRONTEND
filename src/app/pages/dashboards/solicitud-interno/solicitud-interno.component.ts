@@ -37,44 +37,17 @@ export class AppSolicitudInternoComponent implements OnInit {
   isLoading: boolean = false;
   shouldSave: boolean = false;
 
-  constructor(private _formBuilder: FormBuilder, private datePipe: DatePipe) {}
+  constructor(private fb: FormBuilder, private datePipe: DatePipe) {}
 
   ngOnInit() {
-    this.userForm = this._formBuilder.group({
-      duiNit: ['', Validators.required],
+    this.formGroup = this.fb.group({
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
-      usuario: ['', Validators.required],
-      correo: ['', Validators.required],
+      correo: ['', [Validators.required, Validators.email]],
+      telefono: ['', Validators.required],
       organizacion: [{ value: 'DGA', disabled: true }],
-      estado: ['', Validators.required],
-      rol: ['', Validators.required],
-      cargo: ['', Validators.required],
-      perfil: [''],
-      aduanaPerfil: [''],
-      fechaInicioPerfil: [''],
-      fechaFinPerfil: [''],
-      sistema: [''],
-      aduanaSistema: [''],
-      fechaInicioSistema: [''],
-      fechaFinSistema: [''],
-      tipoSolicitud: [''],
+      estado: ['', Validators.required]
     });
-    this.userRequests = [
-      {
-        duiNit: '',
-        nombre: '',
-        apellido: '',
-        usuario: '',
-        correo: '',
-        organizacion: 'DGA',
-        estado: '',
-        rol: '',
-        cargo: '',
-        perfiles: [],
-        sistemas: [],
-      },
-    ];
   }
 
   editPerfil(index: number) {
