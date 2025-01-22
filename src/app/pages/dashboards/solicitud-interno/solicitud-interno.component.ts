@@ -22,7 +22,7 @@ import { TablerIconsModule } from 'angular-tabler-icons';
 })
 export class AppSolicitudInternoComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
-
+  formGroup: FormGroup;
   userForm: FormGroup;
   userRequests: any[] = [];
   perfilesAsignados: any[] = [];

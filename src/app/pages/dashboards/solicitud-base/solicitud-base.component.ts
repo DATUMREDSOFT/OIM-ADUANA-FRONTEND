@@ -33,7 +33,6 @@ export class AppSolicitudBaseComponent implements OnInit {
   constructor(private fb: FormBuilder, private userService: UserService) {}
 
   ngOnInit() {
-    this.userType = this.userService.getUserType();
     this.solicitudForm = this.fb.group({
       formularios: this.fb.array([this.createFormulario()])
     });
@@ -46,7 +45,12 @@ export class AppSolicitudBaseComponent implements OnInit {
   createFormulario(): FormGroup {
     return this.fb.group({
       tipo: ['', Validators.required],
-      subitems: this.fb.array([])
+      nombre: ['', Validators.required],
+      apellido: ['', Validators.required],
+      correo: ['', [Validators.required, Validators.email]],
+      telefono: ['', Validators.required],
+      organizacion: [{ value: 'DGA', disabled: true }],
+      estado: ['', Validators.required]
     });
   }
 
@@ -58,16 +62,16 @@ export class AppSolicitudBaseComponent implements OnInit {
     this.formularios.removeAt(index);
   }
 
+  sendRequest() {
+    console.log(this.solicitudForm.value);
+    // Implement the logic to send the form data to the backend
+  }
+
   scrollToForm(index: number) {
     const form = document.getElementById(`form-${index}`);
     if (form) {
       form.scrollIntoView({ behavior: 'smooth' });
     }
-  }
-
-  sendRequest() {
-    console.log(this.solicitudForm.value);
-    // Implement the logic to send the form data to the backend
   }
   
 }
