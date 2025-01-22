@@ -1,0 +1,82 @@
+<div *ngIf="userType === 'externo' || userType === ''" document-data-card>
+  <mat-card *ngIf="searchCompleted" style="margin-bottom: 16px;">
+    <mat-card-header>
+      <mat-card-title>Datos del Documento</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="userExists; else noData">
+        <p><strong>Nombre:</strong> {{ userData.nombre }}</p>
+        <p><strong>Correo:</strong> {{ userData.correo }}</p>
+        <p><strong>Teléfono:</strong> {{ userData.telefono }}</p>
+        <!-- Add other user data fields here -->
+      </div>
+      <ng-template #noData>
+        <p>No se encontraron datos para el documento ingresado.</p>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+  <mat-form-field appearance="outline" class="w-100" color="primary">
+    <input
+      matInput
+      placeholder="DUI/NIT"
+      [formControl]="documentControl"
+      (keyup.enter)="onSearch()"
+      maxlength="17"
+    />
+    <button mat-icon-button matSuffix (click)="onSearch()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+</div>
+<div *ngFor="let subitem of subitems.controls; let i = index" [formGroup]="$any(subitem)">
+  <div class="row">
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>DUI/NIT</mat-label>
+        <input matInput formControlName="duiNit">
+        <button mat-icon-button matSuffix (click)="fetchUserData()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre">
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Apellido</mat-label>
+        <input matInput formControlName="apellido">
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Usuario</mat-label>
+        <input matInput formControlName="usuario">
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Correo</mat-label>
+        <input matInput formControlName="correo">
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Organización</mat-label>
+        <input matInput formControlName="organizacion" value="DGA" [disabled]="true">
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Estado</mat-label>
+        <input matInput formControlName="estado">
+      </mat-form-field>
+    </div>
+  </div>
+  <button mat-flat-button color="warn" (click)="removeSubitem(i)" style="margin-top: 16px;">Borrar subitem</button>
+  <mat-divider *ngIf="i < subitems.length - 1" style="margin-top: 16px; margin-bottom: 16px;"></mat-divider>
+</div>
+<button mat-flat-button color="primary" (click)="addSubitem()" style="margin-top: 16px;">Agregar subitem</button>

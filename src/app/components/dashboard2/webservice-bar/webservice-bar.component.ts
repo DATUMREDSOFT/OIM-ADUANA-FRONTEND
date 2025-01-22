@@ -50,7 +50,7 @@ export class AppWebServiceBarComponent {
         offsetX: -40,  // This will move the chart to the left
         offsetY: -10  // This will move the chart to the top
       },
-      colors: ["#7869cd", "#e3e1f6"],
+      colors: ["#3683d8", "#a5c1d5"],
       theme: {
         monochrome: {
           enabled: false

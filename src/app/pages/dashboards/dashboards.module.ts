@@ -9,6 +9,7 @@ import { AppDashboard2Component } from './dashboard2/dashboard2.component';
 import { AppDashboardInternoComponent } from './dashboard_interno/dashboard-interno.component';
 import { AppSolicitudInternoComponent } from './solicitud-interno/solicitud-interno.component';
 import { AppSolicitudAfpaComponent } from './solicitud-nuevo-afpa/solicitud-afpa.component';
+import { AppSolicitudBaseComponent } from './solicitud-base/solicitud-base.component';
 
 @NgModule({
   imports: [
@@ -18,6 +19,7 @@ import { AppSolicitudAfpaComponent } from './solicitud-nuevo-afpa/solicitud-afpa
     AppDashboardInternoComponent,
     AppSolicitudInternoComponent,
     AppSolicitudAfpaComponent,
+    AppSolicitudBaseComponent
   ],
 
 })

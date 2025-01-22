@@ -6,6 +6,7 @@ import { AppDashboard2Component } from './dashboard2/dashboard2.component';
 import { AppDashboardInternoComponent} from './dashboard_interno/dashboard-interno.component';
 import { AppSolicitudInternoComponent } from './solicitud-interno/solicitud-interno.component';
 import { AppSolicitudAfpaComponent } from './solicitud-nuevo-afpa/solicitud-afpa.component';
+import { AppSolicitudBaseComponent } from './solicitud-base/solicitud-base.component';
 
 export const DashboardsRoutes: Routes = [
   {
@@ -46,7 +47,7 @@ export const DashboardsRoutes: Routes = [
       },
       {
         path:'solicitudes-interno',
-        component: AppSolicitudInternoComponent,
+        component: AppSolicitudBaseComponent,
         data: {
           title: 'Solicitudes',
           urls: [

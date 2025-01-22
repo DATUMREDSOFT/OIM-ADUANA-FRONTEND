@@ -1,8 +1,6 @@
-import { Routes, RouterModule} from '@angular/router';
+import { Routes} from '@angular/router';
 import { BlankComponent } from './layouts/blank/blank.component';
 import { FullComponent } from './layouts/full/full.component';
-import { NgModule } from '@angular/core';
-
 
 export const routes: Routes = [
   {
@@ -105,8 +103,3 @@ export const routes: Routes = [
   },
 ];
 
-@NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true })],
-  exports: [RouterModule]
-})
-export class AppRoutingModule {}
