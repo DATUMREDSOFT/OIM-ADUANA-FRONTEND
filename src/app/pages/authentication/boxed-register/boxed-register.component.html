@@ -31,13 +31,10 @@
                 <mat-icon>search</mat-icon>
               </button>
             </mat-form-field>
-            <div
-              *ngIf="documentControl.invalid && documentControl.touched"
-              class="text-error"
-            >
+            <mat-error *ngIf="documentControl.invalid && documentControl.touched && searchAttempted">
               Formato no válido de documento
-            </div>
-            <button mat-flat-button color="primary" (click)="onSearch()">Buscar</button>
+            </mat-error>
+            <button mat-flat-button color="primary" class="w-100" (click)="onSearch()">Buscar</button>
             <div *ngIf="loading" class="text-center m-t-16">
               <mat-spinner diameter="30"></mat-spinner>
             </div>

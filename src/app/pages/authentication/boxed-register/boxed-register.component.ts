@@ -22,6 +22,7 @@ export class AppBoxedRegisterComponent {
   userExists: boolean = false;
   userData: any = {};
   userType: string = '';
+  searchAttempted: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -32,13 +33,18 @@ export class AppBoxedRegisterComponent {
     ]);
   }
 
-  onSearch() {
+    onSearch() {
+    this.searchAttempted = true;
     if (this.documentControl.invalid) {
       this.documentControl.markAsTouched();
       return;
     }
     this.loading = true;
-    this.authService.validateDocument(this.documentControl.value).subscribe(
+  
+    // Remove non-digit characters from the document number
+    const documentNumber = this.documentControl.value.replace(/\D/g, '');
+  
+    this.authService.validateDocument(documentNumber).subscribe(
       (response) => {
         this.loading = false;
         this.searchCompleted = true;
