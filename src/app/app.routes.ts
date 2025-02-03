@@ -1,22 +1,22 @@
 import { Routes} from '@angular/router';
 import { BlankComponent } from './layouts/blank/blank.component';
 import { FullComponent } from './layouts/full/full.component';
+import { AppBoxedRegisterComponent } from './pages/authentication/boxed-register/boxed-register.component';
 
 export const routes: Routes = [
   {
     path: '',
+    redirectTo: '/register',
+    pathMatch: 'full',
+  },
+  {
+    path: 'register',
+    component: AppBoxedRegisterComponent,
+  },
+  {
+    path: '',
     component: FullComponent,
     children: [
-      {
-        path: '',
-        redirectTo: '/dashboards/dashboard1',
-        pathMatch: 'full',
-      },
-      {
-        path: '',
-        redirectTo: '/dashboards/dashboard2',
-        pathMatch: 'full',
-      },
       {
         path: 'starter',
         loadChildren: () =>

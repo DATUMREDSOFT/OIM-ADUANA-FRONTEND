@@ -1,12 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CoreService } from 'src/app/services/core.service';
-import { FormGroup, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../material.module';
-import { MatDialog } from '@angular/material/dialog';
-import { AppDeleteRegistryComponent } from '../boxed-register/delete/delete.component';
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthHelperService } from 'src/app/services/auth-helper.service';
+import { searchUser } from 'src/app/services/search-helper';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,68 +13,107 @@ import Swal from 'sweetalert2';
   imports: [CommonModule, RouterModule, MaterialModule, FormsModule, ReactiveFormsModule],
   templateUrl: './boxed-register.component.html',
 })
-export class AppBoxedRegisterComponent {
+export class AppBoxedRegisterComponent implements OnInit {
   documentControl: FormControl;
   loading: boolean = false;
-  searchCompleted: boolean = false;
-  userExists: boolean = false;
-  userData: any = {};
-  userType: string = '';
   searchAttempted: boolean = false;
+  searchCompleted = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authHelperService: AuthHelperService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.documentControl = new FormControl('', [
       Validators.required,
-      Validators.pattern(/^\d{8}-\d{1}$|^\d{4}-\d{6}-\d{3}-\d{1}$/)
+      Validators.pattern(/^\d{8}-\d{1}$|^\d{4}-\d{6}-\d{3}-\d{1}$/),
     ]);
   }
 
-    onSearch() {
+  async onSearch() {
     this.searchAttempted = true;
     if (this.documentControl.invalid) {
       this.documentControl.markAsTouched();
       return;
     }
     this.loading = true;
-  
-    // Remove non-digit characters from the document number
+
     const documentNumber = this.documentControl.value.replace(/\D/g, '');
-  
-    this.authService.validateDocument(documentNumber).subscribe(
-      (response) => {
+
+    searchUser(documentNumber, this.authHelperService).subscribe({
+      next: (user) => {
         this.loading = false;
-        this.searchCompleted = true;
-        this.userExists = response.exists;
-        this.userData = response.data;
-        if (this.userExists) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Documento encontrado',
-            text: 'El documento ha sido validado exitosamente.',
-            confirmButtonText: 'Continuar'
-          }).then(() => {
-            this.router.navigate(['/solicitud-base'], { queryParams: { userType: 'externo', userData: JSON.stringify(this.userData) } });
-          });
+        if (!user) {
+          this.showNotFoundToast();
+          return;
+        }
+
+        // Debugging: Log the response
+        console.log('User Response:', user);
+
+        if (user.status === 200 || user.externalCodeDeclarant) {
+          this.handleUserResponse(user);
         } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Documento no encontrado',
-            text: 'No se encontraron datos para el documento ingresado.',
-          });
+          this.showNotFoundToast();
         }
       },
-      (error) => {
+      error: (err) => {
         this.loading = false;
-        console.error('Document validation failed', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ocurrió un error al validar el documento. Por favor, inténtelo de nuevo.',
-        });
-      }
-    );
+        this.handleError(err);
+      },
+    });
+  }
+
+  private handleUserResponse(user: any): void {
+    if (user.externalCodeDeclarant) {
+      // User is an AgenteAFPA or similar role
+      Swal.fire({
+        title: 'Documento con acceso al sistema',
+        text: 'Este usuario ya cuenta con acceso al sistema. ¿Desea iniciar sesión?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Iniciar sesión',
+        cancelButtonText: 'Cerrar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/authentication/boxed-login']);
+        }
+      });
+    } else if (user.status === 200) {
+      // User is an Elaborador or Aplicante
+      this.router.navigate(['/external-interface']);
+    } else {
+      // Unknown response
+      this.showNotFoundToast();
+    }
+  }
+
+  private handleError(err: any): void {
+    if (err.status !== 404) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en el servidor',
+        text: 'Ocurrió un error al validar el documento. Por favor, intente nuevamente.',
+        confirmButtonText: 'Entendido',
+      });
+    }
+  }
+
+  private showNotFoundToast(): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'El documento no fue encontrado.',
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      },
+    });
   }
 
   formatDocument() {
@@ -95,5 +132,3 @@ export class AppBoxedRegisterComponent {
     }
   }
 }
-
-

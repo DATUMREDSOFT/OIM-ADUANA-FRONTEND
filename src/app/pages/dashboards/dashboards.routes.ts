@@ -4,7 +4,7 @@ import { Routes } from '@angular/router';
 import { AppDashboard1Component } from './dashboard1/dashboard1.component';
 import { AppDashboard2Component } from './dashboard2/dashboard2.component';
 import { AppDashboardInternoComponent} from './dashboard_interno/dashboard-interno.component';
-import { AppSolicitudInternoComponent } from './solicitud-interno/solicitud-interno.component';
+import { AppDashboardExternoComponent } from './dashboard_externo/dashboard-externo.component';
 import { AppSolicitudAfpaComponent } from './solicitud-nuevo-afpa/solicitud-afpa.component';
 import { AppSolicitudBaseComponent } from './solicitud-base/solicitud-base.component';
 
@@ -41,6 +41,17 @@ export const DashboardsRoutes: Routes = [
           title: 'Analytical',
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard-interno' },
+            { title: 'Analytical' },
+          ],
+        },
+      },
+      {
+        path:'dashboard-externo',
+        component: AppDashboardExternoComponent,
+        data: {
+          title: 'Analytical',
+          urls: [
+            { title: 'Dashboard', url: '/dashboards/dashboard-externo' },
             { title: 'Analytical' },
           ],
         },

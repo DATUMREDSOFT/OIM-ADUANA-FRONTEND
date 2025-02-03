@@ -14,13 +14,34 @@ export class AuthService extends BaseService {
     super(http);
   }
 
+  validatePersonalNoAFPA(document: string): Observable<any> {
+    const url = `${this.apiUrl}/form/request/applicant/PersonalNoAFPA/${document}`;
+    return this.http.get(url);
+  }
+
+  validateAgenteAFPA(document: string): Observable<any> {
+    const url = `${this.apiUrl}/form/request/applicant/AgenteAFPA/${document}`;
+    return this.http.get(url);
+  }
+
+  validateElaborador(document: string): Observable<any> {
+    const url = `${this.apiUrl}/form/request/applicant/Elaborador/${document}`;
+    return this.http.get(url);
+  }
+
+  validateAplicante(document: string): Observable<any> {
+    const url = `${this.apiUrl}/form/request/applicant/Aplicante/${document}`;
+    return this.http.get(url);
+  }
+
   validateDocument(document: string): Observable<any> {
     const url = `${this.apiUrl}/form/user/valid/${document}`;
     return this.get(url);
   }
 
-  login(credentials: { username: string; password: string }): Observable<any> {
-    const url = `${environment.apiUrl}/auth/login`;
+  login(credentials: { user: string; password: string; role: string | null }): Observable<any> {
+    const url = `${environment.apiUrl}/flow/login`;
+    credentials.role = null; // Ensure role is always null
     return this.post(url, credentials);
   }
 
