@@ -46,7 +46,7 @@ export class AppUsersOverviewComponent {
         height: 275,
       },
       labels: ['Activos', 'Inactivos'],
-      colors: ["#7869cd", "#e3e1f6"],
+      colors: ["#3683d8", "#a5c1d5"],
       plotOptions: {
         pie: {
           donut: {
@@ -63,7 +63,7 @@ export class AppUsersOverviewComponent {
               },
               total: {
                 show: true,
-                color: '#7869cd',
+                color: '#3683d8',
                 fontSize: '20px',
                 fontWeight: '600',
                 label: '12 usuarios',

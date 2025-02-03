@@ -50,7 +50,7 @@ export class AppRequestStateComponent {
         offsetX: -45,  // This will move the chart to the left
         offsetY: -10  // This will move the chart to the top
       },
-      colors: ["#7869cd", "#e3e1f6"],
+      colors: ["#3683d8", "#e3e1f6"],
       theme: {
         monochrome: {
           enabled: false

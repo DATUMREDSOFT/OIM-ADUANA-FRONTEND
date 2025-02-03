@@ -14,15 +14,15 @@ import { DatePipe } from '@angular/common';
 import { TablerIconsModule } from 'angular-tabler-icons';
 
 @Component({
-  selector: 'app-solicitud-interno',
-  templateUrl: './solicitud-interno.component.html',
+  selector: 'app-solicitud-AFPA',
+  templateUrl: './solicitud-AFPA.component.html',
   standalone: true,
   providers: [DatePipe],
   imports: [MaterialModule, MatCardModule, FormsModule, ReactiveFormsModule, CommonModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule],
 })
-export class AppSolicitudInternoComponent implements OnInit {
+export class AppSolicitudAFPAComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
-  formGroup: FormGroup;
+
   userForm: FormGroup;
   userRequests: any[] = [];
   perfilesAsignados: any[] = [];
@@ -37,17 +37,44 @@ export class AppSolicitudInternoComponent implements OnInit {
   isLoading: boolean = false;
   shouldSave: boolean = false;
 
-  constructor(private fb: FormBuilder, private datePipe: DatePipe) {}
+  constructor(private _formBuilder: FormBuilder, private datePipe: DatePipe) {}
 
   ngOnInit() {
-    this.formGroup = this.fb.group({
+    this.userForm = this._formBuilder.group({
+      duiNit: ['', Validators.required],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
-      correo: ['', [Validators.required, Validators.email]],
-      telefono: ['', Validators.required],
+      usuario: ['', Validators.required],
+      correo: ['', Validators.required],
       organizacion: [{ value: 'DGA', disabled: true }],
-      estado: ['', Validators.required]
+      estado: ['', Validators.required],
+      rol: ['', Validators.required],
+      cargo: ['', Validators.required],
+      perfil: [''],
+      aduanaPerfil: [''],
+      fechaInicioPerfil: [''],
+      fechaFinPerfil: [''],
+      sistema: [''],
+      aduanaSistema: [''],
+      fechaInicioSistema: [''],
+      fechaFinSistema: [''],
+      tipoSolicitud: [''],
     });
+    this.userRequests = [
+      {
+        duiNit: '',
+        nombre: '',
+        apellido: '',
+        usuario: '',
+        correo: '',
+        organizacion: 'DGA',
+        estado: '',
+        rol: '',
+        cargo: '',
+        perfiles: [],
+        sistemas: [],
+      },
+    ];
   }
 
   editPerfil(index: number) {

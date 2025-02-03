@@ -4,8 +4,9 @@ import { Routes } from '@angular/router';
 import { AppDashboard1Component } from './dashboard1/dashboard1.component';
 import { AppDashboard2Component } from './dashboard2/dashboard2.component';
 import { AppDashboardInternoComponent} from './dashboard_interno/dashboard-interno.component';
-import { AppSolicitudInternoComponent } from './solicitud-interno/solicitud-interno.component';
+import { AppDashboardExternoComponent } from './dashboard_externo/dashboard-externo.component';
 import { AppSolicitudAfpaComponent } from './solicitud-nuevo-afpa/solicitud-afpa.component';
+import { AppSolicitudBaseComponent } from './solicitud-base/solicitud-base.component';
 
 export const DashboardsRoutes: Routes = [
   {
@@ -15,7 +16,7 @@ export const DashboardsRoutes: Routes = [
         path: 'dashboard1',
         component: AppDashboard1Component,
         data: {
-          title: 'Analytical',
+          title: 'Dashboard',
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard1' },
             { title: 'Analytical' },
@@ -45,10 +46,21 @@ export const DashboardsRoutes: Routes = [
         },
       },
       {
-        path:'solicitudes-interno',
-        component: AppSolicitudInternoComponent,
+        path:'dashboard-externo',
+        component: AppDashboardExternoComponent,
         data: {
           title: 'Analytical',
+          urls: [
+            { title: 'Dashboard', url: '/dashboards/dashboard-externo' },
+            { title: 'Analytical' },
+          ],
+        },
+      },
+      {
+        path:'solicitudes-interno',
+        component: AppSolicitudBaseComponent,
+        data: {
+          title: 'Solicitudes',
           urls: [
             { title: 'Dashboard', url: '/dashboards/solicitudes-interno' },
             { title: 'Analytical' },

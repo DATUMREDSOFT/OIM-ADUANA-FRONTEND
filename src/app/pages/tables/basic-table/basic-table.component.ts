@@ -102,12 +102,12 @@ export class AppBasicTableComponent {
         {
           name: "Aprobadas",
           data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
-          color: "#7869cd"
+          color: "#3683d8"
         },
         {
           name: "Rechazadas",
           data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
-          color: "#CDC1FF"
+          color: "#a5c1d5"
         },
       ],
       chart: {

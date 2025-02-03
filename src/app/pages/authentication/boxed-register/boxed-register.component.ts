@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CoreService } from 'src/app/services/core.service';
-import { FormGroup, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../material.module';
-import { MatDialog } from '@angular/material/dialog';
-import { AppDeleteRegistryComponent } from '../boxed-register/delete/delete.component';
+import { AuthHelperService } from 'src/app/services/auth-helper.service';
+import { searchUser } from 'src/app/services/search-helper';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-boxed-register',
@@ -13,126 +13,107 @@ import { AppDeleteRegistryComponent } from '../boxed-register/delete/delete.comp
   imports: [CommonModule, RouterModule, MaterialModule, FormsModule, ReactiveFormsModule],
   templateUrl: './boxed-register.component.html',
 })
-export class AppBoxedRegisterComponent {
-  options = this.settings.getOptions();
-  searchQuery: string = '';
+export class AppBoxedRegisterComponent implements OnInit {
   documentControl: FormControl;
   loading: boolean = false;
-  searchCompleted: boolean = false;
-  userExists: boolean = false;
+  searchAttempted: boolean = false;
+  searchCompleted = false;
 
-  validDuis: string[] = ['00000000-0'];
-  userType: string = '';
-  userData: any = {};
-  authorizedList: any[] = [{ nombre: '', correo: '', telefono: '', direccion: '', dui: '' }];
+  constructor(
+    private authHelperService: AuthHelperService,
+    private router: Router
+  ) {}
 
-  addPersonal() {
-    this.authorizedList.push({ nombre: '', correo: '', telefono: '', direccion: '', dui: '' });
-    setTimeout(() => {
-      const element = document.getElementById('.scrollable-container');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 0);
+  ngOnInit() {
+    this.documentControl = new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^\d{8}-\d{1}$|^\d{4}-\d{6}-\d{3}-\d{1}$/),
+    ]);
   }
 
-  confirmDelete(index: number) {
-    const dialogRef = this.dialog.open(AppDeleteRegistryComponent);
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.deletePersonal(index);
-      }
-    });
-  }
-
-  deletePersonal(index: number) {
-    this.authorizedList.splice(index, 1);
-  }
-  
-
-  form = new FormGroup({
-    uname: new FormControl('', [Validators.required, Validators.minLength(6)]),
-    email: new FormControl('', [Validators.required]),
-    password: new FormControl('', [Validators.required]),
-  });
-
-
-  get f() {
-    return this.form.controls;
-  }
-
-  submit() {
-    // console.log(this.form.value);
-    this.router.navigate(['/dashboards/dashboard1']);
-  }
-
-
-ngOnInit() {
-  this.documentControl = new FormControl('', [
-    Validators.required,
-    Validators.pattern(/^\d{8}-\d{1}$|^\d{4}-\d{6}-\d{3}-\d{1}$/)
-  ]);
-}
-constructor(private settings: CoreService, private router: Router, private dialog: MatDialog) {
-  // Dummy data for testing
-  this.validDuis.push('12345678-9'); // Natural Person
-  this.validDuis.push('1234-567890-123-4'); // Company
-  this.validDuis.push('5678-123456-789-0'); // Customs Agent
-  this.validDuis.push('98765432-1'); // Customs Agent
-}
-
-// Removed duplicate onSearch function
-
-  onSearch() {
+  async onSearch() {
+    this.searchAttempted = true;
     if (this.documentControl.invalid) {
       this.documentControl.markAsTouched();
       return;
     }
     this.loading = true;
-    // Simulate an API call
-    setTimeout(() => {
-      this.loading = false;
-      this.searchCompleted = true;
-      // Simulate user existence check
-      this.userExists = this.validDuis.includes(this.documentControl.value);
-      if (this.userExists) {
-        if (this.documentControl.value === '12345678-9') {
-          this.userType = 'naturalPerson';
-          this.userData = {
-            nombre: 'John Doe',
-            correo: 'john.doe@example.com',
-            telefono: '12345678'
-          };
-        } else if (this.documentControl.value === '1234-567890-123-4') {
-          this.userType = 'company';
-          this.userData = {
-            nombre: 'ABC Corp',
-            direccion: '123 Business St',
-            telefono: '87654321',
-            correo: 'contact@abccorp.com'
-          };
-        } else if (this.documentControl.value === '98765432-1') {
-          this.userType = 'customsAgent';
-          this.userData = {
-            nombre: 'Jane Smith',
-            correo: 'jane.smith@example.com',
-            telefono: '11223344',
-            codigoDeclarante: 'A123456'
-          };
-        } else if (this.documentControl.value === '00000000-0') {
-          alert('Este usuario ya tiene cuenta. Redireccionando a login');
-          setTimeout(() => {
-            this.router.navigate(['/authentication/boxed-login']);
-          }, 2000);
+
+    const documentNumber = this.documentControl.value.replace(/\D/g, '');
+
+    searchUser(documentNumber, this.authHelperService).subscribe({
+      next: (user) => {
+        this.loading = false;
+        if (!user) {
+          this.showNotFoundToast();
           return;
         }
-      } else {
-        setTimeout(() => {
-          this.router.navigate(['/authentication/boxed-register']);
-        }, 2000);
-      }
-    }, 2000);
+
+        // Debugging: Log the response
+        console.log('User Response:', user);
+
+        if (user.status === 200 || user.externalCodeDeclarant) {
+          this.handleUserResponse(user);
+        } else {
+          this.showNotFoundToast();
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        this.handleError(err);
+      },
+    });
+  }
+
+  private handleUserResponse(user: any): void {
+    if (user.externalCodeDeclarant) {
+      // User is an AgenteAFPA or similar role
+      Swal.fire({
+        title: 'Documento con acceso al sistema',
+        text: 'Este usuario ya cuenta con acceso al sistema. ¿Desea iniciar sesión?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Iniciar sesión',
+        cancelButtonText: 'Cerrar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/authentication/boxed-login']);
+        }
+      });
+    } else if (user.status === 200) {
+      // User is an Elaborador or Aplicante
+      this.router.navigate(['/external-interface']);
+    } else {
+      // Unknown response
+      this.showNotFoundToast();
+    }
+  }
+
+  private handleError(err: any): void {
+    if (err.status !== 404) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en el servidor',
+        text: 'Ocurrió un error al validar el documento. Por favor, intente nuevamente.',
+        confirmButtonText: 'Entendido',
+      });
+    }
+  }
+
+  private showNotFoundToast(): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'El documento no fue encontrado.',
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      },
+    });
   }
 
   formatDocument() {
@@ -150,24 +131,4 @@ constructor(private settings: CoreService, private router: Router, private dialo
       this.documentControl.setValue(value.replace(/(\d{4})(\d{6})(\d{3})(\d{1})/, '$1-$2-$3-$4'), { emitEvent: false });
     }
   }
-
-  toggleCollapse(index: number) {
-    const content = document.getElementById(`content-${index}`);
-    const icon = document.getElementById(`icon-${index}`);
-    if (content) {
-      if (content.style.display === "none") {
-        content.style.display = "block";
-        if (icon) {
-          icon.innerText = "expand_less";
-        }
-      } else {
-        content.style.display = "none";
-        if (icon) {
-          icon.innerText = "expand_more";
-        }
-      }
-    }
-  }
 }
-
-

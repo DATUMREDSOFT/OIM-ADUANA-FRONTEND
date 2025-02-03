@@ -1,0 +1,228 @@
+<div class="container">
+  <div class="row">
+    <div class="col-lg-3">
+      <mat-card style="position: fixed; max-height: calc(100vh - 40px); overflow-y: auto;">
+      <mat-card-header>
+        <mat-card-title>Índice de formularios</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <ul>
+        <li *ngFor="let user of userRequests; let i = index" (click)="scrollToForm(i)" style="cursor: pointer; color: blue; text-decoration: underline;">
+          Usuario {{ i + 1 }}
+        </li>
+        </ul>
+      </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="col-lg-9" >
+      <div class="form-container">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Formularios de solicitud</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngFor="let user of userRequests; let i = index" class="form-card" [id]="'form-' + i">
+              <h3>Usuario {{ i + 1 }}</h3>
+              <form [formGroup]="userForm">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <mat-form-field appearance="outline" class="w-100">
+                      <mat-label>Seleccione el tipo de solicitud</mat-label>
+                      <mat-select formControlName="tipoSolicitud" (selectionChange)="onSolicitudChange($event, i)">
+                        <mat-option value="nuevoUsuario">Nuevo usuario</mat-option>
+                        <mat-option value="modificarUsuario">Modificar usuario</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div *ngIf="user.tipoSolicitud">
+                  <div *ngIf="user.tipoSolicitud === 'nuevoUsuario'">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <mat-form-field appearance="outline" class="w-100">
+                          <mat-label>DUI/NIT</mat-label>
+                          <input matInput formControlName="duiNit">
+                          <button mat-icon-button matSuffix (click)="fetchUserData()">
+                            <mat-icon>search</mat-icon>
+                          </button>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-lg-6">
+                        <mat-form-field appearance="outline" class="w-100">
+                          <mat-label>Nombre</mat-label>
+                          <input matInput formControlName="nombre">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-lg-6">
+                        <mat-form-field appearance="outline" class="w-100">
+                          <mat-label>Apellido</mat-label>
+                          <input matInput formControlName="apellido">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-lg-6">
+                        <mat-form-field appearance="outline" class="w-100">
+                          <mat-label>Usuario</mat-label>
+                          <input matInput formControlName="usuario">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-lg-6">
+                        <mat-form-field appearance="outline" class="w-100">
+                          <mat-label>Correo</mat-label>
+                          <input matInput formControlName="correo">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-lg-6">
+                        <mat-form-field appearance="outline" class="w-100">
+                          <mat-label>Organización</mat-label>
+                          <input matInput formControlName="organizacion" value="DGA" [disabled]="true">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-lg-6">
+                        <mat-form-field appearance="outline" class="w-100">
+                          <mat-label>Estado</mat-label>
+                          <input matInput formControlName="estado">
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="user.tipoSolicitud === 'modificarUsuario'">
+                    <!-- Add fields specific to 'modificarUsuario' here -->
+                  </div>
+
+                  <mat-divider style="margin-top: 16px; margin-bottom: 16px;"></mat-divider>
+
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <mat-card>
+                        <mat-card-header>
+                          <mat-card-title>Perfiles</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Perfil</mat-label>
+                            <mat-select formControlName="perfil">
+                              <mat-option value="perfil1">Perfil 1</mat-option>
+                              <mat-option value="perfil2">Perfil 2</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                          <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Aduana Perfil</mat-label>
+                            <mat-select formControlName="aduanaPerfil">
+                              <mat-option value="aduana1">Aduana 1</mat-option>
+                              <mat-option value="aduana2">Aduana 2</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                          <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Fecha Inicio Perfil</mat-label>
+                            <input matInput [matDatepicker]="picker1" formControlName="fechaInicioPerfil">
+                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                            <mat-datepicker #picker1></mat-datepicker>
+                          </mat-form-field>
+                          <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Fecha Fin Perfil</mat-label>
+                            <input matInput [matDatepicker]="picker2" formControlName="fechaFinPerfil">
+                            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                            <mat-datepicker #picker2></mat-datepicker>
+                          </mat-form-field>
+                          <button mat-flat-button color="primary" (click)="saveProfileAndSystem()">{{ editMode ? 'Actualizar perfil' : 'Guardar perfil y sistema' }}</button>
+                        </mat-card-content>
+                      </mat-card>
+                    </div>
+                    <div class="col-lg-6">
+                      <mat-card>
+                        <mat-card-header>
+                          <mat-card-title>Sistemas</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Sistema</mat-label>
+                            <mat-select formControlName="sistema">
+                              <mat-option value="sistema1">Sistema 1</mat-option>
+                              <mat-option value="sistema2">Sistema 2</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                          <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Aduana Sistema</mat-label>
+                            <mat-select formControlName="aduanaSistema">
+                              <mat-option value="aduana1">Aduana 1</mat-option>
+                              <mat-option value="aduana2">Aduana 2</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                          <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Fecha Inicio Sistema</mat-label>
+                            <input matInput [matDatepicker]="picker3" formControlName="fechaInicioSistema">
+                            <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+                            <mat-datepicker #picker3></mat-datepicker>
+                          </mat-form-field>
+                          <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Fecha Fin Sistema</mat-label>
+                            <input matInput [matDatepicker]="picker4" formControlName="fechaFinSistema">
+                            <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+                            <mat-datepicker #picker4></mat-datepicker>
+                          </mat-form-field>
+                          <button mat-flat-button color="primary" (click)="saveProfileAndSystem()">{{ editMode ? 'Actualizar sistema' : 'Guardar perfil y sistema' }}</button>
+                        </mat-card-content>
+                      </mat-card>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <mat-card>
+                        <mat-card-header>
+                          <mat-card-title>Perfiles Asignados</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <ul>
+                            <li *ngFor="let perfil of perfilesAsignados; let j = index">
+                              {{ perfil.perfil }} - {{ perfil.aduana }} - Inicio:{{ perfil.fechaInicio || 'N/A' }} - Fin:{{ perfil.fechaFin || 'N/A' }}
+                              <button mat-icon-button color="primary" (click)="editPerfil(j)">
+                                <mat-icon>edit</mat-icon>
+                              </button>
+                              <button mat-icon-button color="warn" (click)="deletePerfil(j)">
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                            </li>
+                          </ul>
+                        </mat-card-content>
+                      </mat-card>
+                    </div>
+                    <div class="col-lg-6">
+                      <mat-card>
+                        <mat-card-header>
+                          <mat-card-title>Sistemas Asignados</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <ul>
+                            <li *ngFor="let sistema of sistemasAsignados; let k = index">
+                              {{ sistema.sistema }} - {{ sistema.aduana }}
+                              <button mat-icon-button color="primary" (click)="editSistema(k)">
+                                <mat-icon>edit</mat-icon>
+                              </button>
+                              <button mat-icon-button color="warn" (click)="deleteSistema(k)">
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                            </li>
+                          </ul>
+                        </mat-card-content>
+                      </mat-card>
+                    </div>
+                  </div>
+
+                  <div class="text-right m-t-16">
+                    <button mat-flat-button color="warn" (click)="deleteForm(i)" style="margin-left: 8px;">Borrar formulario</button>
+                  </div>
+                </div>
+              </form>
+              <mat-divider *ngIf="i < userRequests.length - 1" style="margin-top: 16px; margin-bottom: 16px;"></mat-divider>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="text-right m-t-16">
+        <button mat-flat-button color="primary" (click)="addAnotherForm()" style="margin-right: 8px;">Agregar otro usuario</button>
+        <button mat-flat-button color="accent" (click)="sendRequest()">Enviar solicitud</button>
+      </div>
+    </div>
+  </div>
+</div>
