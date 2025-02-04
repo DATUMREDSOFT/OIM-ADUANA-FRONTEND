@@ -1,23 +1,23 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import {Component, ViewChild, OnInit} from '@angular/core';
 // import { MatStepper } from '@angular/material/stepper';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule, FormArray } from '@angular/forms';
-import { MaterialModule } from '../../../material.module';
-import { MatCardModule } from '@angular/material/card';
-import { CommonModule } from '@angular/common';
-import { MatNativeDateModule } from '@angular/material/core';
+import {FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule, FormArray} from '@angular/forms';
+import {MaterialModule} from '../../../material.module';
+import {MatCardModule} from '@angular/material/card';
+import {CommonModule} from '@angular/common';
+import {MatNativeDateModule} from '@angular/material/core';
 import Swal from 'sweetalert2';
-import { MatAccordion } from '@angular/material/expansion';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { DatePipe } from '@angular/common';
+import {MatAccordion} from '@angular/material/expansion';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {DatePipe} from '@angular/common';
 
 // icons
-import { TablerIconsModule } from 'angular-tabler-icons';
+import {TablerIconsModule} from 'angular-tabler-icons';
 
-import { Inject } from '@angular/core';
-import { UserService } from '../../../services/user.service';
-import { AppSolicitudInternoComponent } from "../solicitud-interno/solicitud-interno.component";
-import { AppSolicitudAfpaComponent } from "../solicitud-nuevo-afpa/solicitud-afpa.component";
-import { AppSolicitudExternoComponent } from "../solicitud-externo/solicitud-externo.component";
+import {Inject} from '@angular/core';
+import {UserService} from '../../../services/user.service';
+import {AppSolicitudInternoComponent} from "../solicitud-interno/solicitud-interno.component";
+import {AppSolicitudAfpaComponent} from "../solicitud-nuevo-afpa/solicitud-afpa.component";
+import {AppSolicitudExternoComponent} from "../solicitud-externo/solicitud-externo.component";
 
 @Component({
   selector: 'app-solicitud-base',
@@ -30,7 +30,8 @@ export class AppSolicitudBaseComponent implements OnInit {
   userType: string;
   solicitudForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private userService: UserService) {}
+  constructor(private fb: FormBuilder, private userService: UserService) {
+  }
 
   ngOnInit() {
     this.solicitudForm = this.fb.group({
@@ -45,12 +46,13 @@ export class AppSolicitudBaseComponent implements OnInit {
   createFormulario(): FormGroup {
     return this.fb.group({
       tipo: ['', Validators.required],
+      uuid: [{value: crypto.randomUUID(), disabled: true}],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
       telefono: ['', Validators.required],
-      organizacion: [{ value: 'DGA', disabled: true }],
-      estado: ['', Validators.required]
+      organizacion: [{value: 'DGA', disabled: true}],
+      estado: ['', Validators.required],
     });
   }
 
@@ -70,8 +72,9 @@ export class AppSolicitudBaseComponent implements OnInit {
   scrollToForm(index: number) {
     const form = document.getElementById(`form-${index}`);
     if (form) {
-      form.scrollIntoView({ behavior: 'smooth' });
+      form.scrollIntoView({behavior: 'smooth'});
     }
   }
-  
+
+  protected readonly console = console;
 }

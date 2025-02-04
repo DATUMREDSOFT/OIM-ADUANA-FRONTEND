@@ -1,30 +1,40 @@
 <div class="container">
   <div class="row">
+
+
     <div class="col-lg-3">
       <mat-card style="position: fixed; max-height: calc(100vh - 40px); overflow-y: auto;">
         <mat-card-header>
           <mat-card-title>Índice de formularios</mat-card-title>
         </mat-card-header>
+
+
         <mat-card-content>
           <ul>
-            <li *ngFor="let formulario of formularios.controls; let i = index" (click)="scrollToForm(i)" style="cursor: pointer; color: blue; text-decoration: underline;">
-              Formulario {{ i + 1 }}
+            <li *ngFor="let formulario of formularios.controls; let i = index" (click)="scrollToForm(i)"
+                style="cursor: pointer; color: blue; text-decoration: underline;">
+             Formulario  {{ i + 1 }}
             </li>
           </ul>
         </mat-card-content>
       </mat-card>
+
     </div>
+
+
     <div class="col-lg-9">
       <div class="form-container">
+
+
+
         <ng-content select="[document-data-card]"></ng-content>
         <mat-card>
-          <mat-card-header>
-            <mat-card-title>Formularios de solicitud</mat-card-title>
-          </mat-card-header>
+
           <mat-card-content>
             <div *ngFor="let formulario of formularios.controls; let i = index" class="form-card" [id]="'form-' + i">
-              <h3>Formulario {{ i + 1 }}</h3>
+              <h2>Formulario {{ i + 1 }}</h2>
               <form [formGroup]="$any(formulario)">
+
                 <div class="row">
                   <div class="col-lg-6">
                     <mat-form-field appearance="outline" class="w-100">
@@ -35,22 +45,38 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
+                  <div class="col-lg-6">
+                    <mat-form-field appearance="outline" class="w-100">
+                      <mat-label>UUID</mat-label>
+                      <input class="text-gray-200" matInput formControlName="uuid" [disabled]="true">
+                    </mat-form-field>
+                  </div>
                 </div>
+
                 <div *ngIf="formulario.get('tipo')?.value === 'solicitudCreacionUsuario'">
+
+
                   <app-solicitud-interno [formGroup]="$any(formulario)"></app-solicitud-interno>
                 </div>
                 <div *ngIf="formulario.get('tipo')?.value === 'otroTipo'">
                   <!-- Add other form types here -->
                 </div>
               </form>
-              <button mat-flat-button color="warn" (click)="removeFormulario(i)" style="margin-top: 16px;">Borrar formulario</button>
-              <mat-divider *ngIf="i < formularios.length - 1" style="margin-top: 16px; margin-bottom: 16px;"></mat-divider>
+
+              <button mat-flat-button color="warn" (click)="removeFormulario(i)" style="margin-top: 16px;">Borrar
+                formulario
+              </button>
+              <mat-divider *ngIf="i < formularios.length - 1"
+                           style="margin-top: 16px; margin-bottom: 16px;"></mat-divider>
+
             </div>
           </mat-card-content>
         </mat-card>
       </div>
       <div class="text-right m-t-16">
-        <button mat-flat-button color="primary" (click)="addFormulario()" style="margin-right: 8px;">Agregar otro formulario</button>
+        <button mat-flat-button color="primary" (click)="addFormulario()" style="margin-right: 8px;">Agregar otro
+          formulario
+        </button>
         <button mat-flat-button color="accent" (click)="sendRequest()">Enviar solicitud</button>
       </div>
     </div>

@@ -1,45 +1,121 @@
+<mat-divider style="margin:  16px 0;"></mat-divider>
 <mat-card-header>
-  <mat-card-title class="pt-0">Datos del Usuario</mat-card-title>
+  <h3 class="">Datos del Usuario</h3>
+
 </mat-card-header>
+
+
+
 <mat-card-content>
   <form [formGroup]="formGroup">
+
     <div class="row">
+      <div class="col-lg-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>DUI:</mat-label>
+          <input type="text" matInput matNativeControl>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+
+
       <div class="col-lg-6">
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Nombre</mat-label>
+          <mat-label>Nombre Completo:</mat-label>
           <input matInput formControlName="nombre">
         </mat-form-field>
       </div>
-      <div class="col-lg-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Apellido</mat-label>
-          <input matInput formControlName="apellido">
-        </mat-form-field>
-      </div>
-      <div class="col-lg-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Correo</mat-label>
-          <input matInput formControlName="correo">
-        </mat-form-field>
-      </div>
+
       <div class="col-lg-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Teléfono</mat-label>
           <input matInput formControlName="telefono">
         </mat-form-field>
       </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Correo</mat-label>
+          <input matInput formControlName="correo">
+        </mat-form-field>
+      </div>
+
       <div class="col-lg-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Organización</mat-label>
           <input matInput formControlName="organizacion" value="DGA" [disabled]="true">
         </mat-form-field>
       </div>
+
       <div class="col-lg-6">
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Estado</mat-label>
-          <input matInput formControlName="estado">
+          <mat-label>Accesos</mat-label>
+          <input matInput formControlName="accesos" value="SIAPA" [disabled]="true">
         </mat-form-field>
       </div>
     </div>
+
+    <mat-divider style="margin:  16px 0;"></mat-divider>
+
+    <div class="row">
+
+      <mat-card-header>
+        <h3>Perfil del Usuario</h3>
+      </mat-card-header>
+
+    </div>
+
+    <div class="row">
+
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Perfil</mat-label>
+          <mat-select formControlName="perfil">
+            <mat-option value="">Value 1</mat-option>
+            <mat-option value="">Value 2</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Aduana</mat-label>
+          <mat-select formControlName="aduanaPerfil">
+            <mat-option value="">Value 1</mat-option>
+            <mat-option value="">Value 2</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-lg-6">
+        <mat-form-field>
+          <mat-label>Fecha Inicio de Sistema</mat-label>
+          <input matInput [matDatepicker]="pickerInicio">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+          <mat-datepicker #pickerInicio></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-4">
+        <mat-form-field>
+          <mat-label>Fecha Fin de Sistema</mat-label>
+          <input matInput [matDatepicker]="pickerFin">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+          <mat-datepicker #pickerFin></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+
+
   </form>
+
+
 </mat-card-content>
+
+
