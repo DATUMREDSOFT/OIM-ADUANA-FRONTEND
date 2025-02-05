@@ -16,6 +16,7 @@ import { Roles } from '../../../enums/roles.enum';
 import Swal from 'sweetalert2';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { Observable, forkJoin, of, throwError } from 'rxjs';
+import { CommonAttribute } from '../../../models/common-attribute.model';
 
 @Component({
   selector: 'app-boxed-register',
@@ -95,12 +96,39 @@ export class AppBoxedRegisterComponent {
   }
 
   private enrichApplicantData(applicant: Solicitante): Solicitante {
+    const document = applicant.document || this.documentControl.value?.replace(/\D/g, '') || '';
+    
     return {
-      ...applicant,
-      externalType: applicant.externalType || { id: 'NA', status: 'ENABLED', value: 'N/A' },
+      attribute: applicant.attribute || { id: 'NA', status: 'ENABLED', value: 'N/A' },
+      externalType: this.determineExternalTypeFromDoc(document),
+      name: applicant.name || '',
       position: applicant.position || { id: 'NA', status: 'ENABLED', value: 'N/A' },
-      attribute: applicant.attribute || { id: 'NA', status: 'ENABLED', value: 'N/A' }
+      document: document,
+      mail: applicant.mail || '',
+      externalCodeDeclarant: applicant.externalCodeDeclarant || ''
     };
+  }
+  
+  private determineExternalTypeFromDoc(document: string): CommonAttribute {
+    const docType = document?.length === 9 ? 'PERSONAL' : 
+                   document?.length === 14 ? 'EMPRESAL' : 
+                   'ADUANAL';
+    
+    return {
+      id: docType,
+      status: 'ENABLED',
+      value: this.getTipoSolicitanteValue(docType)
+    };
+  }
+
+  private getTipoSolicitanteValue(id: string): string {
+    const tipos = [
+      { id: 'PERSONAL', value: 'Persona Natural' },
+      { id: 'EMPRESAL', value: 'Representante Legal' },
+      { id: 'ADUANAL', value: 'Auxiliar de la función pública' }
+    ];
+    
+    return tipos.find(t => t.id === id)?.value || 'N/A';
   }
 
   private async handleRepresentativeSearch(documentNumber: string) {
@@ -138,9 +166,12 @@ export class AppBoxedRegisterComponent {
   }
 
   private async processApplicant(applicant: Solicitante) {
-    if (applicant.document) return this.handleInternalUser();
+    // Check if the user is an internal user based on externalType
+    if (applicant.externalType?.id === 'ADUANAL' || applicant.externalType?.id === 'EMPRESAL') {
+      return this.handleInternalUser();
+    }
     if (applicant.externalCodeDeclarant) return this.handleAfpaUser(applicant);
-
+  
     this.currentApplicant = applicant;
     const formType = applicant.externalCodeDeclarant ? 
                     FormType.AgenteAFPA : 
@@ -227,9 +258,24 @@ export class AppBoxedRegisterComponent {
   }
 
   private storeInLocalStorage(applicant: Solicitante) {
+    const storageItem = {
+      value: {
+        attribute: applicant.attribute,
+        externalType: applicant.externalType,
+        name: applicant.name,
+        externalCodeDeclarant: applicant.externalCodeDeclarant,
+        position: applicant.position,
+        document: applicant.document,
+        mail: applicant.mail
+      },
+      expirationDate: new Date(
+        Date.now() + this.environment.tiempoLocalStorage * 60000
+      ).toISOString()
+    };
+  
     this.localStorageService.setItem(
       this.environment.localStorageSolicitanteKey,
-      applicant,
+      storageItem,
       this.environment.tiempoLocalStorage
     );
   }
