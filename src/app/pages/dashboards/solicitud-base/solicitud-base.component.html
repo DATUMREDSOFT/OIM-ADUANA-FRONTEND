@@ -72,9 +72,12 @@
                     </div>
                   </form>
 
-                  <button mat-flat-button color="warn" (click)="removeFormulario(i)" style="margin-top: 16px;">Borrar
-                    formulario
-                  </button>
+                  <mat-card-content>
+                    <button mat-flat-button  (click)="removeFormulario(i)"
+                            style="margin-top: 12px; padding: 1.5rem; background-color: #fa5a5a; color: white">
+                      Borrar formulario
+                    </button>
+                  </mat-card-content>
                   <mat-divider *ngIf="i < formularios.length - 1"
                                style="margin-top: 16px; margin-bottom: 16px;"></mat-divider>
 
@@ -84,11 +87,14 @@
           </mat-card-content>
         </mat-card>
       </div>
+
+
       <div class="text-right m-t-16">
-        <button mat-flat-button color="primary" (click)="addFormulario()" style="margin-right: 8px;">Agregar otro
+        <button mat-flat-button color="primary" (click)="addFormulario()" style="margin-right: 8px; padding: 1.5rem">Agregar otro
           formulario
         </button>
-        <button mat-flat-button color="accent" (click)="sendRequest()">Enviar solicitud</button>
+        <button mat-flat-button color="accent" style="padding: 1.5rem" (click)="sendRequest()">Enviar solicitud</button>
+
       </div>
     </div>
   </div>
