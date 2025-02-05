@@ -73,10 +73,33 @@
                   </form>
 
                   <mat-card-content>
-                    <button mat-flat-button  (click)="removeFormulario(i)"
-                            style="margin-top: 12px; padding: 1.5rem; background-color: #fa5a5a; color: white">
-                      Borrar formulario
-                    </button>
+
+                    <div class="row">
+
+                      <div class="col-lg-6">
+                        <button mat-flat-button (click)="removeFormulario(i)"
+                                style="margin-top: 12px; padding: 1.5rem; background-color: #fa5a5a; color: white">
+                          Borrar formulario
+                        </button>
+                      </div>
+
+                      <!--                      items-->
+                      <div class="col text-right">
+
+                        <button color="primary" mat-flat-button (click)="removeFormulario(i)"
+                                style="margin: 12px 4px; padding: 1.5rem;">
+                          Agregar Item
+                        </button>
+
+                        <button mat-flat-button (click)="removeFormulario(i)"
+                                style="margin: 12px 4px; padding: 1.5rem; background-color: #fa5a5a; color: white">
+                          Eliminar Item
+                        </button>
+
+                      </div>
+
+                    </div>
+
                   </mat-card-content>
                   <mat-divider *ngIf="i < formularios.length - 1"
                                style="margin-top: 16px; margin-bottom: 16px;"></mat-divider>
@@ -90,7 +113,8 @@
 
 
       <div class="text-right m-t-16">
-        <button mat-flat-button color="primary" (click)="addFormulario()" style="margin-right: 8px; padding: 1.5rem">Agregar otro
+        <button mat-flat-button color="primary" (click)="addFormulario()" style="margin-right: 8px; padding: 1.5rem">
+          Agregar otro
           formulario
         </button>
         <button mat-flat-button color="accent" style="padding: 1.5rem" (click)="sendRequest()">Enviar solicitud</button>
