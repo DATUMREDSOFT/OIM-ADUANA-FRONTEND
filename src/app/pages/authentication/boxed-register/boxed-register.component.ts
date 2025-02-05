@@ -1,11 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+// boxed-register.component.ts
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../material.module';
-import { AuthHelperService } from 'src/app/services/auth-helper.service';
-import { searchUser } from 'src/app/services/search-helper';
+import { ApplicantService } from '../../../services/applicant.service';
+import { TipoUsuarioService } from '../../../services/tipo-usuario.service';
+import { TiposSolicitudService } from '../../../services/tipos-solicitud.service';
+import { LocalStorageService } from '../../../services/local-storage.service';
+import { EnvironmentService } from '../../../services/environment.service';
+import { Solicitante } from '../boxed-register/models/solicitante.model';
+import { TipoSolicitud } from './models/tipo-solicitud.model';
+import { FormType } from '../../../enums/form-type.enum';
+import { Roles } from '../../../enums/roles.enum';
 import Swal from 'sweetalert2';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { Observable, forkJoin, of, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-boxed-register',
@@ -13,121 +23,224 @@ import Swal from 'sweetalert2';
   imports: [CommonModule, RouterModule, MaterialModule, FormsModule, ReactiveFormsModule],
   templateUrl: './boxed-register.component.html',
 })
-export class AppBoxedRegisterComponent implements OnInit {
-  documentControl: FormControl;
-  loading: boolean = false;
-  searchAttempted: boolean = false;
+export class AppBoxedRegisterComponent {
+  private applicantService = inject(ApplicantService);
+  private tipoUsuarioService = inject(TipoUsuarioService);
+  private tiposSolicitudService = inject(TiposSolicitudService);
+  private localStorageService = inject(LocalStorageService);
+  private environment = inject(EnvironmentService);
+  private router = inject(Router);
+
+  @Output() continuar = new EventEmitter<void>();
+
+  documentControl = new FormControl('', [
+    Validators.required,
+    Validators.pattern(/^\d{8}-\d{1}$|^\d{4}-\d{6}-\d{3}-\d{1}$/)
+  ]);
+
+  loading = false;
+  searchAttempted = false;
   searchCompleted = false;
-
-  constructor(
-    private authHelperService: AuthHelperService,
-    private router: Router
-  ) {}
-
-  ngOnInit() {
-    this.documentControl = new FormControl('', [
-      Validators.required,
-      Validators.pattern(/^\d{8}-\d{1}$|^\d{4}-\d{6}-\d{3}-\d{1}$/),
-    ]);
-  }
+  isRepresentativeLegal = false;
+  applicantType = FormType.AgenteAFPA;
+  currentApplicant: Solicitante | null = null;
+  solicitanteAPI: Solicitante | null = null;
+  representanteAPI: Solicitante | null = null;
+  tipoSolicitante: TipoSolicitud | null = null;
 
   async onSearch() {
     this.searchAttempted = true;
-    if (this.documentControl.invalid) {
-      this.documentControl.markAsTouched();
-      return;
-    }
+    if (this.documentControl.invalid) return this.documentControl.markAsTouched();
+
     this.loading = true;
+    const documentNumber = this.documentControl.value?.replace(/\D/g, '') || '';
 
-    const documentNumber = this.documentControl.value.replace(/\D/g, '');
+    try {
+      if (this.isRepresentativeLegal) {
+        await this.handleRepresentativeSearch(documentNumber);
+      } else {
+        await this.handleIndividualSearch(documentNumber);
+      }
+    } catch (error) {
+      this.handleSearchError(error);
+    } finally {
+      this.loading = false;
+    }
+  }
 
-    searchUser(documentNumber, this.authHelperService).subscribe({
-      next: (user) => {
-        this.loading = false;
-        if (!user) {
-          this.showNotFoundToast();
-          return;
-        }
+  private async handleIndividualSearch(documentNumber: string) {
+    try {
+      const applicant = await this.applicantService.fullValidationFlow(documentNumber)
+        .pipe(
+          map(applicant => this.enrichApplicantData(applicant)),
+          catchError(error => {
+            this.handleSearchError(error);
+            return throwError(() => error);
+          })
+        )
+        .toPromise();
 
-        // Debugging: Log the response
-        console.log('User Response:', user);
-
-        if (user.status === 200 || user.externalCodeDeclarant) {
-          this.handleUserResponse(user);
+      if (applicant) {
+        if (applicant.name?.trim() !== 'null') {
+          await this.processApplicant(applicant);
+          this.storeInLocalStorage(applicant);
+          await this.loadTiposSolicitud();
         } else {
-          this.showNotFoundToast();
+          this.showUserNotFoundAlert();
         }
-      },
-      error: (err) => {
-        this.loading = false;
-        this.handleError(err);
-      },
+      }
+    } catch (error) {
+      this.handleSearchError(error);
+    }
+  }
+
+  private enrichApplicantData(applicant: Solicitante): Solicitante {
+    return {
+      ...applicant,
+      externalType: applicant.externalType || { id: 'NA', status: 'ENABLED', value: 'N/A' },
+      position: applicant.position || { id: 'NA', status: 'ENABLED', value: 'N/A' },
+      attribute: applicant.attribute || { id: 'NA', status: 'ENABLED', value: 'N/A' }
+    };
+  }
+
+  private async handleRepresentativeSearch(documentNumber: string) {
+    const representativeDoc = ''; // Get from form
+    try {
+      const result = await this.applicantService
+        .validateRepresentative(documentNumber, representativeDoc)
+        .pipe(
+          map(([applicant, representative]) => [
+            this.enrichApplicantData(applicant),
+            this.enrichApplicantData(representative)
+          ])
+        )
+        .toPromise();
+
+      if (result) {
+        const [applicant, representative] = result;
+        await this.processApplicant(applicant);
+        this.processRepresentative(representative);
+        this.storeInLocalStorage(applicant);
+        await this.loadTiposSolicitud();
+      }
+    } catch (error) {
+      this.handleSearchError(error);
+    }
+  }
+
+  private processRepresentative(representative: Solicitante) {
+    this.representanteAPI = representative;
+    this.localStorageService.setItem(
+      this.environment.localStorageRepresentanteKey,
+      representative,
+      this.environment.tiempoLocalStorage
+    );
+  }
+
+  private async processApplicant(applicant: Solicitante) {
+    if (applicant.document) return this.handleInternalUser();
+    if (applicant.externalCodeDeclarant) return this.handleAfpaUser(applicant);
+
+    this.currentApplicant = applicant;
+    const formType = applicant.externalCodeDeclarant ? 
+                    FormType.AgenteAFPA : 
+                    FormType.PersonalNoAFPA;
+    
+    this.tipoUsuarioService.setTipoUsuario(formType);
+    this.showSuccessAlert(applicant);
+  }
+
+  private async loadTiposSolicitud() {
+    try {
+      const tipoUsuario = this.tipoUsuarioService.getTipoUsuario();
+      const tipo = tipoUsuario === Roles.AFPA ? 'AFPA' : 
+                  tipoUsuario === Roles.INTERNO ? 'interno' : 'externo';
+      
+      const tipos = await this.applicantService.getTiposSolicitud(tipo)
+        .pipe(
+          map(response => response.sort((a, b) => a.id.localeCompare(b.id)))
+        )
+        .toPromise();
+
+      if (tipos) {
+        this.tiposSolicitudService.setData(tipos);
+      }
+    } catch (error) {
+      console.error('Error loading request types:', error);
+      Swal.fire('Error', 'No se pudieron cargar los tipos de solicitud', 'error');
+    }
+  }
+
+  private handleInternalUser() {
+    this.showLoginPrompt('Eres un usuario interno, inicia sesión para continuar.');
+  }
+
+  private handleAfpaUser(applicant: Solicitante) {
+    this.showLoginPrompt('Eres un usuario AFPA, inicia sesión para continuar.', true);
+  }
+
+  private showSuccessAlert(applicant: Solicitante) {
+    Swal.fire({
+      title: 'Usuario encontrado',
+      html: `Bienvenido ${applicant.name}<br>${applicant.externalCodeDeclarant ? 
+        `Código declarante: ${applicant.externalCodeDeclarant}` : ''}`,
+      icon: 'success',
+      confirmButtonText: 'Continuar'
+    }).then(() => this.continuar.emit());
+  }
+
+  private showLoginPrompt(message: string, isAfpa = false) {
+    Swal.fire({
+      title: 'Acceso existente',
+      text: message,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Iniciar sesión',
+      cancelButtonText: 'Cerrar'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.router.navigate([isAfpa ? '/external-interface' : '/authentication/boxed-login']);
+      }
     });
   }
 
-  private handleUserResponse(user: any): void {
-    if (user.externalCodeDeclarant) {
-      // User is an AgenteAFPA or similar role
-      Swal.fire({
-        title: 'Documento con acceso al sistema',
-        text: 'Este usuario ya cuenta con acceso al sistema. ¿Desea iniciar sesión?',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Iniciar sesión',
-        cancelButtonText: 'Cerrar',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.router.navigate(['/authentication/boxed-login']);
-        }
-      });
-    } else if (user.status === 200) {
-      // User is an Elaborador or Aplicante
-      this.router.navigate(['/external-interface']);
-    } else {
-      // Unknown response
-      this.showNotFoundToast();
-    }
-  }
-
-  private handleError(err: any): void {
-    if (err.status !== 404) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error en el servidor',
-        text: 'Ocurrió un error al validar el documento. Por favor, intente nuevamente.',
-        confirmButtonText: 'Entendido',
-      });
-    }
-  }
-
-  private showNotFoundToast(): void {
+  private showUserNotFoundAlert() {
     Swal.fire({
       icon: 'error',
-      title: 'El documento no fue encontrado.',
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer);
-        toast.addEventListener('mouseleave', Swal.resumeTimer);
-      },
+      title: 'Usuario no encontrado',
+      text: 'El documento proporcionado no está registrado en el sistema',
+      confirmButtonText: 'Entendido'
     });
+  }
+
+  private handleSearchError(error: any) {
+    if (error.status === 404) {
+      this.showUserNotFoundAlert();
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error del servidor',
+        text: 'Ocurrió un error al procesar su solicitud',
+        confirmButtonText: 'Reintentar'
+      });
+    }
+  }
+
+  private storeInLocalStorage(applicant: Solicitante) {
+    this.localStorageService.setItem(
+      this.environment.localStorageSolicitanteKey,
+      applicant,
+      this.environment.tiempoLocalStorage
+    );
   }
 
   formatDocument() {
-    let value = this.documentControl.value.replace(/\D/g, ''); // Remove non-digit characters
-
-    if (value.length > 14) {
-      value = value.substring(0, 14); // Limit to 14 digits
-    }
+    let value = (this.documentControl.value || '').replace(/\D/g, '');
+    if (value.length > 14) value = value.substring(0, 14);
 
     if (value.length <= 9) {
-      // Format as DUI
       this.documentControl.setValue(value.replace(/(\d{8})(\d{1})/, '$1-$2'), { emitEvent: false });
     } else {
-      // Format as NIT
       this.documentControl.setValue(value.replace(/(\d{4})(\d{6})(\d{3})(\d{1})/, '$1-$2-$3-$4'), { emitEvent: false });
     }
   }

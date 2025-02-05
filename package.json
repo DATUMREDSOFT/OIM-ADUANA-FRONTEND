@@ -38,6 +38,7 @@
     "ngx-pagination": "^6.0.1",
     "ngx-permissions": "^13.0.1",
     "ngx-scrollbar": "^11.0.0",
+    "ngx-spinner": "^17.0.0",
     "rxjs": "~7.5.0",
     "sass": "^1.57.1",
     "sweetalert2": "^11.6.13",
