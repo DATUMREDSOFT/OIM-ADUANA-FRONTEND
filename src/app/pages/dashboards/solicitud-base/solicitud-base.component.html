@@ -26,17 +26,22 @@
 
         <ng-content select="[document-data-card]"></ng-content>
         <mat-card>
-
           <mat-card-content>
             <div class="row">
               <div class="col">
-                <div *ngFor="let formulario of formularios.controls; let i = index" class="" [id]="'form-' + i">
-                  <mat-card-header>
-                    <h2>Formulario {{ i + 1 }}</h2>
-                  </mat-card-header>
+                <div *ngFor="let formulario of formularios.controls; let i = index" class="col" [id]="'form-' + i">
+
+
                   <form [formGroup]="$any(formulario)">
 
                     <mat-card-content>
+
+                      <div class="row">
+                        <mat-card-content>
+                          <h2>Formulario {{ i + 1 }}</h2>
+                        </mat-card-content>
+                      </div>
+
                       <div class="row ">
                         <div class="col-lg-6">
                           <mat-form-field appearance="outline" class="w-100">
