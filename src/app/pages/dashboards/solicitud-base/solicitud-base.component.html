@@ -26,17 +26,22 @@
 
         <ng-content select="[document-data-card]"></ng-content>
         <mat-card>
-
           <mat-card-content>
             <div class="row">
               <div class="col">
-                <div *ngFor="let formulario of formularios.controls; let i = index" class="" [id]="'form-' + i">
-                  <mat-card-header>
-                    <h2>Formulario {{ i + 1 }}</h2>
-                  </mat-card-header>
+                <div *ngFor="let formulario of formularios.controls; let i = index" class="col" [id]="'form-' + i">
+
+
                   <form [formGroup]="$any(formulario)">
 
                     <mat-card-content>
+
+                      <div class="row">
+                        <mat-card-content>
+                          <h2>Formulario {{ i + 1 }}</h2>
+                        </mat-card-content>
+                      </div>
+
                       <div class="row ">
                         <div class="col-lg-6">
                           <mat-form-field appearance="outline" class="w-100">
@@ -67,9 +72,35 @@
                     </div>
                   </form>
 
-                  <button mat-flat-button color="warn" (click)="removeFormulario(i)" style="margin-top: 16px;">Borrar
-                    formulario
-                  </button>
+                  <mat-card-content>
+
+                    <div class="row">
+
+                      <div class="col-lg-6">
+                        <button mat-flat-button (click)="removeFormulario(i)"
+                                style="margin-top: 12px; padding: 1.5rem; background-color: #fa5a5a; color: white">
+                          Borrar formulario
+                        </button>
+                      </div>
+
+                      <!--                      items-->
+                      <div class="col text-right">
+
+                        <button color="primary" mat-flat-button (click)="removeFormulario(i)"
+                                style="margin: 12px 4px; padding: 1.5rem;">
+                          Agregar Item
+                        </button>
+
+                        <button mat-flat-button (click)="removeFormulario(i)"
+                                style="margin: 12px 4px; padding: 1.5rem; background-color: #fa5a5a; color: white">
+                          Eliminar Item
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                  </mat-card-content>
                   <mat-divider *ngIf="i < formularios.length - 1"
                                style="margin-top: 16px; margin-bottom: 16px;"></mat-divider>
 
@@ -79,11 +110,15 @@
           </mat-card-content>
         </mat-card>
       </div>
+
+
       <div class="text-right m-t-16">
-        <button mat-flat-button color="primary" (click)="addFormulario()" style="margin-right: 8px;">Agregar otro
+        <button mat-flat-button color="primary" (click)="addFormulario()" style="margin-right: 8px; padding: 1.5rem">
+          Agregar otro
           formulario
         </button>
-        <button mat-flat-button color="accent" (click)="sendRequest()">Enviar solicitud</button>
+        <button mat-flat-button color="accent" style="padding: 1.5rem" (click)="sendRequest()">Enviar solicitud</button>
+
       </div>
     </div>
   </div>
