@@ -91,9 +91,9 @@ import {
     MatCardModule,
     NgApexchartsModule,
   ],
-  templateUrl: './dashboard1.component.html',
+  templateUrl: './dashboard-interno.component.html',
 })
-export class AppDashboard1Component implements OnInit {
+export class AppDashboardInternoComponent implements OnInit {
   selectedCard: string | null = null;
 
   ngOnInit() {
