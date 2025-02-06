@@ -48,7 +48,7 @@ import {
 } from 'ng-apexcharts';
 
 @Component({
-  selector: 'app-dashboard1',
+  selector: 'app-dashboard-externo',
   standalone: true,
   imports: [
     CommonModule,

@@ -211,14 +211,25 @@ export class AppBoxedRegisterComponent {
   }
 
   private showSuccessAlert(applicant: Solicitante) {
-    Swal.fire({
-      title: 'Usuario encontrado',
-      html: `Bienvenido ${applicant.name}<br>${applicant.externalCodeDeclarant ? 
-        `Código declarante: ${applicant.externalCodeDeclarant}` : ''}`,
-      icon: 'success',
-      confirmButtonText: 'Continuar'
-    }).then(() => this.continuar.emit());
+    // Determine user type from externalType
+    const userType = applicant.externalType?.id;
+  
+    // Set the correct dashboard route
+    let dashboardRoute = '/dashboards/dashboard-externo'; // Default to external dashboard
+  
+    if (userType === 'ADUANAL' || userType === 'EMPRESAL') {
+      dashboardRoute = '/dashboards/dashboard-interno';
+    } else if (applicant.externalCodeDeclarant) {
+      dashboardRoute = '/dashboards/dashboard-afpa'; // Assuming AFPA also redirects here
+    }
+  
+    // Store user info in localStorage
+    this.storeInLocalStorage(applicant);
+  
+    // Redirect user to the correct dashboard
+    this.router.navigate([dashboardRoute]);
   }
+  
 
   private showLoginPrompt(message: string, isAfpa = false) {
     Swal.fire({
