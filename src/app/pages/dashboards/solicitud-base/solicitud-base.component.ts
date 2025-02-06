@@ -29,11 +29,13 @@ import {AppSolicitudExternoComponent} from "../solicitud-externo/solicitud-exter
 export class AppSolicitudBaseComponent implements OnInit {
   userType: string;
   solicitudForm: FormGroup;
+  tiposSolicitud: { id: string; value: string }[] = [];
 
   constructor(private fb: FormBuilder, private userService: UserService) {
   }
 
   ngOnInit() {
+    this.obtenerTiposSolicitudDesdeLocalStorage();
     this.solicitudForm = this.fb.group({
       formularios: this.fb.array([this.createFormulario()])
     });
@@ -46,7 +48,7 @@ export class AppSolicitudBaseComponent implements OnInit {
   createFormulario(): FormGroup {
     return this.fb.group({
       tipo: ['', Validators.required],
-      uuid: [{value: crypto.randomUUID(), disabled: true}],
+      uuid: [{value: crypto.randomUUID(), disabled: true}], // modificar ya que no es uuid
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
@@ -55,6 +57,7 @@ export class AppSolicitudBaseComponent implements OnInit {
       estado: ['', Validators.required],
     });
   }
+
 
   addFormulario() {
     this.formularios.push(this.createFormulario());
@@ -77,4 +80,22 @@ export class AppSolicitudBaseComponent implements OnInit {
   }
 
   protected readonly console = console;
+
+
+  obtenerTiposSolicitudDesdeLocalStorage(): void {
+    const datosGuardados = localStorage.getItem('tipos-solicitud');
+
+    if (datosGuardados) {
+      try {
+        const parsedData = JSON.parse(datosGuardados);
+        if (parsedData && parsedData.value) {
+          this.tiposSolicitud = parsedData.value;
+        }
+      } catch (error) {
+        console.error('Error al parsear los datos del Local Storage', error);
+      }
+    }
+  }
+
+
 }
