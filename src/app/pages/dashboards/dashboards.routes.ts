@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from 'src/app/guards/auth.guard';
 
 // dashboards
 import { AppDashboard1Component } from './dashboard1/dashboard1.component';
@@ -7,6 +8,7 @@ import { AppDashboardInternoComponent} from './dashboard_interno/dashboard-inter
 import { AppDashboardExternoComponent } from './dashboard_externo/dashboard-externo.component';
 import { AppSolicitudAfpaComponent } from './solicitud-nuevo-afpa/solicitud-afpa.component';
 import { AppSolicitudBaseComponent } from './solicitud-base/solicitud-base.component';
+import { AppSolicitudExternoComponent } from './solicitud-externo/solicitud-externo.component';
 
 export const DashboardsRoutes: Routes = [
   {
@@ -37,7 +39,9 @@ export const DashboardsRoutes: Routes = [
       {
         path:'dashboard-interno',
         component: AppDashboardInternoComponent,
+        canActivate: [AuthGuard],
         data: {
+          role: 'INTERNO',
           title: 'Analytical',
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard-interno' },
@@ -48,7 +52,9 @@ export const DashboardsRoutes: Routes = [
       {
         path:'dashboard-externo',
         component: AppDashboardExternoComponent,
+        canActivate: [AuthGuard],
         data: {
+          role: 'NOAFPA',
           title: 'Analytical',
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard-externo' },
@@ -78,6 +84,19 @@ export const DashboardsRoutes: Routes = [
           ],
         },
       },
+      {
+        path:'solicitudes-externo',
+        component: AppSolicitudBaseComponent,
+        canActivate: [AuthGuard],
+        data: {
+          role: 'NOAFPA',
+          title: 'Analytical',
+          urls: [
+            { title: 'Dashboard', url: '/dashboards/solicitudes-externo' },
+            { title: 'Analytical' },
+          ],
+        },
+      }
     ],
   },
 ];

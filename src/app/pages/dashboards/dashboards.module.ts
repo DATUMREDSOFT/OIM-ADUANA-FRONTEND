@@ -11,6 +11,7 @@ import { AppDashboardExternoComponent } from './dashboard_externo/dashboard-exte
 import { AppSolicitudInternoComponent } from './solicitud-interno/solicitud-interno.component';
 import { AppSolicitudAfpaComponent } from './solicitud-nuevo-afpa/solicitud-afpa.component';
 import { AppSolicitudBaseComponent } from './solicitud-base/solicitud-base.component';
+import { AppSolicitudExternoComponent } from './solicitud-externo/solicitud-externo.component';
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import { AppSolicitudBaseComponent } from './solicitud-base/solicitud-base.compo
     AppSolicitudInternoComponent,
     AppDashboardExternoComponent,
     AppSolicitudAfpaComponent,
-    AppSolicitudBaseComponent
+    AppSolicitudBaseComponent,
+    AppSolicitudExternoComponent,
   ],
 
 })

@@ -6,7 +6,7 @@ import { AppBoxedRegisterComponent } from './pages/authentication/boxed-register
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/register',
+    redirectTo: '/authentication/boxed-register',
     pathMatch: 'full',
   },
   {
