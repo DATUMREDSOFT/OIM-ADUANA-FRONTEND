@@ -12,13 +12,15 @@ import {DatePipe} from '@angular/common';
 
 // icons
 import {TablerIconsModule} from 'angular-tabler-icons';
+import {PerfilUsuarioComponent} from "../perfil-usuario/perfil-usuario.component";
+import {DatosUsuarioComponent} from "../datos-usuario/datos-usuario.component";
 
 @Component({
   selector: 'app-solicitud-externo',
   templateUrl: './solicitud-externo.component.html',
   standalone: true,
   providers: [DatePipe],
-  imports: [MaterialModule, MatCardModule, FormsModule, ReactiveFormsModule, CommonModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule],
+  imports: [MaterialModule, MatCardModule, FormsModule, ReactiveFormsModule, CommonModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, PerfilUsuarioComponent, DatosUsuarioComponent],
 })
 export class AppSolicitudExternoComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
