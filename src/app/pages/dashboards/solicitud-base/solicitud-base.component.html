@@ -74,14 +74,7 @@
                     <div *ngIf="formulario.get('tipo')?.value === 'TYREQ-1'">
 
 
-                      <!--                      formulario interno-->
-<!--                      <app-solicitud-interno [formGroup]="$any(formulario)"></app-solicitud-interno>-->
-
-                      <!--                      formulario externo-->
-
-                      <app-solicitud-externo [formGroup]="$any(formulario)"></app-solicitud-externo>
-
-
+                      <app-solicitud-interno [formGroup]="$any(formulario)"></app-solicitud-interno>
                     </div>
                     <div *ngIf="formulario.get('tipo')?.value === 'otroTipo'">
                       <!-- Add other form types here -->
@@ -100,19 +93,19 @@
                       </div>
 
                       <!--                      items-->
-<!--                      <div class="col text-right">-->
+                      <div class="col text-right">
 
-<!--                        <button color="primary" mat-flat-button-->
-<!--                                style="margin: 12px 4px; padding: 1.5rem;">-->
-<!--                          Agregar Item-->
-<!--                        </button>-->
+                        <button color="primary" mat-flat-button
+                                style="margin: 12px 4px; padding: 1.5rem;">
+                          Agregar Item
+                        </button>
 
-<!--                        <button mat-flat-button (click)="removeFormulario(i)"-->
-<!--                                style="margin: 12px 4px; padding: 1.5rem; background-color: #fa5a5a; color: white">-->
-<!--                          Eliminar Item-->
-<!--                        </button>-->
+                        <button mat-flat-button (click)="removeFormulario(i)"
+                                style="margin: 12px 4px; padding: 1.5rem; background-color: #fa5a5a; color: white">
+                          Eliminar Item
+                        </button>
 
-<!--                      </div>-->
+                      </div>
 
                     </div>
 
