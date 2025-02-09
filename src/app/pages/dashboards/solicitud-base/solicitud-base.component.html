@@ -71,10 +71,10 @@
 
 
                     @if (formulario.get('tipo')?.value) {
-                      @if (formulario.get('tipo')?.value === 'TYREQ-1' || formulario.get('tipo')?.value === 'TYREQ-2') {
+                      @if (formulario.get('tipo')?.value === 'TYREQ-1') {
                         <app-solicitud-externo [formGroup]="$any(formulario.get('form'))"></app-solicitud-externo>
                       } @else {
-                        <app-solicitud-interno [formGroup]="$any(formulario.get('form'))"></app-solicitud-interno>
+                        <!--                        <app-solicitud-interno [formGroup]="$any(formulario.get('form'))"></app-solicitud-interno>-->
                       }
 
                     }
