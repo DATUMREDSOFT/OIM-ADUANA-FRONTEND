@@ -66,7 +66,7 @@ export class AppSolicitudBaseComponent implements OnInit {
     return this.fb.group({
       tipo: ['', Validators.required],
       uuid: [crypto.randomUUID()],
-
+      externo: this.formService.getForm(),
     });
   }
 
