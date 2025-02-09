@@ -13,13 +13,19 @@
 <mat-card-content>
   <form [formGroup]="formGroup">
     <div class="row">
-      <div class="col-lg-4">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>DUI:</mat-label>
-          <input type="text" matInput matNativeControl>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar...</mat-label>
+          <input matInput placeholder="Ingrese su búsqueda"/>
+          <button mat-icon-button matSuffix>
+            <mat-icon>search</mat-icon>
+          </button>
         </mat-form-field>
       </div>
+
     </div>
+
 
     <div class="row">
 
