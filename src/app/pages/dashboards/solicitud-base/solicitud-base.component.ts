@@ -19,6 +19,7 @@ import {AppSolicitudInternoComponent} from "../solicitud-interno/solicitud-inter
 import {AppSolicitudAfpaComponent} from "../solicitud-nuevo-afpa/solicitud-afpa.component";
 import {AppSolicitudExternoComponent} from "../solicitud-externo/solicitud-externo.component";
 import {FormServiceService} from "../../../services/form-service.service";
+import {TiposSolicitudService} from "../../../services/tipos-solicitud.service";
 
 @Component({
   selector: 'app-solicitud-base',
@@ -33,11 +34,22 @@ export class AppSolicitudBaseComponent implements OnInit {
   tiposSolicitud: { id: string; value: string }[] = [];
 
 
-  constructor(private fb: FormBuilder, private userService: UserService, private formService: FormServiceService) {
+  constructor(private fb: FormBuilder,
+              private userService: UserService,
+              private formService: FormServiceService,
+              private tipoSolicitudService: TiposSolicitudService) {
   }
 
   ngOnInit() {
-    this.obtenerTiposSolicitudDesdeLocalStorage();
+
+    this.userType = this.userService.getTipoUsuario();
+
+    this.tiposSolicitud = this.tipoSolicitudService.getData().map(tipo => ({
+      id: tipo.id,
+      value: tipo.value
+    }));
+
+
     this.solicitudForm = this.fb.group({
       formularios: this.fb.array([this.createFormulario()])
     });
@@ -53,7 +65,7 @@ export class AppSolicitudBaseComponent implements OnInit {
 
     return this.fb.group({
       tipo: ['', Validators.required],
-      uuid: [{value: crypto.randomUUID(), disabled: false}],
+      uuid: [crypto.randomUUID()],
       externo: this.formService.getForm(),
     });
   }
@@ -70,8 +82,11 @@ export class AppSolicitudBaseComponent implements OnInit {
   sendRequest() {
 
 
-
     console.log(this.solicitudForm.value);
+    console.log(this.userType);
+
+    console.log(this.tiposSolicitud);
+
     // Implement the logic to send the form data to the backend
   }
 
@@ -83,22 +98,6 @@ export class AppSolicitudBaseComponent implements OnInit {
   }
 
   protected readonly console = console;
-
-
-  obtenerTiposSolicitudDesdeLocalStorage(): void {
-    const datosGuardados = localStorage.getItem('tipos-solicitud');
-
-    if (datosGuardados) {
-      try {
-        const parsedData = JSON.parse(datosGuardados);
-        if (parsedData && parsedData.value) {
-          this.tiposSolicitud = parsedData.value;
-        }
-      } catch (error) {
-        console.error('Error al parsear los datos del Local Storage', error);
-      }
-    }
-  }
 
 
 }
