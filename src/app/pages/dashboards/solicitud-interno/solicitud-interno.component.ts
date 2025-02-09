@@ -12,6 +12,7 @@ import {DatePipe} from '@angular/common';
 
 // icons
 import {TablerIconsModule} from 'angular-tabler-icons';
+import {range} from "rxjs";
 
 @Component({
   selector: 'app-solicitud-interno',
@@ -52,7 +53,14 @@ export class AppSolicitudInternoComponent implements OnInit {
       accesos: [{value: 'SIAPA', disabled: true}],
       perfil: [''],
       aduanaPerfil: [''],
-
+      rol: [''],
+      cargo: [''],
+      movil: ['', Validators.required],
+      correoAlternativo: ['', Validators.required],
+      nivel1: ['', Validators.required],
+      nivel2: ['', Validators.required],
+      nivel3: ['', Validators.required],
+      nivel4: ['', Validators.required],
     });
   }
 
@@ -297,4 +305,6 @@ export class AppSolicitudInternoComponent implements OnInit {
       Swal.fire('Éxito', 'Solicitud enviada', 'success');
     }, 3000);
   }
+
+  protected readonly range = range;
 }

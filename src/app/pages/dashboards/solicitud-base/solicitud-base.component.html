@@ -61,8 +61,8 @@
 
                         <div class="col-lg-6">
                           <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>UUID</mat-label>
-                            <input class="text-gray-200" matInput formControlName="uuid" [disabled]="true">
+                            <mat-label>Usuario ID</mat-label>
+                            <input class="text-gray-200" readonly matInput formControlName="uuid">
                           </mat-form-field>
                         </div>
                       </div>
@@ -74,7 +74,7 @@
                     <div *ngIf="formulario.get('tipo')?.value === 'TYREQ-1'">
 
 
-                      <app-solicitud-interno [formGroup]="$any(formulario)"></app-solicitud-interno>
+                      <app-solicitud-externo [formGroup]="$any(formulario)"></app-solicitud-externo>
                     </div>
                     <div *ngIf="formulario.get('tipo')?.value === 'otroTipo'">
                       <!-- Add other form types here -->
@@ -92,20 +92,20 @@
                         </button>
                       </div>
 
-                      <!--                      items-->
-                      <div class="col text-right">
+<!--                      &lt;!&ndash;                      items&ndash;&gt;-->
+<!--                      <div class="col text-right">-->
 
-                        <button color="primary" mat-flat-button
-                                style="margin: 12px 4px; padding: 1.5rem;">
-                          Agregar Item
-                        </button>
+<!--                        <button color="primary" mat-flat-button-->
+<!--                                style="margin: 12px 4px; padding: 1.5rem;">-->
+<!--                          Agregar Item-->
+<!--                        </button>-->
 
-                        <button mat-flat-button (click)="removeFormulario(i)"
-                                style="margin: 12px 4px; padding: 1.5rem; background-color: #fa5a5a; color: white">
-                          Eliminar Item
-                        </button>
+<!--                        <button mat-flat-button (click)="removeFormulario(i)"-->
+<!--                                style="margin: 12px 4px; padding: 1.5rem; background-color: #fa5a5a; color: white">-->
+<!--                          Eliminar Item-->
+<!--                        </button>-->
 
-                      </div>
+<!--                      </div>-->
 
                     </div>
 

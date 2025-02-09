@@ -12,6 +12,7 @@ import {DatePipe} from '@angular/common';
 
 // icons
 import {TablerIconsModule} from 'angular-tabler-icons';
+import {FormServiceService} from "../../../services/form-service.service";
 
 @Component({
   selector: 'app-solicitud-externo',
@@ -37,23 +38,29 @@ export class AppSolicitudExternoComponent implements OnInit {
   isLoading: boolean = false;
   shouldSave: boolean = false;
 
-  constructor(private fb: FormBuilder, private datePipe: DatePipe) {
+  constructor(private fb: FormBuilder, private datePipe: DatePipe, private formService: FormServiceService) {
   }
 
   ngOnInit() {
-    this.formGroup = this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-      correo: ['', [Validators.required, Validators.email]],
-      telefono: ['', Validators.required],
-      organizacion: [{value: 'DGA', disabled: true}],
-      estado: ['', Validators.required],
-      tipo: ['', Validators.required],
-      accesos: [{value: 'SIAPA', disabled: true}],
-      perfil: [''],
-      aduanaPerfil: [''],
+    // this.formGroup = this.fb.group({
+    //   nombre: ['', Validators.required],
+    //   apellido: ['', Validators.required],
+    //   correo: ['', [Validators.required, Validators.email]],
+    //   telefono: ['', Validators.required],
+    //   organizacion: [{value: 'DGA', disabled: true}],
+    //   estado: ['', Validators.required],
+    //   tipo: ['', Validators.required],
+    //   accesos: [{value: 'SIAPA', disabled: true}],
+    //   perfil: [''],
+    //   aduanaPerfil: [''],
+    //   correoAlternativo: ['', Validators.required],
+    //   movil: ['', Validators.required],
+    //
+    // });
 
-    });
+    this.formGroup = this.formService.getForm();
+
+
   }
 
   editPerfil(index: number) {
