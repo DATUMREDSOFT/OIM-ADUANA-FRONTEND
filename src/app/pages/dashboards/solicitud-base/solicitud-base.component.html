@@ -70,14 +70,16 @@
                     </mat-card-content>
 
 
-                    <div *ngIf="formulario.get('tipo')?.value === 'TYREQ-1'">
+                    @if (formulario.get('tipo')?.value) {
+                      @if (formulario.get('tipo')?.value === 'TYREQ-1' || formulario.get('tipo')?.value === 'TYREQ-2') {
+                        <app-solicitud-externo [formGroup]="$any(formulario.get('form'))"></app-solicitud-externo>
+                      } @else {
+                        <app-solicitud-interno [formGroup]="$any(formulario.get('form'))"></app-solicitud-interno>
+                      }
+
+                    }
 
 
-                      <app-solicitud-externo [formGroup]="$any(formulario)"></app-solicitud-externo>
-                    </div>
-                    <div *ngIf="formulario.get('tipo')?.value === 'otroTipo'">
-                      <!-- Add other form types here -->
-                    </div>
                   </form>
 
                   <mat-card-content>

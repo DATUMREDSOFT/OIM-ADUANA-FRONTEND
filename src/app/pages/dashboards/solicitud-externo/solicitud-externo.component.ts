@@ -42,21 +42,6 @@ export class AppSolicitudExternoComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.formGroup = this.fb.group({
-    //   nombre: ['', Validators.required],
-    //   apellido: ['', Validators.required],
-    //   correo: ['', [Validators.required, Validators.email]],
-    //   telefono: ['', Validators.required],
-    //   organizacion: [{value: 'DGA', disabled: true}],
-    //   estado: ['', Validators.required],
-    //   tipo: ['', Validators.required],
-    //   accesos: [{value: 'SIAPA', disabled: true}],
-    //   perfil: [''],
-    //   aduanaPerfil: [''],
-    //   correoAlternativo: ['', Validators.required],
-    //   movil: ['', Validators.required],
-    //
-    // });
 
     this.formGroup = this.formService.getForm();
 

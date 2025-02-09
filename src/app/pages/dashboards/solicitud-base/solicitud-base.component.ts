@@ -20,6 +20,7 @@ import {AppSolicitudAfpaComponent} from "../solicitud-nuevo-afpa/solicitud-afpa.
 import {AppSolicitudExternoComponent} from "../solicitud-externo/solicitud-externo.component";
 import {FormServiceService} from "../../../services/form-service.service";
 import {TiposSolicitudService} from "../../../services/tipos-solicitud.service";
+import {TipoUsuarioService} from "../../../services/tipo-usuario.service";
 
 @Component({
   selector: 'app-solicitud-base',
@@ -61,29 +62,53 @@ export class AppSolicitudBaseComponent implements OnInit {
 
   createFormulario(): FormGroup {
 
-    this.formService.initForm();
+    this.formService.initForm(this.tiposSolicitud[0].id);
 
     return this.fb.group({
       tipo: ['', Validators.required],
       uuid: [crypto.randomUUID()],
-      externo: this.formService.getForm(),
+      form: this.formService.getForm(),
     });
   }
 
 
   addFormulario() {
+
+
     this.formularios.push(this.createFormulario());
+
+    setTimeout(() => {
+      this.scrollToForm(this.formularios.length - 1);
+    }, 100);
+
   }
 
   removeFormulario(index: number) {
-    this.formularios.removeAt(index);
+
+    if (this.formularios.length > 1) {
+      Swal.fire({
+        title: '¿Está seguro?',
+        text: 'Esta acción eliminará el formulario seleccionado',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.formularios.removeAt(index);
+          Swal.fire('Eliminado', 'El formulario ha sido eliminado', 'success');
+        }
+      });
+    }
+
   }
 
-  sendRequest() {
+  async sendRequest(): Promise<void> {
 
 
     console.log(this.solicitudForm.value);
     console.log(this.userType);
+
 
     console.log(this.tiposSolicitud);
 
