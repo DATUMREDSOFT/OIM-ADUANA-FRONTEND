@@ -18,6 +18,7 @@ import {UserService} from '../../../services/user.service';
 import {AppSolicitudInternoComponent} from "../solicitud-interno/solicitud-interno.component";
 import {AppSolicitudAfpaComponent} from "../solicitud-nuevo-afpa/solicitud-afpa.component";
 import {AppSolicitudExternoComponent} from "../solicitud-externo/solicitud-externo.component";
+import {FormServiceService} from "../../../services/form-service.service";
 
 @Component({
   selector: 'app-solicitud-base',
@@ -31,7 +32,8 @@ export class AppSolicitudBaseComponent implements OnInit {
   solicitudForm: FormGroup;
   tiposSolicitud: { id: string; value: string }[] = [];
 
-  constructor(private fb: FormBuilder, private userService: UserService) {
+
+  constructor(private fb: FormBuilder, private userService: UserService, private formService: FormServiceService) {
   }
 
   ngOnInit() {
@@ -46,10 +48,13 @@ export class AppSolicitudBaseComponent implements OnInit {
   }
 
   createFormulario(): FormGroup {
+
+    this.formService.initForm();
+
     return this.fb.group({
       tipo: ['', Validators.required],
-      uuid: [{value: crypto.randomUUID(), }], // modificar ya que no es uuid
-
+      uuid: [{value: crypto.randomUUID(), disabled: false}],
+      externo: this.formService.getForm(),
     });
   }
 
@@ -63,6 +68,9 @@ export class AppSolicitudBaseComponent implements OnInit {
   }
 
   sendRequest() {
+
+
+
     console.log(this.solicitudForm.value);
     // Implement the logic to send the form data to the backend
   }
