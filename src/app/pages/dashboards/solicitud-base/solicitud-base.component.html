@@ -60,10 +60,9 @@
 
 
                         <div class="col-lg-6">
-                          <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>Usuario ID</mat-label>
-                            <input class="text-gray-200" readonly matInput formControlName="uuid">
-                          </mat-form-field>
+                          <span>
+                           UID: {{ formulario.get('uuid')?.value }}
+                          </span>
                         </div>
                       </div>
 
@@ -92,20 +91,20 @@
                         </button>
                       </div>
 
-<!--                      &lt;!&ndash;                      items&ndash;&gt;-->
-<!--                      <div class="col text-right">-->
+                      <!--                      &lt;!&ndash;                      items&ndash;&gt;-->
+                      <!--                      <div class="col text-right">-->
 
-<!--                        <button color="primary" mat-flat-button-->
-<!--                                style="margin: 12px 4px; padding: 1.5rem;">-->
-<!--                          Agregar Item-->
-<!--                        </button>-->
+                      <!--                        <button color="primary" mat-flat-button-->
+                      <!--                                style="margin: 12px 4px; padding: 1.5rem;">-->
+                      <!--                          Agregar Item-->
+                      <!--                        </button>-->
 
-<!--                        <button mat-flat-button (click)="removeFormulario(i)"-->
-<!--                                style="margin: 12px 4px; padding: 1.5rem; background-color: #fa5a5a; color: white">-->
-<!--                          Eliminar Item-->
-<!--                        </button>-->
+                      <!--                        <button mat-flat-button (click)="removeFormulario(i)"-->
+                      <!--                                style="margin: 12px 4px; padding: 1.5rem; background-color: #fa5a5a; color: white">-->
+                      <!--                          Eliminar Item-->
+                      <!--                        </button>-->
 
-<!--                      </div>-->
+                      <!--                      </div>-->
 
                     </div>
 
