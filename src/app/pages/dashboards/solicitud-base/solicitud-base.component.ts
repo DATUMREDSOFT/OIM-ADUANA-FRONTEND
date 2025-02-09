@@ -48,13 +48,8 @@ export class AppSolicitudBaseComponent implements OnInit {
   createFormulario(): FormGroup {
     return this.fb.group({
       tipo: ['', Validators.required],
-      uuid: [{value: crypto.randomUUID(), disabled: true}], // modificar ya que no es uuid
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-      correo: ['', [Validators.required, Validators.email]],
-      telefono: ['', Validators.required],
-      organizacion: [{value: 'DGA', disabled: true}],
-      estado: ['', Validators.required],
+      uuid: [{value: crypto.randomUUID(), }], // modificar ya que no es uuid
+
     });
   }
 

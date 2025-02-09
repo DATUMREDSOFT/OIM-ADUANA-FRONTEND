@@ -52,6 +52,8 @@ export class AppSolicitudExternoComponent implements OnInit {
       accesos: [{value: 'SIAPA', disabled: true}],
       perfil: [''],
       aduanaPerfil: [''],
+      correoAlternativo: ['', Validators.required],
+      movil: ['', Validators.required],
 
     });
   }
