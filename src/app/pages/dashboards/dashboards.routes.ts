@@ -67,7 +67,7 @@ export const DashboardsRoutes: Routes = [
       },
       {
         path:'solicitudes-afpa',
-        component: AppSolicitudAfpaComponent,
+        component: AppSolicitudBaseComponent,
         canActivate: [AuthGuard],
         data: {
           role : 'AFPA',

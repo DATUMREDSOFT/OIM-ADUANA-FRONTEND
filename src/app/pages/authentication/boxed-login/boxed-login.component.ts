@@ -6,7 +6,7 @@ import { MaterialModule } from '../../../material.module';
 import { AuthService } from 'src/app/services/auth.service';
 import { CookieService } from 'ngx-cookie-service';
 import { LocalStorageService } from '../../../services/local-storage.service';
-import { QueryParamService } from '../../../services/query-params.service';
+
 import { ApiService } from 'src/app/services/api.service';
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
@@ -23,7 +23,6 @@ export class AppBoxedLoginComponent implements OnInit {
   options = { theme: 'light' };
   private authService = inject(AuthService);
   private localStorageService = inject(LocalStorageService);
-  private queryParamService = inject(QueryParamService);
   private apiService = inject(ApiService);
   private router = inject(Router);
 
@@ -34,7 +33,7 @@ export class AppBoxedLoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   get f() { return this.form.controls; }
 
@@ -63,55 +62,55 @@ export class AppBoxedLoginComponent implements OnInit {
   }
 
   private async initializeUserSession(): Promise<void> {
-  try {
-    const token = this.cookieService.get('authToken');
-    if (!token) throw new Error('JWT token not found');
-    const decodedToken = this.decodeJWT(token);
-    console.log('Decoded Token:', decodedToken);
-    const userlogin = decodedToken?.sub;
-    if (!userlogin) throw new Error('User login not found in token');
-    console.log('Extracted User Login:', userlogin);
+    try {
+      const token = this.cookieService.get('authToken');
+      if (!token) throw new Error('JWT token not found');
+      const decodedToken = this.decodeJWT(token);
+      console.log('Decoded Token:', decodedToken);
+      const userlogin = decodedToken?.sub;
+      if (!userlogin) throw new Error('User login not found in token');
+      console.log('Extracted User Login:', userlogin);
 
-    const applicantData = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/user/applicant/${userlogin}`));
-    const userType = applicantData.userType === 'EXTERNO DGA' ? 'AFPA' : 'INTERNO';
-    const document = applicantData.document;
+      const applicantData = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/user/applicant/${userlogin}`));
+      const userType = applicantData.userType === 'EXTERNO DGA' ? 'AFPA' : 'INTERNO';
+      const document = applicantData.document;
 
-    this.localStorageService.setItem('solicitante', {
-      value: applicantData
-    }, 1440);
+      this.localStorageService.setItem('solicitante', {
+        value: applicantData
+      }, 1440);
 
 
-    this.localStorageService.setItem('tipo-usuario', {
-      value: userType
-    }, 1440);
-    console.log('User Type Stored:', userType);
+      this.localStorageService.setItem('tipo-usuario', {
+        value: userType
+      }, 1440);
+      console.log('User Type Stored:', userType);
 
-    const requestTypeUrl = userType === 'INTERNO' ? 'interno' : 'AFPA';
-    const requestTypes = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/requestype/list/${requestTypeUrl}`));
-    const formattedRequestTypes = requestTypes.map((req: any) => ({
-      id: req.id,
-      value: req.name,
-      status: req.status
-    }));
+      const requestTypeUrl = userType === 'INTERNO' ? 'interno' : 'AFPA';
+      const requestTypes = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/requestype/list/${requestTypeUrl}`));
+      const formattedRequestTypes = requestTypes.map((req: any) => ({
+        id: req.id,
+        value: req.name,
+        status: req.status
+      }));
 
-    this.localStorageService.setItem('tipo-solicitud', formattedRequestTypes, 1440);
-    console.log('Request Types Stored:', formattedRequestTypes);
+      this.localStorageService.setItem('tipo-solicitud', formattedRequestTypes, 1440);
+      console.log('Request Types Stored:', formattedRequestTypes);
 
-    const applicantRequest = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/request/applicant/Aplicante/${document}`));
-    console.log('Applicant Request Data:', applicantRequest);
+      const applicantRequest = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/request/applicant/Aplicante/${document}`));
+      console.log('Applicant Request Data:', applicantRequest);
 
-    const requestFlow = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/requestflow/list/${document}`));
-    console.log('Request Flow Data:', requestFlow);
+      const requestFlow = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/requestflow/list/${document}`));
+      console.log('Request Flow Data:', requestFlow);
 
-    // Ensure redirection happens at the end of session initialization
-    const redirectTo = userType === 'AFPA' ? '/dashboards/dashboard-afpa' : '/dashboards/dashboard-interno';
-    console.log('Redirecting to:', redirectTo);
-    this.router.navigate([redirectTo]);
-  } catch (error) {
-    console.error('Error initializing user session:', error);
-    Swal.fire('Error', 'Failed to initialize user session', 'error');
+      // Ensure redirection happens at the end of session initialization
+      const redirectTo = userType === 'AFPA' ? '/dashboards/dashboard-afpa' : '/dashboards/dashboard-interno';
+      console.log('Redirecting to:', redirectTo);
+      this.router.navigate([redirectTo]);
+    } catch (error) {
+      console.error('Error initializing user session:', error);
+      Swal.fire('Error', 'Failed to initialize user session', 'error');
+    }
   }
-}
 
   private decodeJWT(token: string): any {
     try {

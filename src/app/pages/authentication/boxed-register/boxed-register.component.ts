@@ -206,7 +206,7 @@ export class AppBoxedRegisterComponent {
           this.tiposSolicitudService.setData(tipos);
           // Store tipos in localStorage
           this.localStorageService.setItem(
-            'tipos-solicitud',
+            'tipo-solicitud',
             tipos,
             this.environment.tiempoLocalStorage
           );
