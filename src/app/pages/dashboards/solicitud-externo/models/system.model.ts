@@ -1,4 +1,4 @@
-import { CommonAttribute } from "../../../models/common-attribute.model";
+import { CommonAttribute } from "../../../../models/common-attribute.model";
 
 export interface System {
   catSysId?: string;

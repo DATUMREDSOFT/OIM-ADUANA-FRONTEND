@@ -1,4 +1,4 @@
-import {Component, ViewChild, OnInit} from '@angular/core';
+import {Component, ViewChild, OnInit, Input, SimpleChange, SimpleChanges} from '@angular/core';
 // import { MatStepper } from '@angular/material/stepper';
 import {FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MaterialModule} from '../../../material.module';
@@ -23,7 +23,7 @@ import {FormServiceService} from "../../../services/form-service.service";
 })
 export class AppSolicitudExternoComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
-  formGroup: FormGroup;
+  @Input() formGroup!: FormGroup;
   userForm: FormGroup;
   userRequests: any[] = [];
   perfilesAsignados: any[] = [];
@@ -42,11 +42,19 @@ export class AppSolicitudExternoComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    this.formGroup = this.formService.getForm();
-
-
+    if (!this.formGroup) {
+      console.warn("❌ Warning: `formGroup` is undefined in `solicitud-externo.component.ts`.");
+    } else {
+      console.log("✅ Received `formGroup` on Init:", this.formGroup.value);
+    }
   }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['formGroup']?.currentValue) {
+      console.log("✅ `formGroup` Updated:", changes['formGroup'].currentValue);
+    }
+  }
+
 
   editPerfil(index: number) {
     this.editMode = true;

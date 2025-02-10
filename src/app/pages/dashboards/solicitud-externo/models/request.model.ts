@@ -1,4 +1,4 @@
-import { CommonAttribute } from "../../../models/common-attribute.model";
+import { CommonAttribute } from "../../../../models/common-attribute.model";
 import { Flow } from "./flow.model";
 import { Other } from "./other.model";
 import { Person } from "./person.model";
