@@ -3,7 +3,7 @@
 
   <div class="row">
     <mat-card-header>
-      <h2>Datos del Usuario Externo </h2>
+      <h2>Datos del Usuario</h2>
     </mat-card-header>
   </div>
 
@@ -14,12 +14,28 @@
   <form [formGroup]="formGroup">
     <div class="row">
 
-      <div class="col-lg-6">
-        <mat-label>DUI/NIT</mat-label>
-        <input matInput formControlName="duiNit">
-        <button mat-icon-button matSuffix (click)="fetchUserData()">
-          <mat-icon>search</mat-icon>
-        </button>
+      <div class="col-lg-4">
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>DUI/NIT</mat-label>
+          <input matInput formControlName="duiNit">
+          <button mat-icon-button matSuffix (click)="fetchUserData()">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+      </div>
+
+      <div class="col-lg-8">
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Tipo de AFPA</mat-label>
+          <input matInput formControlName="duiNit">
+          <button mat-icon-button matSuffix (click)="fetchUserData()">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
       </div>
 
     </div>

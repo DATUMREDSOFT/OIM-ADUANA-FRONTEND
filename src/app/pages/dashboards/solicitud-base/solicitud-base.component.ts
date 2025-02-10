@@ -23,16 +23,18 @@ import {FormServiceService} from "../../../services/form-service.service";
 import {TiposSolicitudService} from "../../../services/tipos-solicitud.service";
 import {ApiService} from "../../../services/api.service";
 import {TipoUsuarioService} from "../../../services/tipo-usuario.service";
+import {SolicitudWebServiceComponent} from "../solicitud-AFPA/solicitud-web-service/solicitud-web-service.component";
+import {SolicitudDigitadorComponent} from "../solicitud-AFPA/solicitud-digitador/solicitud-digitador.component";
 
 @Component({
   selector: 'app-solicitud-base',
   templateUrl: './solicitud-base.component.html',
   standalone: true,
   providers: [UserService],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, AppSolicitudInternoComponent, AppSolicitudAfpaComponent, AppSolicitudExternoComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, AppSolicitudInternoComponent, AppSolicitudAfpaComponent, AppSolicitudExternoComponent, SolicitudWebServiceComponent, SolicitudDigitadorComponent],
 })
 export class AppSolicitudBaseComponent implements OnInit {
-  private apiUrl = 'https://tu-api.com/dga/form';
+
   userType: string;
   solicitudForm: FormGroup;
   tiposSolicitud: { id: string; value: string }[] = [];
