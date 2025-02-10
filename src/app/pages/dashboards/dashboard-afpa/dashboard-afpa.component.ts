@@ -48,7 +48,7 @@ import {
 } from 'ng-apexcharts';
 
 @Component({
-  selector: 'app-dashboard-interno',
+  selector: 'app-dashboard-afpa',
   standalone: true,
   imports: [
     CommonModule,
@@ -91,9 +91,9 @@ import {
     MatCardModule,
     NgApexchartsModule,
   ],
-  templateUrl: './dashboard-interno.component.html',
+  templateUrl: './dashboard-afpa.component.html',
 })
-export class AppDashboardInternoComponent implements OnInit {
+export class AppDashboardAfpaComponent implements OnInit {
   selectedCard: string | null = null;
 
   ngOnInit() {

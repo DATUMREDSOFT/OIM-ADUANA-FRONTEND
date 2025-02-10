@@ -84,7 +84,12 @@ export class AppBoxedRegisterComponent {
       if (applicant) {
         if (applicant.name?.trim() !== 'null') {
           await this.processApplicant(applicant);
-          this.storeInLocalStorage(applicant);
+          
+          // Only store in localStorage if user is NO AFPA
+          if (!applicant.externalCodeDeclarant) {
+            this.storeInLocalStorage(applicant);
+          }
+          
           await this.loadTiposSolicitud();
         } else {
           this.showUserNotFoundAlert();
@@ -168,9 +173,9 @@ export class AppBoxedRegisterComponent {
   private async processApplicant(applicant: Solicitante) {
     // Check if the user is an internal user based on externalType
     if (applicant.externalType?.id === 'ADUANAL' || applicant.externalType?.id === 'EMPRESAL') {
-      return this.handleInternalUser();
+      return this.handleRestrictedUser(false);
     }
-    if (applicant.externalCodeDeclarant) return this.handleAfpaUser(applicant);
+    if (applicant.externalCodeDeclarant) return this.handleRestrictedUser(false);
   
     this.currentApplicant = applicant;
     const formType = applicant.externalCodeDeclarant ? 
@@ -183,18 +188,29 @@ export class AppBoxedRegisterComponent {
 
   private async loadTiposSolicitud() {
     try {
-      const tipoUsuario = this.tipoUsuarioService.getTipoUsuario();
-      const tipo = tipoUsuario === Roles.AFPA ? 'AFPA' : 
-                  tipoUsuario === Roles.INTERNO ? 'interno' : 'externo';
+      const applicant = this.currentApplicant;
       
-      const tipos = await this.applicantService.getTiposSolicitud(tipo)
-        .pipe(
-          map(response => response.sort((a, b) => a.id.localeCompare(b.id)))
-        )
-        .toPromise();
+      // Only proceed if user is external (not AFPA and not internal)
+      if (applicant && 
+          !applicant.externalCodeDeclarant && 
+          applicant.externalType?.id !== 'ADUANAL' && 
+          applicant.externalType?.id !== 'EMPRESAL') {
+        
+        const tipos = await this.applicantService.getTiposSolicitud('externo')
+          .pipe(
+            map(response => response.sort((a, b) => a.id.localeCompare(b.id)))
+          )
+          .toPromise();
 
-      if (tipos) {
-        this.tiposSolicitudService.setData(tipos);
+        if (tipos) {
+          this.tiposSolicitudService.setData(tipos);
+          // Store tipos in localStorage
+          this.localStorageService.setItem(
+            'tipos-solicitud',
+            tipos,
+            this.environment.tiempoLocalStorage
+          );
+        }
       }
     } catch (error) {
       console.error('Error loading request types:', error);
@@ -202,12 +218,19 @@ export class AppBoxedRegisterComponent {
     }
   }
 
-  private handleInternalUser() {
-    this.showLoginPrompt('Eres un usuario interno, inicia sesión para continuar.');
-  }
-
-  private handleAfpaUser(applicant: Solicitante) {
-    this.showLoginPrompt('Eres un usuario AFPA, inicia sesión para continuar.', true);
+  private handleRestrictedUser(isAfpa: boolean) {
+    Swal.fire({
+      title: 'Tiene que iniciar sesión',
+      text: 'Ya cuenta con acceso al sistema. Inicie sesión para continuar.',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Iniciar sesión',
+      cancelButtonText: 'Cerrar'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.router.navigate([isAfpa ? '/external-interface' : '/authentication/boxed-login']);
+      }
+    });
   }
 
   private showSuccessAlert(applicant: Solicitante) {
