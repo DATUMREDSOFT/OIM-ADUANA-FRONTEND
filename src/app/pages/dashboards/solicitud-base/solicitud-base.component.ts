@@ -134,27 +134,27 @@ export class AppSolicitudBaseComponent implements OnInit {
   });
 }
 
-  
+
   // ✅ Create a new `usuario` FormGroup
   private createUsuarioForm(): FormGroup {
     return this.fb.group({
-      nombre: ['', Validators.required], 
-      apellido: ['', Validators.required], 
-      telefono: ['', Validators.required], 
-      movil: [''], 
-      correo: ['', [Validators.required, Validators.email]], 
-      correoAlternativo: [''], 
-      fechaInicioSolicitud: [''], 
+      nombre: ['', Validators.required],
+      apellido: ['', Validators.required],
+      telefono: ['', Validators.required],
+      movil: [''],
+      correo: ['', [Validators.required, Validators.email]],
+      correoAlternativo: [''],
+      fechaInicioSolicitud: [''],
       fechaFinSolicitud: [''],
-      perfil: ['', Validators.required], 
-      aduanaPerfil: ['', Validators.required], 
-      fechaInicioSistema: [''], 
+      perfil: ['', Validators.required],
+      aduanaPerfil: ['', Validators.required],
+      fechaInicioSistema: [''],
       fechaFinSistema: [''],
       sistemas: this.fb.array([this.createDefaultSistema()]) // ✅ Initialize with default system
     });
   }
-  
-  
+
+
   // ✅ Add SIAP System Automatically (deactivated by default)
   private createDefaultSistema(): FormGroup {
     return this.fb.group({
@@ -206,10 +206,10 @@ export class AppSolicitudBaseComponent implements OnInit {
   /** ✅ Send Form Request */
   /** ✅ Submit Multiple Users */
   async enviarFormulario() {
-    if (this.solicitudForm.invalid) {
-      Swal.fire('Error', 'Por favor complete todos los campos obligatorios', 'error');
-      return;
-    }
+    // if (this.solicitudForm.invalid) {
+    //   Swal.fire('Error', 'Por favor complete todos los campos obligatorios', 'error');
+    //   return;
+    // }
 
     // ✅ Now each formulario contains multiple usuarios (subitems)
     const formData = this.solicitudForm.value.formularios.map((form: any) => ({
