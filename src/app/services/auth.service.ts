@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { BaseService } from './base.service';
 import { environments } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -40,9 +41,17 @@ export class AuthService extends BaseService {
   }
 
   login(credentials: { user: string; password: string; role: string | null }): Observable<any> {
-    const url = `${environments.urlApi}/flow/login`;
+    const url = `${environments.urlApi}dga/flow/login`;
     credentials.role = null; // Ensure role is always null
-    return this.post(url, credentials);
+    return this.http.post(url, credentials, { responseType: 'text' }).pipe(
+      map((response: any) => {
+        try {
+          return JSON.parse(response);
+        } catch (e) {
+          return response;
+        }
+      })
+    );
   }
 
   register(user: any): Observable<any> {

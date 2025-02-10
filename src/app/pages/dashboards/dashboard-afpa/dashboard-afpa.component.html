@@ -1,0 +1,57 @@
+<div class="row">
+  <div class="col-lg-8">
+    <app-top-cards (cardClick)="onCardClick($event)"></app-top-cards>
+  </div>
+  <div class="col-lg-4">
+    <div class="row">
+      <div class="col-sm-6">
+        <ng-container *ngIf="selectedCard === 'pendingRequests'; else defaultPayments">
+          <app-solicitudes-pendientes></app-solicitudes-pendientes>
+        </ng-container>
+        <ng-template #defaultPayments>
+          <app-total-earnings></app-total-earnings>
+          <!--<app-payments></app-payments> -->
+        </ng-template>
+      </div>
+      <div class="col-sm-6">
+        <ng-container *ngIf="selectedCard === 'pendingRequests'; else defaultWebserviceCard">
+          <app-solicitudes-finalizadas></app-solicitudes-finalizadas>
+        </ng-container>
+        <ng-template #defaultWebserviceCard>
+          <app-webservice-bar></app-webservice-bar>
+          <!-- <app-webservice-card></app-webservice-card> -->
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <ng-container *ngIf="selectedCard">
+      <app-users-table *ngIf="selectedCard === 'digitadores'"></app-users-table>
+      <app-webusers-table *ngIf="selectedCard === 'users'"></app-webusers-table>
+      <app-basic-table *ngIf="selectedCard === 'pendingRequests'"></app-basic-table>
+    </ng-container>
+  </div>
+  <div class="col-lg-4">
+    <div class="row">
+      <div class="col-sm-6" *ngIf="false">
+        <ng-container *ngIf="selectedCard === 'pendingRequests'; else defaultTotalEarnings">
+          <app-solicitudes-no-iniciadas></app-solicitudes-no-iniciadas>
+        </ng-container>
+        <ng-template #defaultTotalEarnings>
+          <app-total-earnings></app-total-earnings>
+        </ng-template>
+      </div>
+      <div class="col-sm-6" *ngIf="false">
+        <ng-container *ngIf="selectedCard === 'pendingRequests'; else defaultWebserviceBar">
+          <app-solicitudes-estado></app-solicitudes-estado>
+        </ng-container>
+        <ng-template #defaultWebserviceBar>
+          <app-webservice-bar></app-webservice-bar>
+        </ng-template>
+      </div>
+      <div class="col-12">
+        <app-users-overview [selectedCard]="selectedCard || ''"></app-users-overview>
+      </div>
+    </div>
+  </div>
+</div>

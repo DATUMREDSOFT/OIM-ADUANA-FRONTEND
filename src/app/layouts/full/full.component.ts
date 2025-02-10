@@ -151,7 +151,15 @@ export class FullComponent implements OnInit {
    * ✅ Load the correct navigation items based on the user type
    */
   private loadUserNavItems() {
-    const userType = JSON.parse(localStorage.getItem('tipo-usuario') || '{}').value;
+    // Parse and safely access the value
+    const storedData = JSON.parse(localStorage.getItem('tipo-usuario') || '{}');
+    const userType = storedData?.value?.value;
+  
+    console.log('User Type for Nav Items:', userType); // Debugging output
+  
+    // Load nav items based on the user type
     this.navItems = navItemsByUserType[userType] || [];
+    console.log('Loaded Nav Items:', this.navItems);
   }
+  
 }
