@@ -66,13 +66,25 @@ export class HeaderComponent {
 
     this.fullName = solicitante?.name || 'Usuario';
     this.userTypeLabel =
-    tipoUsuario === 'NOAFPA'
-      ? 'Usuario Externo'
-      : tipoUsuario === 'AFPA'
-      ? 'Usuario AFPA'
-      : 'Usuario Interno';
-    this.document = solicitante?.document || 'N/A';
+      tipoUsuario === 'NOAFPA'
+        ? 'Usuario Externo'
+        : tipoUsuario === 'AFPA'
+        ? 'Usuario AFPA'
+        : tipoUsuario === 'INTERNO'
+        ? 'Usuario Interno'
+        : 'Usuario';
   
+    // Handle document type
+    const document = solicitante?.document || 'N/A';
+    if (document.length === 9) {
+      this.document = `DUI: ${document}`;
+    } else if (document.length === 14) {
+      this.document = `NIT: ${document}`;
+    } else {
+      this.document = 'Documento no válido';
+    }
+  
+    // Handle full name for the user display
     if (solicitante?.name) {
       const nameParts = solicitante.name.split(' ');
       if (nameParts.length >= 4) {
@@ -85,7 +97,7 @@ export class HeaderComponent {
         this.userFullName = `${firstName} ${firstSurname}`;
       }
     }
-
+  
     if (tipoUsuario === 'NOAFPA') {
       this.profiledd = [];
     }

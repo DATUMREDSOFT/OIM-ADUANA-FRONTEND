@@ -3,7 +3,7 @@ import { AuthGuard } from 'src/app/guards/auth.guard';
 
 // dashboards
 import { AppDashboardInternoComponent } from './dasboard-interno/dashboard-interno.component';
-import { AppDashboard2Component } from './dashboard2/dashboard2.component';
+import { AppDashboardAfpaComponent } from './dashboard-afpa/dashboard-afpa.component';
 import { AppDashboardExternoComponent } from './dashboard_externo/dashboard-externo.component';
 import { AppSolicitudAfpaComponent } from './solicitud-nuevo-afpa/solicitud-afpa.component';
 import { AppSolicitudBaseComponent } from './solicitud-base/solicitud-base.component';
@@ -16,12 +16,25 @@ export const DashboardsRoutes: Routes = [
       {
         path:'dashboard-interno',
         component: AppDashboardInternoComponent,
-        
+        canActivate: [AuthGuard],
         data: {
-          
+          role : 'INTERNO',
           title: 'Analytical',
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard-interno' },
+            { title: 'Analytical' },
+          ],
+        },
+      },
+      {
+        path:'dashboard-afpa',
+        component: AppDashboardAfpaComponent,
+        canActivate: [AuthGuard],
+        data: {
+          role: 'AFPA',
+          title: 'Analytical',
+          urls: [
+            { title: 'Dashboard', url: '/dashboards/dashboard-afpa' },
             { title: 'Analytical' },
           ],
         },
@@ -42,7 +55,9 @@ export const DashboardsRoutes: Routes = [
       {
         path:'solicitudes-interno',
         component: AppSolicitudBaseComponent,
+        canActivate: [AuthGuard],
         data: {
+          role : 'INTERNO',
           title: 'Solicitudes',
           urls: [
             { title: 'Dashboard', url: '/dashboards/solicitudes-interno' },
@@ -51,12 +66,14 @@ export const DashboardsRoutes: Routes = [
         },
       },
       {
-        path:'solicitud-nuevo-afpa',
-        component: AppSolicitudAfpaComponent,
+        path:'solicitudes-afpa',
+        component: AppSolicitudBaseComponent,
+        canActivate: [AuthGuard],
         data: {
+          role : 'AFPA',
           title: 'Analytical',
           urls: [
-            { title: 'Dashboard', url: '/dashboards/solicitud-nuevo-afpa' },
+            { title: 'Dashboard', url: '/dashboards/solicitudes-afpa' },
             { title: 'Analytical' },
           ],
         },

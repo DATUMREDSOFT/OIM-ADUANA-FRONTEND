@@ -15,11 +15,13 @@
     <div class="row">
 
       <div class="col-lg-6">
-        <mat-label>DUI/NIT</mat-label>
-        <input matInput formControlName="duiNit">
-        <button mat-icon-button matSuffix (click)="fetchUserData()">
-          <mat-icon>search</mat-icon>
-        </button>
+        <mat-form-field appearance="outline" class="search-field w-100">
+          <mat-label>DUI/NIT</mat-label>
+          <input matInput placeholder="Ingrese su búsqueda"/>
+          <button mat-icon-button matSuffix>
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
       </div>
 
     </div>
@@ -84,7 +86,7 @@
 
       <div class="col-lg-6">
 
-        <mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
           <mat-label>Fecha Inicio de Solicitud</mat-label>
           <input matInput [matDatepicker]="fechaInicioSolicitud" formControlName="fechaInicioSolicitud">
           <mat-hint>MM/DD/YYYY</mat-hint>
@@ -92,8 +94,10 @@
           <mat-datepicker #fechaInicioSolicitud></mat-datepicker>
         </mat-form-field>
 
+      </div>
 
-        <mat-form-field>
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
           <mat-label>Fecha Fin de Solicitud</mat-label>
           <input matInput [matDatepicker]="fechaFinSolicitud" formControlName="fechaFinSolicitud">
           <mat-hint>MM/DD/YYYY</mat-hint>

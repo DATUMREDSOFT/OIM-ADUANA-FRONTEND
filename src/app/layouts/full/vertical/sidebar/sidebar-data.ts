@@ -3,7 +3,7 @@ import { NavItem } from './nav-item/nav-item';
 export const navItemsByUserType: { [key: string]: NavItem[] } = {
   NOAFPA: [
     {
-      navCap: 'Home',
+      navCap: 'Menu principal',
     },
     {
       displayName: 'Principal',
@@ -21,31 +21,32 @@ export const navItemsByUserType: { [key: string]: NavItem[] } = {
   ],
   AFPA: [
     {
-      navCap: 'Dashboard',
+      navCap: 'Menu principal',
     },
     {
-      displayName: 'Dashboard Interno',
+      displayName: 'Dashboard AFPA',
       iconName: 'dashboard',
-      route: '/dashboards/dashboard-interno',
+      action: () => {
+        window.location.reload();
+      },
+      route: '/dashboards/dashboard-afpa',
     },
     {
-      displayName: 'Solicitudes Interno',
+      displayName: 'Solicitudes AFPA',
       iconName: 'file',
-      route: '/dashboards/solicitudes-interno',
-    },
-    {
-      displayName: 'Nuevo AFPA',
-      iconName: 'person-add',
-      route: '/dashboards/solicitud-nuevo-afpa',
+      route: '/dashboards/solicitudes-afpa',
     },
   ],
   INTERNO: [
     {
-      navCap: 'Dashboard',
+      navCap: 'Menu principal',
     },
     {
       displayName: 'Dashboard Interno',
       iconName: 'dashboard',
+      action: () => {
+        window.location.reload();
+      },
       route: '/dashboards/dashboard-interno',
     },
     {
