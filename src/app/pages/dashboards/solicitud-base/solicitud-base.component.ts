@@ -1,35 +1,34 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, DatePipe } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { MatCardModule } from '@angular/material/card';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { TablerIconsModule } from 'angular-tabler-icons';
+import { ChangeDetectorRef } from '@angular/core';
+import { lastValueFrom } from 'rxjs';
+import Swal from 'sweetalert2';
+
 import { ApiService } from '../../../services/api.service';
 import { ProcesoFormularioService } from '../../../services/proceso-formulario.service';
-import Swal from 'sweetalert2';
-import { lastValueFrom } from 'rxjs';
+import { UserService } from '../../../services/user.service';
+import { LocalStorageService } from '../../../services/local-storage.service';
+import { TiposSolicitudService } from '../../../services/tipos-solicitud.service';
+import { FormServiceService } from "../../../services/form-service.service";
+import { TipoUsuarioService } from "../../../services/tipo-usuario.service";
+
 import { TipoSolicitud } from '../solicitud-base/models/tipo-solicitud.model';
 import { System } from '../solicitud-externo/models/system.model';
 import { Profile } from '../solicitud-externo/models/profile.model';
 import { Aduana } from '../../../models/aduana.model';
-import { UserService } from '../../../services/user.service';
-import { LocalStorageService } from '../../../services/local-storage.service';
-import { TiposSolicitudService } from '../../../services/tipos-solicitud.service';
-// import { MatStepper } from '@angular/material/stepper';
-import { MaterialModule } from '../../../material.module';
-import { MatCardModule } from '@angular/material/card';
-import { CommonModule } from '@angular/common';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatAccordion } from '@angular/material/expansion';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { DatePipe } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-// icons
-import { TablerIconsModule } from 'angular-tabler-icons';
+import { FormularioExterno } from '../solicitud-externo/models/formulario-externo.model';
 
-import { Inject } from '@angular/core';
+import { MaterialModule } from '../../../material.module';
 import { AppSolicitudInternoComponent } from "../solicitud-interno/solicitud-interno.component";
 import { AppSolicitudAfpaComponent } from "../solicitud-nuevo-afpa/solicitud-afpa.component";
 import { AppSolicitudExternoComponent } from "../solicitud-externo/solicitud-externo.component";
-import { FormServiceService } from "../../../services/form-service.service";
-import { TipoUsuarioService } from "../../../services/tipo-usuario.service";
-import { ChangeDetectorRef } from '@angular/core';
+import { Roles } from '../../../enums/roles.enum';
 
 @Component({
   selector: 'app-solicitud-base',
@@ -112,49 +111,49 @@ export class AppSolicitudBaseComponent implements OnInit {
 
   /** ✅ Create a new Formulario */
   private createFormulario(): FormGroup {
-  return this.fb.group({
-    tipo: ['', Validators.required],
-    childComponent: [null], // Stores dynamically loaded component
-    form: this.fb.group({ // Ensure form is defined
-      uid: [''],
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-      correo: ['', [Validators.required, Validators.email]],
-      telefono: ['', Validators.required],
-      movil: [''],
-      correoAlternativo: [''],
-      fechaInicioSolicitud: [''],
-      fechaFinSolicitud: [''],
-      perfil: ['', Validators.required],
-      aduanaPerfil: ['', Validators.required],
-      fechaInicioSistema: [''],
-      fechaFinSistema: ['']
-    }),
-    usuarios: this.fb.array([this.createUsuarioForm()]) // Ensure at least one user is created
-  });
+    return this.fb.group({
+      tipo: ['TYREQ-1', Validators.required], // Mocking type selection
+      childComponent: ['externo'], // Predefine the loaded component
+      form: this.fb.group({
+        uid: ['mock.uid123'],
+        nombre: ['John'],
+        apellido: ['Doe'],
+        correo: ['john.doe@example.com'],
+        telefono: ['123456789'],
+        movil: ['987654321'],
+        correoAlternativo: ['alt.johndoe@example.com'],
+        fechaInicioSolicitud: ['2024-02-01'],
+        fechaFinSolicitud: ['2024-12-31'],
+        perfil: ['Admin'],
+        aduanaPerfil: ['Main Customs'],
+        fechaInicioSistema: ['2024-02-01'],
+        fechaFinSistema: ['2024-12-31']
+      }),
+      usuarios: this.fb.array([this.createUsuarioForm()])
+    });
 }
 
-
+  
   // ✅ Create a new `usuario` FormGroup
   private createUsuarioForm(): FormGroup {
     return this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-      telefono: ['', Validators.required],
-      movil: [''],
-      correo: ['', [Validators.required, Validators.email]],
-      correoAlternativo: [''],
-      fechaInicioSolicitud: [''],
-      fechaFinSolicitud: [''],
-      perfil: ['', Validators.required],
-      aduanaPerfil: ['', Validators.required],
-      fechaInicioSistema: [''],
-      fechaFinSistema: [''],
-      sistemas: this.fb.array([this.createDefaultSistema()]) // ✅ Initialize with default system
+      nombre: ['Jane'],
+      apellido: ['Doe'],
+      telefono: ['123456789'],
+      movil: ['987654321'],
+      correo: ['jane.doe@example.com'],
+      correoAlternativo: ['alt.janedoe@example.com'],
+      fechaInicioSolicitud: ['2024-02-01'],
+      fechaFinSolicitud: ['2024-12-31'],
+      perfil: ['User'],
+      aduanaPerfil: ['Secondary Customs'],
+      fechaInicioSistema: ['2024-02-01'],
+      fechaFinSistema: ['2024-12-31'],
+      sistemas: this.fb.array([this.createDefaultSistema()]) // Mock SIAP system
     });
   }
-
-
+  
+  
   // ✅ Add SIAP System Automatically (deactivated by default)
   private createDefaultSistema(): FormGroup {
     return this.fb.group({
@@ -206,41 +205,103 @@ export class AppSolicitudBaseComponent implements OnInit {
   /** ✅ Send Form Request */
   /** ✅ Submit Multiple Users */
   async enviarFormulario() {
-    // if (this.solicitudForm.invalid) {
-    //   Swal.fire('Error', 'Por favor complete todos los campos obligatorios', 'error');
-    //   return;
-    // }
-
-    // ✅ Now each formulario contains multiple usuarios (subitems)
-    const formData = this.solicitudForm.value.formularios.map((form: any) => ({
-      tipo: form.tipo,
-      formType: this.userService.getTipoUsuario(),
-      usuarios: form.usuarios.map((usuario: any) => ({
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        telefono: usuario.telefono,
-        movil: usuario.movil,
-        correo: usuario.correo,
-        correoAlternativo: usuario.correoAlternativo,
-        fechaInicioSolicitud: usuario.fechaInicioSolicitud,
-        fechaFinSolicitud: usuario.fechaFinSolicitud,
-        perfil: usuario.perfil,
-        aduanaPerfil: usuario.aduanaPerfil,
-        fechaInicioSistema: usuario.fechaInicioSistema,
-        fechaFinSistema: usuario.fechaFinSistema,
-        sistema: usuario.sistema, // ✅ SIAP is prefilled
+    if (this.solicitudForm.invalid) {
+      Swal.fire('Error', 'Por favor complete todos los campos obligatorios', 'error');
+      return;
+    }
+  
+    const currentTimestamp = new Date().getTime().toString(); // ✅ API expects UNIX timestamp in milliseconds
+  
+    // ✅ Build the API payload correctly
+    const formData: FormularioExterno = {
+      id: '', // ✅ API will generate this
+      createdOn: new Date().toISOString(),
+      createdBy: this.procesoFormulario.getUserLogin() ?? 'NA',
+      modifiedOn: new Date().toISOString(),
+      modifiedBy: this.procesoFormulario.getUserLogin() ?? 'NA',
+      closed: false,
+      step: "-",
+      comment: 'Solicitud generada desde Angular 18',
+      applicantViewer: '-',
+      file1: '', // ✅ Ensure file handling
+      file2: '', // ✅ Ensure file handling
+      file3: '', // ✅ Ensure file handling
+      file4: '', // ✅ Ensure file handling
+      file5: '', // ✅ Ensure file handling
+      file6: '', // ✅ Ensure file handling
+      status: 'PENDING',
+      createdName: 'Solicitante',
+      formType: this.userService.getTipoUsuario() === Roles.INTERNO ? 'Interno' : 'Externo',
+  
+      // ✅ Ensure Applicant Data is Properly Formatted
+      applicant: {
+        id: '',
+        document: "123456789",
+        position: {
+          id: '',
+          value: ''
+        },
+        attribute: {
+          id: '',
+          value: ''
+        },
+        externalType: {
+          id: "PERSONAL",
+          status: "ENABLED",
+          value: "Persona Natural"
+        },
+        name: "John Doe",
+        externalName: "John Doe",
+        mail: "john.doe@example.com",
+        externalRepLegal: '',
+        externalCodeDeclarant: ''
+      },
+  
+      // ✅ Ensure Requests are Correctly Formatted
+      requests: this.solicitudForm.value.formularios.map((form: any) => ({
+        id: "",
+        typeRequest: {
+          id: form.tipo,
+          value: "Nuevo Usuario",
+          status: null
+        },
+        state: "PENDIENTE DE ASIGNAR",
+        createBy: this.procesoFormulario.getUserLogin() ?? 'NA',
+        createOn: Date.now().toString(),
+        profiles: form.usuarios?.length ? form.usuarios : {},  // ✅ If empty, use `{}` instead of `[]`
+        resources: {},
+        systems: form.usuarios.flatMap((usuario: any) => usuario.sistemas.map((sistema: any) => ({
+          id: "",
+          status: "PENDIENTE DE ASIGNAR",
+          type: "Externo",
+          startDate: Date.now().toString(),
+          group: {
+            id: "CATGRP-78",
+            status: "ENABLED",
+            value: "PAGOES",
+            system: null
+          },
+          custom: {}
+        }))),
+        others: {},
+        flow: {}
       }))
-    }));
-
+    };
+  
+    console.log("✅ Fixed Request:", formData);
+  
     try {
-      const response = await this.procesoFormulario.iniciarProceso(formData[0]);
+      const response = await this.procesoFormulario.iniciarProceso(formData);
       if (response) {
         Swal.fire('Éxito', 'El formulario se ha enviado correctamente', 'success');
       }
     } catch (error) {
-      Swal.fire('Error', 'Ocurrió un problema al enviar el formulario', 'error');
+      const errorMessage = (error as any).message || 'Error desconocido';
+      Swal.fire('Error', 'Ocurrió un problema al enviar el formulario: ' + errorMessage, 'error');
     }
   }
+  
+  
 
   // ✅ Ensure that each 'usuario' retrieved is cast to a FormGroup
   getUsuarioForm(formulario: FormGroup, index: number): FormGroup {
