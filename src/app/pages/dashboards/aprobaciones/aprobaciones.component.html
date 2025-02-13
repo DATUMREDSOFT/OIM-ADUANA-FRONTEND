@@ -3,76 +3,76 @@
     <mat-card class="cardWithShadow">
       <mat-card-header>
         <mat-card-title>Listado de solicitudes</mat-card-title>
-<!--        <mat-card-subtitle class="mat-body-1"></mat-card-subtitle>-->
+        <!--        <mat-card-subtitle class="mat-body-1"></mat-card-subtitle>-->
       </mat-card-header>
       <mat-card-content>
         <div class="table-responsive m-t-30">
           <mat-table #table [dataSource]="dataSource">
 
-            <ng-container matColumnDef="DGA">
+            <ng-container [matColumnDef]="Header.DGA">
               <mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-                DGA
+                {{ Header.DGA }}
               </mat-header-cell>
               <mat-cell class="p-16" *matCellDef="let element" class="mat-body-1">
-                {{ element.productName }}
+                {{ element.DGA }}
               </mat-cell>
             </ng-container>
 
             <!-- Name Column -->
-            <ng-container matColumnDef="name">
+            <ng-container [matColumnDef]="Header.Description">
               <mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-                Name
+                {{ Header.Description }}
               </mat-header-cell>
               <mat-cell class="p-16" *matCellDef="let element" class="mat-body-1">
-                {{ element.productName }}
+                {{ element.description }}
               </mat-cell>
             </ng-container>
 
             <!-- Weight Column -->
-            <ng-container matColumnDef="priority">
+            <ng-container [matColumnDef]="Header.Date">
               <mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-                Priority
+                {{ Header.Date }}
               </mat-header-cell>
               <mat-cell class="p-16" *matCellDef="let element">
-                @if (element.priority == 'low') {
+                @if (element.state === State.pending) {
                   <span class="bg-light-accent text-accent rounded f-w-600 p-6 p-y-4 f-s-12">
-              {{ element.priority | titlecase }}
+              {{ element.state | titlecase }}
             </span>
                 }
 
-                @if (element.priority == 'medium') {
-                  <span class="bg-light-primary text-primary rounded f-w-600 p-6 p-y-4 f-s-12">
-              {{ element.priority | titlecase }}
-            </span>
-                }
+<!--                @if (element.priority === Priority.approved) {-->
+<!--                  <span class="bg-light-primary text-primary rounded f-w-600 p-6 p-y-4 f-s-12">-->
+<!--                              {{ element.priority | titlecase }}-->
+<!--                            </span>-->
+<!--                }-->
 
-                @if (element.priority == 'high') {
-                  <span class="bg-light-warning text-warning rounded f-w-600 p-6 p-y-4 f-s-12">
-              {{ element.priority | titlecase }}
-            </span>
-                }
+<!--                @if (element.priority == Priority.rejected) {-->
+<!--                  <span class="bg-light-warning text-warning rounded f-w-600 p-6 p-y-4 f-s-12">-->
+<!--                              {{ element.priority | titlecase }}-->
+<!--                            </span>-->
+<!--                }-->
 
-                @if (element.priority == 'critical') {
+                @if (element.state === State.rejected) {
                   <span class="bg-light-error text-error rounded f-w-600 p-6 p-y-4 f-s-12">
-              {{ element.priority | titlecase }}
+              {{ element.state | titlecase }}
             </span>
                 }
 
-                @if (element.priority == 'moderate') {
+                @if (element.state === State.approved) {
                   <span class="bg-light-success text-success rounded f-w-600 p-6 p-y-4 f-s-12">
-              {{ element.priority | titlecase }}
+              {{ element.state | titlecase }}
             </span>
                 }
               </mat-cell>
             </ng-container>
 
             <!-- Symbol Column -->
-            <ng-container matColumnDef="budget">
+            <ng-container [matColumnDef]="Header.State">
               <mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14 text-right p-r-0">
                 Budget
               </mat-header-cell>
               <mat-cell class="p-16 mat-body-1 p-r-0 text-right" *matCellDef="let element">
-                ${{ element.budget }}k
+                {{ element.state }}
               </mat-cell>
             </ng-container>
 

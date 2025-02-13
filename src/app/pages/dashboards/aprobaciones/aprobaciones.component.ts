@@ -13,18 +13,26 @@ import {MatPaginator} from "@angular/material/paginator";
 import {TitleCasePipe} from "@angular/common";
 
 
-enum Priority {
+enum State {
   pending = 'Pendiente',
   approved = 'Aprobado',
   rejected = 'Rechazado'
 }
 
+enum Header {
+  DGA = 'DGA',
+  Description = 'Descripción',
+  Date = 'Fecha de Creación',
+  State = 'Estado'
+}
+
+
 interface ELEMENT_DATA {
-  uname: string;
-  position: string;
-  productName: string;
-  priority: Priority;
-  budget: number;
+
+  DGA: string;
+  description: string;
+  date: string;
+  state: State;
 }
 
 
@@ -56,34 +64,84 @@ interface ELEMENT_DATA {
 export class AprobacionesComponent {
 
 
-  displayedColumns: string[] = ['DGA', 'name', 'priority', 'budget'];
+  displayedColumns: string[] = [Header.DGA, Header.Description, Header.Date, Header.State];
+
+
   dataSource = new MatTableDataSource<ELEMENT_DATA>([
     {
-
-      uname: 'John Doe',
-      position: 'Project Manager',
-      productName: 'CRM System',
-      priority: Priority.pending,
-      budget: 15
+      DGA: 'DGA-001',
+      description: 'Nuevo Usuario',
+      date: '2024-02-01',
+      state: State.pending
     },
     {
-
-      uname: 'Jane Smith',
-      position: 'UI/UX Designer',
-      productName: 'Website Redesign',
-      priority: Priority.approved,
-      budget: 8
+      DGA: 'DGA-002',
+      description: 'Nuevo Usuario',
+      date: '2024-02-02',
+      state: State.approved
     },
     {
-
-      uname: 'David Johnson',
-      position: 'Software Engineer',
-      productName: 'Mobile App',
-      priority: Priority.rejected,
-      budget: 25
+      DGA: 'DGA-003',
+      description: 'Nuevo Usuario',
+      date: '2024-02-03',
+      state: State.rejected
     },
-
+    {
+      DGA: 'DGA-004',
+      description: 'Nuevo Usuario',
+      date: '2024-02-04',
+      state: State.pending
+    },
+    {
+      DGA: 'DGA-005',
+      description: 'Nuevo Usuario',
+      date: '2024-02-05',
+      state: State.approved
+    },
+    {
+      DGA: 'DGA-006',
+      description: 'Nuevo Usuario',
+      date: '2024-02-06',
+      state: State.rejected
+    },
+    {
+      DGA: 'DGA-007',
+      description: 'Nuevo Usuario',
+      date: '2024-02-07',
+      state: State.pending
+    },
+    {
+      DGA: 'DGA-008',
+      description: 'Nuevo Usuario',
+      date: '2024-02-08',
+      state: State.approved
+    },
+    {
+      DGA: 'DGA-009',
+      description: 'Nuevo Usuario',
+      date: '2024-02-09',
+      state: State.rejected
+    },
+    {
+      DGA: 'DGA-010',
+      description: 'Nuevo Usuario',
+      date: '2024-02-10',
+      state: State.pending
+    },
+    {
+      DGA: 'DGA-010',
+      description: 'Nuevo Usuario',
+      date: '2024-02-10',
+      state: State.pending
+    },
+    {
+      DGA: 'DGA-010',
+      description: 'Nuevo Usuario',
+      date: '2024-02-10',
+      state: State.pending
+    }
   ]);
+
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -92,4 +150,7 @@ export class AprobacionesComponent {
   }
 
 
+  protected readonly State = State;
+  protected readonly Header = Header;
+  protected readonly MatHeaderRow = MatHeaderRow;
 }
