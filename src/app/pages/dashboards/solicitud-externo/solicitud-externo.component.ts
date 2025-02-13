@@ -55,6 +55,7 @@ export class AppSolicitudExternoComponent implements OnInit {
     }
   }
 
+  
 
   editPerfil(index: number) {
     this.editMode = true;
