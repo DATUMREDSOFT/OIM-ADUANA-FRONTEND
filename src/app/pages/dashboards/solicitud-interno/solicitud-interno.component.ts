@@ -43,6 +43,7 @@ export class AppSolicitudInternoComponent implements OnInit {
 
   ngOnInit() {
     this.formGroup = this.fb.group({
+      duiNit: ['', Validators.required],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],

@@ -54,6 +54,11 @@ export const navItemsByUserType: { [key: string]: NavItem[] } = {
       iconName: 'file',
       route: '/dashboards/solicitudes-interno',
     },
+    {
+      displayName: 'Aprobaciones',
+      iconName: 'file',
+      route: '/dashboards/aprobaciones',
+    },
   ],
 };
 
