@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, AbstractControl, FormGroupDirective } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
@@ -67,13 +67,15 @@ export class AppSolicitudBaseComponent implements OnInit {
     return this.solicitudForm.get('formularios') as FormArray;
   }
 
+  asFormGroup(control: AbstractControl): FormGroup {
+    return control as FormGroup;
+  }
+
   /** ✅ Load Request Types from Local Storage */
   private loadTiposSolicitudFromStorage(): void {
     let storedData: any;
 
-    // 🔍 Try retrieving using localStorage.getItem() directly
     const rawStoredData = localStorage.getItem('tipos-solicitud');
-
     console.log("🔍 Directly Retrieved from localStorage:", rawStoredData);
 
     if (rawStoredData) {
@@ -85,19 +87,16 @@ export class AppSolicitudBaseComponent implements OnInit {
       }
     }
 
-    // 🔹 Try using the localStorageService if available
     if (!storedData) {
       storedData = this.localStorageService.getItem('tipo-solicitud');
       console.log("🔍 Retrieved from localStorageService:", storedData);
     }
 
-    // ❌ If still no data, warn
     if (!storedData || !storedData.value || !Array.isArray(storedData.value)) {
       console.warn("⚠️ No valid tipos-solicitud found in storage.", storedData);
       return;
     }
 
-    // ✅ Extract the correct data
     this.tiposSolicitud = storedData.value.map((tipo: any) => ({
       id: tipo.id,
       value: tipo.value
@@ -106,59 +105,54 @@ export class AppSolicitudBaseComponent implements OnInit {
     console.log("✅ Successfully loaded tipos-solicitud:", this.tiposSolicitud);
   }
 
-
-
-
   /** ✅ Create a new Formulario */
   private createFormulario(): FormGroup {
     return this.fb.group({
-      tipo: ['TYREQ-1', Validators.required], // Mocking type selection
-      childComponent: ['externo'], // Predefine the loaded component
+      tipo: ['', Validators.required],
+      childComponent: [''],
       form: this.fb.group({
-        uid: ['mock.uid123'],
-        nombre: ['John'],
-        apellido: ['Doe'],
-        correo: ['john.doe@example.com'],
-        telefono: ['123456789'],
-        movil: ['987654321'],
-        correoAlternativo: ['alt.johndoe@example.com'],
-        fechaInicioSolicitud: ['2024-02-01'],
-        fechaFinSolicitud: ['2024-12-31'],
-        perfil: ['Admin'],
-        aduanaPerfil: ['Main Customs'],
-        fechaInicioSistema: ['2024-02-01'],
-        fechaFinSistema: ['2024-12-31']
+        uid: [''],
+        nombre: [''],
+        apellido: [''],
+        correo: [''],
+        telefono: [''],
+        movil: [''],
+        correoAlternativo: [''],
+        fechaInicioSolicitud: [''],
+        fechaFinSolicitud: [''],
+        perfil: [''],
+        aduanaPerfil: [''],
+        fechaInicioSistema: [''],
+        fechaFinSistema: ['']
       }),
       usuarios: this.fb.array([this.createUsuarioForm()])
     });
-}
+  }
 
-  
-  // ✅ Create a new `usuario` FormGroup
+  /** ✅ Create a new `usuario` FormGroup */
   private createUsuarioForm(): FormGroup {
     return this.fb.group({
-      nombre: ['Jane'],
-      apellido: ['Doe'],
-      telefono: ['123456789'],
-      movil: ['987654321'],
-      correo: ['jane.doe@example.com'],
-      correoAlternativo: ['alt.janedoe@example.com'],
-      fechaInicioSolicitud: ['2024-02-01'],
-      fechaFinSolicitud: ['2024-12-31'],
-      perfil: ['User'],
-      aduanaPerfil: ['Secondary Customs'],
-      fechaInicioSistema: ['2024-02-01'],
-      fechaFinSistema: ['2024-12-31'],
-      sistemas: this.fb.array([this.createDefaultSistema()]) // Mock SIAP system
+      nombre: [''],
+      apellido: [''],
+      telefono: [''],
+      movil: [''],
+      correo: [''],
+      correoAlternativo: [''],
+      fechaInicioSolicitud: [''],
+      fechaFinSolicitud: [''],
+      perfil: [''],
+      aduanaPerfil: [''],
+      fechaInicioSistema: [''],
+      fechaFinSistema: [''],
+      sistemas: this.fb.array([this.createDefaultSistema()])
     });
   }
-  
-  
-  // ✅ Add SIAP System Automatically (deactivated by default)
+
+  /** ✅ Add SIAP System Automatically (deactivated by default) */
   private createDefaultSistema(): FormGroup {
     return this.fb.group({
-      nombre: ['SIAP'], // Predefined system name
-      estado: ['deactivated'] // Automatically disabled
+      nombre: ['SIAP'],
+      estado: ['deactivated']
     });
   }
 
@@ -203,18 +197,16 @@ export class AppSolicitudBaseComponent implements OnInit {
   }
 
   /** ✅ Send Form Request */
-  /** ✅ Submit Multiple Users */
   async enviarFormulario() {
     if (this.solicitudForm.invalid) {
       Swal.fire('Error', 'Por favor complete todos los campos obligatorios', 'error');
       return;
     }
-  
-    const currentTimestamp = new Date().getTime().toString(); // ✅ API expects UNIX timestamp in milliseconds
-  
-    // ✅ Build the API payload correctly
+
+    const currentTimestamp = new Date().getTime().toString();
+
     const formData: FormularioExterno = {
-      id: '', // ✅ API will generate this
+      id: '',
       createdOn: new Date().toISOString(),
       createdBy: this.procesoFormulario.getUserLogin() ?? 'NA',
       modifiedOn: new Date().toISOString(),
@@ -223,17 +215,16 @@ export class AppSolicitudBaseComponent implements OnInit {
       step: "-",
       comment: 'Solicitud generada desde Angular 18',
       applicantViewer: '-',
-      file1: '', // ✅ Ensure file handling
-      file2: '', // ✅ Ensure file handling
-      file3: '', // ✅ Ensure file handling
-      file4: '', // ✅ Ensure file handling
-      file5: '', // ✅ Ensure file handling
-      file6: '', // ✅ Ensure file handling
+      file1: '',
+      file2: '',
+      file3: '',
+      file4: '',
+      file5: '',
+      file6: '',
       status: 'PENDING',
       createdName: 'Solicitante',
       formType: this.userService.getTipoUsuario() === Roles.INTERNO ? 'Interno' : 'Externo',
-  
-      // ✅ Ensure Applicant Data is Properly Formatted
+
       applicant: {
         id: '',
         document: "123456789",
@@ -256,9 +247,8 @@ export class AppSolicitudBaseComponent implements OnInit {
         externalRepLegal: '',
         externalCodeDeclarant: ''
       },
-  
-      // ✅ Ensure Requests are Correctly Formatted
-      requests: this.solicitudForm.value.formularios.map((form: any) => ({
+
+      requests: this.formularios.value.map((form: any) => ({
         id: "",
         typeRequest: {
           id: form.tipo,
@@ -268,7 +258,7 @@ export class AppSolicitudBaseComponent implements OnInit {
         state: "PENDIENTE DE ASIGNAR",
         createBy: this.procesoFormulario.getUserLogin() ?? 'NA',
         createOn: Date.now().toString(),
-        profiles: form.usuarios?.length ? form.usuarios : {},  // ✅ If empty, use `{}` instead of `[]`
+        profiles: form.usuarios?.length ? form.usuarios : {},
         resources: {},
         systems: form.usuarios.flatMap((usuario: any) => usuario.sistemas.map((sistema: any) => ({
           id: "",
@@ -287,9 +277,9 @@ export class AppSolicitudBaseComponent implements OnInit {
         flow: {}
       }))
     };
-  
+
     console.log("✅ Fixed Request:", formData);
-  
+
     try {
       const response = await this.procesoFormulario.iniciarProceso(formData);
       if (response) {
@@ -300,33 +290,29 @@ export class AppSolicitudBaseComponent implements OnInit {
       Swal.fire('Error', 'Ocurrió un problema al enviar el formulario: ' + errorMessage, 'error');
     }
   }
-  
-  
 
-  // ✅ Ensure that each 'usuario' retrieved is cast to a FormGroup
-  getUsuarioForm(formulario: FormGroup, index: number): FormGroup {
-    return this.getUsuarios(formulario).at(index) as FormGroup;
+  /** ✅ Ensure that each 'usuario' retrieved is cast to a FormGroup */
+  getUsuarioForm(formulario: AbstractControl, index: number): FormArray {
+    return (formulario.get('usuarios') as FormArray);
   }
 
-  // ✅ Get the `usuarios` FormArray safely
-getUsuarios(formulario: FormGroup): FormArray {
-  return formulario.get('usuarios') as FormArray;
-}
-
-// ✅ Add a new user to a specific form
-addUsuario(index: number): void {
-  this.getUsuarios(this.formularios.at(index) as FormGroup).push(this.createUsuarioForm());
-}
-
-// ✅ Remove a user from a specific form
-removeUsuario(formIndex: number, userIndex: number): void {
-  const usuarios = this.getUsuarios(this.formularios.at(formIndex) as FormGroup);
-  if (usuarios.length > 1) {
-    usuarios.removeAt(userIndex);
+  /** ✅ Get the `usuarios` FormArray safely */
+  getUsuarios(formulario: FormGroup): FormArray {
+    return formulario.get('usuarios') as FormArray;
   }
-}
 
+  /** ✅ Add a new user to a specific form */
+  addUsuario(index: number): void {
+    this.getUsuarios(this.formularios.at(index) as FormGroup).push(this.createUsuarioForm());
+  }
 
+  /** ✅ Remove a user from a specific form */
+  removeUsuario(formIndex: number, userIndex: number): void {
+    const usuarios = this.getUsuarios(this.formularios.at(formIndex) as FormGroup);
+    if (usuarios.length > 1) {
+      usuarios.removeAt(userIndex);
+    }
+  }
 
   /** ✅ Add a new Formulario */
   addFormulario() {
@@ -368,15 +354,19 @@ removeUsuario(formIndex: number, userIndex: number): void {
         console.warn("⚠️ Tipo de solicitud no reconocido:", selectedTipo);
     }
 
-    // Ensure Angular detects the change
-    formulario.patchValue({ childComponent: null });
-
-    setTimeout(() => {
-      formulario.patchValue({ childComponent: componentToLoad });
-      this.cdr.detectChanges(); // ✅ Force UI refresh
-    }, 0);
+    formulario.patchValue({ childComponent: componentToLoad });
+    this.cdr.detectChanges();
   }
 
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      const formulario = this.formularios.at(0);
+      formulario.get('form.file')?.setValue(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
 
   /** ✅ Scroll to a Specific Form */
   scrollToForm(index: number) {
