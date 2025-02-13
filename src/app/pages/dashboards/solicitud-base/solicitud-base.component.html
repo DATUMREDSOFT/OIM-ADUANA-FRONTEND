@@ -2,17 +2,27 @@
   <div class="row">
     <!-- Sidebar with Form Index -->
     <div class="col-lg-3">
-      <mat-card style="position: fixed; max-height: calc(100vh - 40px); overflow-y: auto;">
+      <mat-card style="position: fixed; max-height: calc(100vh - 40px); overflow-y: auto; width: 15rem; z-index: 1; ">
         <mat-card-header>
           <mat-card-title>Índice de formularios</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <ul>
-            <li *ngFor="let formulario of formularios.controls; let i = index" (click)="scrollToForm(i)"
-              style="cursor: pointer; color: blue; text-decoration: underline;">
-              Formulario {{ i + 1 }}
-            </li>
+        <li *ngFor="let formulario of formularios.controls; let i = index" (click)="scrollToForm(i)"
+          style="cursor: pointer; color: blue; text-decoration: underline;">
+          Formulario {{ i + 1 }}
+        </li>
           </ul>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card style="position: fixed; max-height: calc(100vh - 40px); overflow-y: auto; overflow-x: hidden; margin-top: 7rem; width: 15rem; z-index: 1;">
+        <mat-card-header>
+          <mat-card-title>Adjuntar archivo</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <input type="file" accept=".pdf" (change)="onFileSelected($event)" />
+          <p style="color: gray;">Solo archivos .pdf</p>
         </mat-card-content>
       </mat-card>
     </div>
@@ -27,32 +37,21 @@
               <div class="col">
                 <div *ngFor="let formulario of formularios.controls; let i = index" class="col" [id]="'form-' + i">
                   <form [formGroup]="$any(formulario)">
-                    <mat-card-content>
+                    <mat-card-content class="p-l-15 p-t-0">
                       <div class="row">
-                        <mat-card-content class="mt-2">
+                        <mat-card-content class="p-l-0 p-t-0">
                           <h2>Formulario {{ i + 1 }}</h2>
                         </mat-card-content>
                       </div>
 
                       <div class="row">
                         <!-- Form Type Dropdown -->
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 p-l-0">
                           <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Seleccione el tipo de formulario</mat-label>
                             <mat-select formControlName="tipo" (selectionChange)="updateSelectedTipoSolicitud(i)">
-                              @for (item of tiposSolicitud; track item.id) {
-                              <mat-option [value]="item.id">{{ item.value }}</mat-option>
-                              }
+                              <mat-option *ngFor="let item of tiposSolicitud" [value]="item.id">{{ item.value }}</mat-option>
                             </mat-select>
-                          </mat-form-field>
-
-                        </div>
-
-                        <!-- UID Display -->
-                        <div class="col-lg-6">
-                          <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>UID</mat-label>
-                            <input matInput [value]="formulario.get('form')?.get('uid')?.value || ''" disabled>
                           </mat-form-field>
                         </div>
                       </div>
@@ -78,11 +77,11 @@
                     <div formArrayName="usuarios">
                       <div *ngFor="let usuario of getUsuarios($any(formulario)).controls; let j = index">
                         <ng-container *ngIf="usuario as usuarioForm">
-                          <app-solicitud-externo $any[(formGroup)]="usuarioForm"></app-solicitud-externo>
+                          <app-solicitud-externo [formGroup]="asFormGroup(usuarioForm)"></app-solicitud-externo>
                     
                           <!-- Remove User Button -->
                           <button *ngIf="getUsuarios($any(formulario)).length > 1" mat-flat-button 
-                                  (click)="removeUsuario(i, j)" style="background-color: red; color: white;">
+                                  (click)="removeUsuario(i, j)" color="warn">
                             Borrar usuario {{ j + 1 }}
                           </button>
                         </ng-container>
@@ -93,9 +92,10 @@
                     <button mat-flat-button color="primary" (click)="addUsuario(i)">
                       Agregar Usuario
                     </button>
-                    
 
-
+                    <button *ngIf="formularios.length !== 1" mat-flat-button color="warn" (click)="removeFormulario(i)">
+                          Borrar formulario
+                        </button>
                   </form>
 
                   <!-- Delete Form Button -->
@@ -110,8 +110,7 @@
                     </div>
                   </mat-card-content>
 
-                  <mat-divider *ngIf="i < formularios.length - 1"
-                    style="margin-top: 16px; margin-bottom: -10px"></mat-divider>
+                    <mat-divider *ngIf="i < formularios.length - 1" class="m-t-16"></mat-divider>
                 </div>
               </div>
             </div>
@@ -121,10 +120,10 @@
 
       <!-- Add Form & Submit Buttons -->
       <div class="text-right m-t-16">
-        <button mat-flat-button color="primary" (click)="addFormulario()" style="margin-right: 8px; padding: 1.5rem">
+        <button mat-flat-button color="primary" (click)="addFormulario()" >
           Agregar otro formulario
         </button>
-        <button mat-flat-button color="accent" style="padding: 1.5rem" (click)="enviarFormulario()">
+        <button mat-flat-button color="accent" class="m-l-16" (click)="enviarFormulario()">
           Enviar solicitud
         </button>
       </div>
