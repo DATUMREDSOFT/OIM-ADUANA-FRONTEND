@@ -40,13 +40,17 @@ export class AuthService extends BaseService {
     return this.get(url);
   }
 
-  login(credentials: { user: string; password: string; role: string | null }): Observable<any> {
+    login(credentials: { user: string; password: string; role: string | null }): Observable<any> {
     const url = `${environments.urlApi}dga/flow/login`;
     credentials.role = null; // Ensure role is always null
-    return this.http.post(url, credentials, { responseType: 'text' }).pipe(
+    return this.http.post(url, credentials).pipe(
       map((response: any) => {
         try {
-          return JSON.parse(response);
+          return {
+            token: response.token,
+            expiracion: response.expiracion,
+            roles: response.roles
+          };
         } catch (e) {
           return response;
         }
