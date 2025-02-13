@@ -1,33 +1,44 @@
 import {Component, ViewChild} from '@angular/core';
 import {
   MatCell,
-  MatCellDef, MatColumnDef,
-  MatHeaderCell, MatHeaderCellDef,
-  MatHeaderRow, MatHeaderRowDef,
-  MatRow, MatRowDef,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
   MatTable,
   MatTableDataSource
 } from "@angular/material/table";
 import {MatCard, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle} from "@angular/material/card";
 import {MatPaginator} from "@angular/material/paginator";
-import {TitleCasePipe} from "@angular/common";
+import {NgIf, NgStyle, TitleCasePipe} from "@angular/common";
+import {MatFormField, MatLabel, MatSuffix} from "@angular/material/form-field";
+import {MatInput} from "@angular/material/input";
+import {MatIcon, MatIconModule} from "@angular/material/icon";
+import {MatIconButton} from "@angular/material/button";
+import {Router} from "@angular/router";
+import {DetallesAprobacionesComponent} from "./detalles-aprobaciones/detalles-aprobaciones.component";
 
 
-enum State {
+export enum State {
   pending = 'Pendiente',
   approved = 'Aprobado',
   rejected = 'Rechazado'
 }
 
-enum Header {
+export enum Header {
   DGA = 'DGA',
   Description = 'Descripción',
   Date = 'Fecha de Creación',
-  State = 'Estado'
+  State = 'Estado',
+  Action = 'Resumen'
 }
 
 
-interface ELEMENT_DATA {
+export interface ELEMENT_DATA {
 
   DGA: string;
   description: string;
@@ -56,7 +67,17 @@ interface ELEMENT_DATA {
     MatHeaderCellDef,
     MatColumnDef,
     MatHeaderRowDef,
-    MatRowDef
+    MatRowDef,
+    MatFormField,
+    MatInput,
+    MatIcon,
+    MatIconButton,
+    MatLabel,
+    MatSuffix,
+    NgStyle,
+    MatIconModule,
+    DetallesAprobacionesComponent,
+    NgIf
   ],
   templateUrl: './aprobaciones.component.html',
   styles: ``
@@ -64,7 +85,8 @@ interface ELEMENT_DATA {
 export class AprobacionesComponent {
 
 
-  displayedColumns: string[] = [Header.DGA, Header.Description, Header.Date, Header.State];
+
+  displayedColumns: string[] = [Header.DGA, Header.Description, Header.Date, Header.State, Header.Action];
 
 
   dataSource = new MatTableDataSource<ELEMENT_DATA>([
@@ -150,7 +172,37 @@ export class AprobacionesComponent {
   }
 
 
-  protected readonly State = State;
+  applyFilter(event: Event) {
+
+
+    this.dataSource.filter = (event.target as HTMLInputElement).value.trim().toLowerCase();
+
+    // Configurar un predicado de filtro personalizado para filtrar solo por la columna "DGA"
+    this.dataSource.filterPredicate = (data: ELEMENT_DATA, filter: string) => {
+      return data.DGA.toLowerCase().includes(filter); // Comparar solo la columna DGA
+    };
+  }
+
+
   protected readonly Header = Header;
-  protected readonly MatHeaderRow = MatHeaderRow;
+  protected readonly State = State;
+
+
+  mostrarDetalles = false;
+
+  verMas(element: any) {
+    this.mostrarDetalles = true;
+  }
+
+  cerrarDetalles() {
+    this.mostrarDetalles = false;
+
+    setTimeout(() => {
+      if (this.paginator) {
+        this.dataSource.paginator = this.paginator;
+        this.paginator.firstPage(); // Regresa a la primera página
+      }
+    });
+  }
+
 }

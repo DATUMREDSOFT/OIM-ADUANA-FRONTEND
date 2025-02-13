@@ -104,6 +104,7 @@ export const DashboardsRoutes: Routes = [
             {title: 'Analytical'},
           ],
         },
+
       }
     ],
   },
