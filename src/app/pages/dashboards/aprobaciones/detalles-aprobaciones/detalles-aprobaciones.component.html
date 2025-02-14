@@ -1,31 +1,69 @@
 <mat-card>
   <mat-card-content>
-    <div class="row flex justify-content-end">
-      <button mat-raised-button color="primary" (click)="cerrarDetalles()">Cerrar</button>
-    </div>
 
-    <div class="invoice-container">
-      <div class="invoice-header">
-        <h2>DGA: {{ elemento?.DGA }}</h2>
+    <div class="col-lg-12 p-r-24 m-y-24">
+
+
+      <div class="row flex justify-content-end">
+        <button mat-raised-button color="primary" (click)="cerrarDetalles()">Cerrar</button>
       </div>
 
-      <!-- Información General -->
-      <div class="order-info">
-        <div class="status">
-          <span class="label">Descripción:</span>
-          <span class="value">{{ elemento?.description }}</span>
+
+      <div class="invoice-container">
+        <div class="">
+          <h2>DGA: {{ elemento?.DGA }}</h2>
         </div>
-        <div class="date">
-          <span class="label">Fecha de Creación:</span>
-          <span class="value">{{ elemento?.date }}</span>
+
+        <!-- Información General -->
+        <div class="">
+          <div class="status">
+            <span class="label">Descripción:</span>
+            <span class="value">{{ elemento?.description }}</span>
+          </div>
+          <div class="date">
+            <span class="label">Fecha de Creación:</span>
+            <span class="value">{{ elemento?.date }}</span>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Tabla de Perfiles -->
-    <div class="col-lg-12">
+    <div class="col-lg-12 mt-4">
       <mat-card>
         <mat-card-content>
+
+
+          <!-- Table Header -->
+
+
+          <div class="col-lg-12">
+            <div class="d-flex justify-content-between m-b-16  align-items-center">
+              <div>
+                <h3 class="m-0">Lista de Perfiles</h3>
+                <p class="text-muted m-0">{{ selection.selected.length }} perfiles seleccionados</p>
+              </div>
+              <div class="d-flex gap-16">
+                <button mat-raised-button
+                        color="primary"
+                        [disabled]="!selection.hasValue()"
+                        (click)="approveRequest(null)">
+                  <mat-icon>check</mat-icon>
+                  Aprobar
+                </button>
+                <button mat-raised-button
+                        color="warn"
+                        [disabled]="!selection.hasValue()"
+                        (click)="rejectRequest(null)">
+                  <mat-icon>close</mat-icon>
+                  Rechazar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <mat-divider class="m-y-16"></mat-divider>
+
           <div class="table-responsive">
             <mat-table [dataSource]="dataSource">
               <!-- Checkbox Column -->
@@ -50,21 +88,39 @@
 
               <!-- Nombre Column -->
               <ng-container matColumnDef="nombre">
-                <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell>
+                <mat-header-cell class="f-w-800 mat-subtitle-1 f-s-14" *matHeaderCellDef>{{ 'Nombre' | uppercase }}
+                </mat-header-cell>
                 <mat-cell *matCellDef="let perfil">{{ perfil.nombre }}</mat-cell>
               </ng-container>
 
               <!-- Apellido Column -->
               <ng-container matColumnDef="apellido">
-                <mat-header-cell *matHeaderCellDef>Apellido</mat-header-cell>
+                <mat-header-cell class="f-w-600 mat-subtitle-1 f-s-14" *matHeaderCellDef>{{ 'Apellido' | uppercase }}
+                </mat-header-cell>
                 <mat-cell *matCellDef="let perfil">{{ perfil.apellido }}</mat-cell>
               </ng-container>
 
               <!-- Cargo Column -->
               <ng-container matColumnDef="cargo">
-                <mat-header-cell *matHeaderCellDef>Cargo</mat-header-cell>
+                <mat-header-cell class="f-w-600 mat-subtitle-1 f-s-14" *matHeaderCellDef>{{ 'Cargo' | uppercase }}
+                </mat-header-cell>
                 <mat-cell *matCellDef="let perfil">{{ perfil.cargo }}</mat-cell>
               </ng-container>
+
+              <ng-container matColumnDef="fecha de creacion">
+                <mat-header-cell class="f-w-600 mat-subtitle-1 f-s-14"
+                                 *matHeaderCellDef>{{ 'fecha de creacion' | uppercase }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let perfil">{{ perfil.fechaCreacion }}</mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="fecha de eliminacion">
+                <mat-header-cell class="f-w-600 mat-subtitle-1 f-s-14"
+                                 *matHeaderCellDef>{{ 'fecha de eliminacion' | uppercase }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let perfil">{{ perfil.fechaEliminacion }}</mat-cell>
+              </ng-container>
+
 
               <mat-header-row *matHeaderRowDef="displayedColumnsPerfiles"></mat-header-row>
               <mat-row *matRowDef="let row; columns: displayedColumnsPerfiles"

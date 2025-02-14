@@ -22,6 +22,9 @@ import {MatPaginator} from "@angular/material/paginator";
 import Swal from "sweetalert2";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {SelectionModel} from "@angular/cdk/collections";
+import {UpperCasePipe} from "@angular/common";
+import {MatIconModule} from "@angular/material/icon";
+import {MatDivider} from "@angular/material/divider";
 
 
 export interface Aprobacion {
@@ -54,7 +57,10 @@ export interface Aprobacion {
     TablerIconsModule,
     MatInput,
     MatPaginator,
-    MatCheckbox
+    MatCheckbox,
+    UpperCasePipe,
+    MatIconModule,
+    MatDivider
   ],
   templateUrl: './detalles-aprobaciones.component.html',
 })
@@ -67,7 +73,7 @@ export class DetallesAprobacionesComponent {
 
   dataSource = new MatTableDataSource<Aprobacion>();
   selection = new SelectionModel<Aprobacion>(true, []);
-  displayedColumnsPerfiles: string[] = ['select', 'nombre', 'apellido', 'cargo'];
+  displayedColumnsPerfiles: string[] = ['select', 'nombre', 'apellido', 'cargo', 'fecha de creacion', 'fecha de eliminacion'];
 
   ngOnInit() {
     if (this.elemento?.perfiles) {
