@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-sm-4 col-lg-3 m-b-16" *ngIf="!mostrarDetalles">
       <mat-form-field appearance="outline" class="w-100 hide-hint">
-        <input matInput (keyup)="applyFilter($event)" placeholder="Busqueda DGA:" #input />
+        <input matInput (keyup)="applyFilter($event)" placeholder="Busqueda DGA:" #input/>
       </mat-form-field>
     </div>
   </div>
@@ -35,13 +35,16 @@
               {{ Header.State }}
             </mat-header-cell>
             <mat-cell class="p-16" *matCellDef="let element">
-              <span *ngIf="element.state === State.pending" class="bg-light-accent text-accent rounded f-w-600 p-6 p-y-4 f-s-12">
+              <span *ngIf="element.state === State.pending"
+                    class="bg-light-accent text-accent rounded f-w-600 p-6 p-y-4 f-s-12">
                 {{ element.state | titlecase }}
               </span>
-              <span *ngIf="element.state === State.rejected" class="bg-light-error text-error rounded f-w-600 p-6 p-y-4 f-s-12">
+              <span *ngIf="element.state === State.rejected"
+                    class="bg-light-error text-error rounded f-w-600 p-6 p-y-4 f-s-12">
                 {{ element.state | titlecase }}
               </span>
-              <span *ngIf="element.state === State.approved" class="bg-light-success text-success rounded f-w-600 p-6 p-y-4 f-s-12">
+              <span *ngIf="element.state === State.approved"
+                    class="bg-light-success text-success rounded f-w-600 p-6 p-y-4 f-s-12">
                 {{ element.state | titlecase }}
               </span>
             </mat-cell>
@@ -76,6 +79,7 @@
 
   <!-- Mostrar el componente de detalles cuando mostrarDetalles es true -->
   <div *ngIf="mostrarDetalles">
-    <app-detalles-aprobaciones (cerrar)="cerrarDetalles()"></app-detalles-aprobaciones>
+    <app-detalles-aprobaciones [elemento]="elementoSeleccionado"
+                               (cerrar)="cerrarDetalles()"></app-detalles-aprobaciones>
   </div>
 </div>

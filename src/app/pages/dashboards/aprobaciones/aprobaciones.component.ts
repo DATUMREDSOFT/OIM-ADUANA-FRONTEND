@@ -37,6 +37,13 @@ export enum Header {
   Action = 'Resumen'
 }
 
+export interface Perfiles {
+  nombre: string;
+  apellido: string;
+  cargo: string;
+  fechaCreacion: string;
+  fechaEliminacion: string;
+}
 
 export interface ELEMENT_DATA {
 
@@ -44,6 +51,7 @@ export interface ELEMENT_DATA {
   description: string;
   date: string;
   state: State;
+  perfiles: Perfiles[];
 }
 
 
@@ -85,7 +93,6 @@ export interface ELEMENT_DATA {
 export class AprobacionesComponent {
 
 
-
   displayedColumns: string[] = [Header.DGA, Header.Description, Header.Date, Header.State, Header.Action];
 
 
@@ -94,73 +101,179 @@ export class AprobacionesComponent {
       DGA: 'DGA-001',
       description: 'Nuevo Usuario',
       date: '2024-02-01',
-      state: State.pending
+      state: State.pending,
+      perfiles: [
+        {
+          nombre: 'Juan',
+          apellido: 'Pérez',
+          cargo: 'Analista',
+          fechaCreacion: '2023-01-10',
+          fechaEliminacion: '2023-02-15'
+        },
+        {
+          nombre: 'Ana',
+          apellido: 'Gómez',
+          cargo: 'Gerente',
+          fechaCreacion: '2023-02-15',
+          fechaEliminacion: '2023-03-20'
+        },
+      ]
     },
     {
       DGA: 'DGA-002',
-      description: 'Nuevo Usuario',
-      date: '2024-02-02',
-      state: State.approved
+      description: 'Actualización de Permisos',
+      date: '2024-02-05',
+      state: State.approved,
+      perfiles: [
+        {
+          nombre: 'Carlos',
+          apellido: 'Ramírez',
+          cargo: 'Supervisor',
+          fechaCreacion: '2023-03-10',
+          fechaEliminacion: '2023-04-12'
+        },
+        {
+          nombre: 'Laura',
+          apellido: 'Fernández',
+          cargo: 'Coordinadora',
+          fechaCreacion: '2023-04-15',
+          fechaEliminacion: '2023-05-18'
+        },
+      ]
     },
     {
       DGA: 'DGA-003',
-      description: 'Nuevo Usuario',
-      date: '2024-02-03',
-      state: State.rejected
+      description: 'Eliminación de Usuario',
+      date: '2024-02-10',
+      state: State.rejected,
+      perfiles: [
+        {
+          nombre: 'Miguel',
+          apellido: 'Torres',
+          cargo: 'Administrador',
+          fechaCreacion: '2023-05-01',
+          fechaEliminacion: '2023-06-10'
+        }
+      ]
     },
     {
       DGA: 'DGA-004',
-      description: 'Nuevo Usuario',
-      date: '2024-02-04',
-      state: State.pending
+      description: 'Cambio de Rol',
+      date: '2024-02-15',
+      state: State.pending,
+      perfiles: [
+        {
+          nombre: 'Andrea',
+          apellido: 'López',
+          cargo: 'Analista Senior',
+          fechaCreacion: '2023-07-05',
+          fechaEliminacion: '2023-08-12'
+        },
+        {
+          nombre: 'Pedro',
+          apellido: 'Sánchez',
+          cargo: 'Gerente',
+          fechaCreacion: '2023-08-15',
+          fechaEliminacion: '2023-09-20'
+        },
+      ]
     },
     {
       DGA: 'DGA-005',
-      description: 'Nuevo Usuario',
-      date: '2024-02-05',
-      state: State.approved
+      description: 'Creación de Grupo',
+      date: '2024-02-20',
+      state: State.approved,
+      perfiles: [
+        {
+          nombre: 'Sofía',
+          apellido: 'Martínez',
+          cargo: 'Especialista',
+          fechaCreacion: '2023-10-10',
+          fechaEliminacion: '2023-11-15'
+        }
+      ]
     },
     {
       DGA: 'DGA-006',
-      description: 'Nuevo Usuario',
-      date: '2024-02-06',
-      state: State.rejected
+      description: 'Actualización de Datos',
+      date: '2024-02-25',
+      state: State.pending,
+      perfiles: [
+        {
+          nombre: 'Luis',
+          apellido: 'García',
+          cargo: 'Técnico',
+          fechaCreacion: '2023-12-01',
+          fechaEliminacion: '2024-01-10'
+        }
+      ]
     },
     {
       DGA: 'DGA-007',
-      description: 'Nuevo Usuario',
-      date: '2024-02-07',
-      state: State.pending
+      description: 'Solicitud de Acceso',
+      date: '2024-02-28',
+      state: State.rejected,
+      perfiles: [
+        {
+          nombre: 'Camila',
+          apellido: 'Ortega',
+          cargo: 'Asesora',
+          fechaCreacion: '2024-01-15',
+          fechaEliminacion: '2024-02-20'
+        }
+      ]
     },
     {
       DGA: 'DGA-008',
-      description: 'Nuevo Usuario',
-      date: '2024-02-08',
-      state: State.approved
+      description: 'Eliminación de Permisos',
+      date: '2024-03-01',
+      state: State.pending,
+      perfiles: [
+        {
+          nombre: 'Diego',
+          apellido: 'Morales',
+          cargo: 'Director',
+          fechaCreacion: '2024-02-05',
+          fechaEliminacion: '2024-03-10'
+        },
+        {
+          nombre: 'María',
+          apellido: 'Herrera',
+          cargo: 'Coordinadora',
+          fechaCreacion: '2024-02-15',
+          fechaEliminacion: '2024-03-20'
+        },
+      ]
     },
     {
       DGA: 'DGA-009',
-      description: 'Nuevo Usuario',
-      date: '2024-02-09',
-      state: State.rejected
+      description: 'Modificación de Grupo',
+      date: '2024-03-05',
+      state: State.approved,
+      perfiles: [
+        {
+          nombre: 'Fernando',
+          apellido: 'Ruiz',
+          cargo: 'Líder de Proyecto',
+          fechaCreacion: '2024-03-01',
+          fechaEliminacion: '2024-04-05'
+        }
+      ]
     },
     {
       DGA: 'DGA-010',
-      description: 'Nuevo Usuario',
-      date: '2024-02-10',
-      state: State.pending
-    },
-    {
-      DGA: 'DGA-010',
-      description: 'Nuevo Usuario',
-      date: '2024-02-10',
-      state: State.pending
-    },
-    {
-      DGA: 'DGA-010',
-      description: 'Nuevo Usuario',
-      date: '2024-02-10',
-      state: State.pending
+      description: 'Creación de Nuevo Proyecto',
+      date: '2024-03-10',
+      state: State.pending,
+      perfiles: [
+        {
+          nombre: 'Valentina',
+          apellido: 'Castro',
+          cargo: 'Gestora',
+          fechaCreacion: '2024-03-15',
+          fechaEliminacion: '2024-04-20'
+        }
+      ]
     }
   ]);
 
@@ -190,12 +303,17 @@ export class AprobacionesComponent {
 
   mostrarDetalles = false;
 
+  elementoSeleccionado: any;
+
   verMas(element: any) {
     this.mostrarDetalles = true;
+    this.elementoSeleccionado = element;
   }
 
   cerrarDetalles() {
     this.mostrarDetalles = false;
+
+    this.elementoSeleccionado = null;
 
     setTimeout(() => {
       if (this.paginator) {

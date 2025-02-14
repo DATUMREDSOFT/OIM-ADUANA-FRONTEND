@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {MatButton} from "@angular/material/button";
 import {MatCard, MatCardContent} from "@angular/material/card";
 import {
@@ -19,6 +19,9 @@ import {NgApexchartsModule} from "ng-apexcharts";
 import {TablerIconsModule} from "angular-tabler-icons";
 import {MatInput} from "@angular/material/input";
 import {MatPaginator} from "@angular/material/paginator";
+import Swal from "sweetalert2";
+import {MatCheckbox} from "@angular/material/checkbox";
+import {SelectionModel} from "@angular/cdk/collections";
 
 
 export interface Aprobacion {
@@ -50,33 +53,101 @@ export interface Aprobacion {
     NgApexchartsModule,
     TablerIconsModule,
     MatInput,
-    MatPaginator
+    MatPaginator,
+    MatCheckbox
   ],
   templateUrl: './detalles-aprobaciones.component.html',
 })
 export class DetallesAprobacionesComponent {
 
+
   @Output() cerrar = new EventEmitter<void>();
+  @Input() elemento: any;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  displayedColumns: string[] = ['nombre', 'apellido', 'correo', 'cargo'];
-  dataSource = new MatTableDataSource<Aprobacion>([
-    { nombre: 'Juan', apellido: 'Pérez', correo: 'juan@example.com', cargo: 'Gerente' },
-    { nombre: 'Ana', apellido: 'Gómez', correo: 'ana@example.com', cargo: 'Analista' },
-    { nombre: 'Carlos', apellido: 'Ruiz', correo: 'carlos@example.com', cargo: 'Supervisor' },
-    { nombre: 'Marta', apellido: 'López', correo: 'marta@example.com', cargo: 'Directora' }
-  ]);
+  dataSource = new MatTableDataSource<Aprobacion>();
+  selection = new SelectionModel<Aprobacion>(true, []);
+  displayedColumnsPerfiles: string[] = ['select', 'nombre', 'apellido', 'cargo'];
+
+  ngOnInit() {
+    if (this.elemento?.perfiles) {
+      this.dataSource.data = this.elemento.perfiles;
+    }
+  }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+  }
+
+  isAllSelected(): boolean {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  masterToggle(): void {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.dataSource.data.forEach(row => this.selection.select(row));
+  }
+
+  checkboxLabel(row?: Aprobacion): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row`;
   }
 
   cerrarDetalles() {
     this.cerrar.emit();
   }
 
-  applyFilter(event: Event) {
-    this.dataSource.filter = (event.target as HTMLInputElement).value.trim().toLowerCase();
+  approveRequest(elemento: any) {
+    // Si hay elementos seleccionados, solo aprobar esos
+    const elementosAprobar = this.selection.selected.length > 0 ?
+      this.selection.selected : [elemento];
+
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: 'Esta acción aprobará la(s) solicitud(es) seleccionada(s).',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, aprobar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        elementosAprobar.forEach(elem => {
+          elem.state = 'approved';
+          console.log('Request Approved:', elem);
+        });
+        Swal.fire('Aprobado', 'Las solicitudes han sido aprobadas', 'success');
+      }
+    });
+  }
+
+  rejectRequest(elemento: any) {
+    // Si hay elementos seleccionados, solo rechazar esos
+    const elementosRechazar = this.selection.selected.length > 0 ?
+      this.selection.selected : [elemento];
+
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: 'Esta acción rechazará la(s) solicitud(es) seleccionada(s).',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, rechazar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        elementosRechazar.forEach((elem: { state: string; }) => {
+          elem.state = 'rejected';
+          console.log('Request Rejected:', elem);
+        });
+        Swal.fire('Rechazado', 'Las solicitudes han sido rechazadas', 'error');
+      }
+    });
   }
 
 }
