@@ -6,7 +6,7 @@ import { CoreService } from 'src/app/services/core.service';
 import { AppSettings } from 'src/app/config';
 import { filter } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
-import { navItems } from './vertical/sidebar/sidebar-data';
+import { navItemsByUserType } from './vertical/sidebar/sidebar-data';
 import { NavService } from '../../services/nav.service';
 import { AppNavItemComponent } from './vertical/sidebar/nav-item/nav-item.component';
 import { RouterModule } from '@angular/router';
@@ -20,26 +20,12 @@ import { AppHorizontalHeaderComponent } from './horizontal/header/header.compone
 import { AppHorizontalSidebarComponent } from './horizontal/sidebar/sidebar.component';
 import { AppBreadcrumbComponent } from './shared/breadcrumb/breadcrumb.component';
 import { CustomizerComponent } from './shared/customizer/customizer.component';
+import { NavItem } from './vertical/sidebar/nav-item/nav-item';
 
 const MOBILE_VIEW = 'screen and (max-width: 768px)';
 const TABLET_VIEW = 'screen and (min-width: 769px) and (max-width: 1024px)';
 const MONITOR_VIEW = 'screen and (min-width: 1024px)';
 const BELOWMONITOR = 'screen and (max-width: 1023px)';
-
-// for mobile app sidebar
-interface apps {
-  id: number;
-  img: string;
-  title: string;
-  subtitle: string;
-  link: string;
-}
-
-interface quicklinks {
-  id: number;
-  title: string;
-  link: string;
-}
 
 @Component({
   selector: 'app-full',
@@ -63,13 +49,11 @@ interface quicklinks {
   encapsulation: ViewEncapsulation.None,
 })
 export class FullComponent implements OnInit {
-  navItems = navItems;
-
-  @ViewChild('leftsidenav')
-  public sidenav: MatSidenav;
-  resView = false;
+  @ViewChild('leftsidenav') public sidenav: MatSidenav;
   @ViewChild('content', { static: true }) content!: MatSidenavContent;
-  //get options from service
+
+  navItems: NavItem[] = []; // ✅ FIX: Define `navItems` to prevent errors
+  resView = false;
   options = this.settings.getOptions();
   private layoutChangesSubscription = Subscription.EMPTY;
   private isMobileScreen = false;
@@ -85,109 +69,6 @@ export class FullComponent implements OnInit {
     return this.resView;
   }
 
-  // for mobile app sidebar
-  apps: apps[] = [
-    {
-      id: 1,
-      img: '/assets/images/svgs/icon-dd-chat.svg',
-      title: 'Chat Application',
-      subtitle: 'Messages & Emails',
-      link: '/apps/chat',
-    },
-    {
-      id: 2,
-      img: '/assets/images/svgs/icon-dd-cart.svg',
-      title: 'eCommerce App',
-      subtitle: 'Buy a Product',
-      link: '/apps/email/inbox',
-    },
-    {
-      id: 3,
-      img: '/assets/images/svgs/icon-dd-invoice.svg',
-      title: 'Invoice App',
-      subtitle: 'Get latest invoice',
-      link: '/apps/invoice',
-    },
-    {
-      id: 4,
-      img: '/assets/images/svgs/icon-dd-date.svg',
-      title: 'Calendar App',
-      subtitle: 'Get Dates',
-      link: '/apps/calendar',
-    },
-    {
-      id: 5,
-      img: '/assets/images/svgs/icon-dd-mobile.svg',
-      title: 'Contact Application',
-      subtitle: '2 Unsaved Contacts',
-      link: '/apps/contacts',
-    },
-    {
-      id: 6,
-      img: '/assets/images/svgs/icon-dd-lifebuoy.svg',
-      title: 'Tickets App',
-      subtitle: 'Create new ticket',
-      link: '/apps/tickets',
-    },
-    {
-      id: 7,
-      img: '/assets/images/svgs/icon-dd-message-box.svg',
-      title: 'Email App',
-      subtitle: 'Get new emails',
-      link: '/apps/email/inbox',
-    },
-    {
-      id: 8,
-      img: '/assets/images/svgs/icon-dd-application.svg',
-      title: 'Courses',
-      subtitle: 'Create new course',
-      link: '/apps/courses',
-    },
-  ];
-
-  quicklinks: quicklinks[] = [
-    {
-      id: 1,
-      title: 'Pricing Page',
-      link: '/theme-pages/pricing',
-    },
-    {
-      id: 2,
-      title: 'Authentication Design',
-      link: '/authentication/login',
-    },
-    {
-      id: 3,
-      title: 'Register Now',
-      link: '/authentication/side-register',
-    },
-    {
-      id: 4,
-      title: '404 Error Page',
-      link: '/authentication/error',
-    },
-    {
-      id: 5,
-      title: 'Notes App',
-      link: '/apps/notes',
-    },
-    {
-      id: 6,
-      title: 'Employee App',
-      link: '/apps/employee',
-    },
-    {
-      id: 7,
-      title: 'Todo Application',
-      link: '/apps/todo',
-    },
-    {
-      id: 8,
-      title: 'Treeview',
-      link: '/theme-pages/treeview',
-    },
-  ];
-
   constructor(
     private settings: CoreService,
     private mediaMatcher: MediaMatcher,
@@ -199,10 +80,9 @@ export class FullComponent implements OnInit {
     this.layoutChangesSubscription = this.breakpointObserver
       .observe([MOBILE_VIEW, TABLET_VIEW, MONITOR_VIEW, BELOWMONITOR])
       .subscribe((state) => {
-        // SidenavOpened must be reset true when layout changes
         this.options.sidenavOpened = true;
         this.isMobileScreen = state.breakpoints[BELOWMONITOR];
-        if (this.options.sidenavCollapsed == false) {
+        if (!this.options.sidenavCollapsed) {
           this.options.sidenavCollapsed = state.breakpoints[TABLET_VIEW];
         }
         this.isContentWidthFixed = state.breakpoints[MONITOR_VIEW];
@@ -212,15 +92,21 @@ export class FullComponent implements OnInit {
     // Initialize project theme with options
     this.receiveOptions(this.options);
 
+    // Ensure nav items are loaded on startup
+    this.loadUserNavItems();
+
     // This is for scroll to top
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((e) => {
+      .subscribe(() => {
         this.content.scrollTo({ top: 0 });
+        this.loadUserNavItems(); // ✅ Ensure nav items update on navigation
       });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadUserNavItems();
+  }
 
   ngOnDestroy() {
     this.layoutChangesSubscription.unsubscribe();
@@ -260,4 +146,27 @@ export class FullComponent implements OnInit {
       this.htmlElement.classList.add('light-theme');
     }
   }
+
+  /**
+   * ✅ Load the correct navigation items based on the user type
+   */
+  private loadUserNavItems() {
+    // Parse the localStorage value
+    const storedData = JSON.parse(localStorage.getItem('tipo-usuario') || '{}');
+  
+    // Extract userType correctly for both cases
+    const userType =
+      typeof storedData?.value === 'string' // Case: NOAFPA (flat structure)
+        ? storedData.value
+        : storedData?.value?.value; // Case: AFPA & INTERNO (nested structure)
+  
+    console.log('User Type for Nav Items:', userType); // Debugging output
+  
+    // Load nav items based on the user type
+    this.navItems = navItemsByUserType[userType] || [];
+  
+    console.log('Loaded Nav Items:', this.navItems);
+  }
+  
+  
 }

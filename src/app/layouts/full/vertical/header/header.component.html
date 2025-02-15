@@ -11,7 +11,7 @@
   </button>
   } 
 
-  <h1 class="mat-subtitle-1 m-l-6 f-w-400">Bienvenido <span class="f-w-600">Mathew</span></h1>
+  <h1 class="mat-subtitle-1 m-l-6 f-w-400">{{ currentMenuOption }}</h1>
 
   <!-- Mobile Menu -->
    @if(!showToggle) {
@@ -202,82 +202,80 @@
   <!-- profile Dropdown -->
   <!-- --------------------------------------------------------------- -->
   <button
-    mat-icon-button
     [matMenuTriggerFor]="profilemenu"
-    aria-label="Notifications"
   >
-    <img
-      src="/assets/images/profile/user-1.jpg"
-      class="rounded-circle object-cover icon-35 profile-dd"
-      width="35"
-    />
-  </button>
   <div class="d-flex align-items-center justify-content-end m-l-8">
     <div class="m-r-16 text-end">
-      <h6 class="f-s-14 f-w-600 m-b-0 mat-subtitle-1">Mathew Anderson</h6>
+      <h6 class="f-s-14 f-w-600 m-b-0 mat-subtitle-1">{{ userFullName }}</h6>
     </div>
   </div>
+    <!-- Profile image removed -->
+  </button>
+  
   
   <mat-menu #profilemenu="matMenu" class="topbar-dd cardWithShadow">
     <div class="position-relative" style="height: auto">
       <div class="p-x-32 p-y-16">
-        <h6 class="f-s-16 f-w-600 m-0 mat-subtitle-1">Perfil de usuario</h6>
-
         <div class="d-flex align-items-center p-b-24 b-b-1 m-t-16">
-          <img
-            src="/assets/images/profile/user-1.jpg"
-            class="rounded-circle"
-            width="95"
-          />
+          <!-- Replace the placeholder image with your desired static icon or keep it -->
           <div class="m-l-16">
-            <h6 class="f-s-14 f-w-600 m-0 mat-subtitle-1">Mathew Anderson</h6>
-            <span class="f-s-14 d-block m-b-4">AFPA</span>
+            <!-- Display the full name fetched from localStorage -->
+            <h6 class="f-s-14 f-w-600 m-0 mat-subtitle-1">{{ fullName }}</h6>
+            <!-- Display the user type -->
+            <span class="f-s-14 d-block m-b-4">{{ userTypeLabel }}</span>
             <span class="d-flex align-items-center">
-              <i-tabler name="mail" class="icon-15 m-r-4"></i-tabler>
-              m.anderson&#64;aduana.gob.sv
+              <!-- Replace mail icon with document icon -->
+              <i-tabler name="id" class="icon-15 m-r-4"></i-tabler>
+              <!-- Display the document (DUI/NIT) -->
+               {{ document }}
             </span>
           </div>
         </div>
       </div>
-      <div class="p-x-32">
-        @for(profile of profiledd; track profile.title) {
-        <a
-          class="p-y-16 text-decoration-none d-block text-hover-primary"
-          [routerLink]="[profile.link]"
-        >
-          <div class="d-flex align-items-center">
-            <button
-              mat-mini-fab
-              class="text-primary bg-light-primary shadow-none rounded"
-            >
-              <img [src]="profile.img" width="20" />
-            </button>
-
-            <div class="m-l-16">
-              <h5
-                class="f-s-14 f-w-600 m-0 textprimary mat-subtitle-1 hover-text"
+  
+      <!-- Only display this section for non-EXTERNO users -->
+      <ng-container *ngIf="userType !== 'NOAFPA'">
+        <div class="p-x-32">
+          @for(profile of profiledd; track profile.title) {
+          <a
+            class="p-y-16 text-decoration-none d-block text-hover-primary"
+            [routerLink]="[profile.link]"
+          >
+            <div class="d-flex align-items-center">
+              <button
+                mat-mini-fab
+                class="text-primary bg-light-primary shadow-none rounded"
               >
-                {{ profile.title }}
-              </h5>
-              <span class="mat-body-1">{{ profile.subtitle }}</span>
+                <img [src]="profile.img" width="20" />
+              </button>
+      
+              <div class="m-l-16">
+                <h5
+                  class="f-s-14 f-w-600 m-0 textprimary mat-subtitle-1 hover-text"
+                >
+                  {{ profile.title }}
+                </h5>
+                <span class="mat-body-1">{{ profile.subtitle }}</span>
+              </div>
             </div>
-          </div>
-        </a>
-        }
-
-        <!-- upgrade -->
-        
-      </div>
-
+          </a>
+          }
+        </div>
+      </ng-container>
+      
+  
       <div class="p-y-12 p-x-32">
-        <a
-          [routerLink]="['/authentication/boxed-login']"
+        <!-- Logout Button -->
+        <button
           mat-stroked-button
           color="primary"
           class="w-100"
-          >Cerrar sesion</a
+          (click)="logout()"
         >
+          Cerrar sesión
+        </button>
       </div>
     </div>
   </mat-menu>
+  
 </mat-toolbar>

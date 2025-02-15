@@ -1,0 +1,211 @@
+<mat-card-content>
+
+  <div class="row">
+    <mat-card-header>
+      <h2>Datos del Usuario</h2>
+    </mat-card-header>
+  </div>
+
+</mat-card-content>
+
+<mat-card-content>
+  <form [formGroup]="formGroup">
+    <div class="row">
+      <div class="col-lg-4">
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>DUI/NIT</mat-label>
+          <input matInput formControlName="duiNit">
+          <button mat-icon-button matSuffix (click)="fetchUserData()">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+      </div>
+      -
+    </div>
+
+    <div class="row">
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nombres</mat-label>
+          <input matInput formControlName="nombre">
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Apellidos</mat-label>
+          <input matInput formControlName="nombre">
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Usuario</mat-label>
+          <input matInput formControlName="nombre">
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Correo</mat-label>
+          <input matInput formControlName="correo">
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Organización</mat-label>
+          <mat-select formControlName="organizacion">
+            <mat-option value="DGA">DGA</mat-option>
+            <mat-option value="otros">otros</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Tipo de Usuario:</mat-label>
+          <mat-select formControlName="tipoUsuario">
+            <mat-option value="">Interno</mat-option>
+            <mat-option value="">Administracion</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-12" style="margin-bottom: 1.4rem;">
+        Estado:
+        <hr class="mat-divider" style="margin: 1rem 0 .8rem 0; border-color: rgb(237,237,237)">
+      </div>
+
+
+      <!--      Roles and levels debe ser otro componenete -->
+
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Rol</mat-label>
+          <mat-select formControlName="rol" [disabled]="true">
+            <mat-option value="">Asesor</mat-option>
+            <mat-option value="">Administrador de aduana</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Cargo:</mat-label>
+          <mat-select formControlName="cargo" [disabled]="true">
+            <mat-option value="">N/A</mat-option>
+            <mat-option value="">Administrador de aduana</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nivel: 1</mat-label>
+          <mat-select formControlName="nivel1" [disabled]="true">
+            <mat-option value="">DIRECCION GENERAL DE ADUANAS</mat-option>
+            <mat-option value="">N/A</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nivel: 2</mat-label>
+          <mat-select formControlName="nivel2" [disabled]="true">
+            <mat-option value="">SUBDIRECCION</mat-option>
+            <mat-option value="">SECRETARIA GENERA</mat-option>
+            <mat-option value="">SUBDIRECCION DE INNOVACION</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nivel: 3</mat-label>
+          <mat-select formControlName="nivel3" [disabled]="true">
+            <mat-option value="">UNIDAD DE CORRESPONDENCIA</mat-option>
+            <mat-option value="">UNIDAD DE APOYO JURIDICO</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nivel: 4</mat-label>
+          <mat-select formControlName="nivel4">
+            <mat-option value="">/</mat-option>
+            <mat-option value="">/</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!--      podria ser un range date-->
+
+      <div class="col-lg-6">
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Número de telefono</mat-label>
+          <input matInput formControlName="telefono">
+        </mat-form-field>
+
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Correo alternativo:</mat-label>
+          <input matInput formControlName="correoAlternativo">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>
+            Telefono móvil:
+          </mat-label>
+          <input matInput formControlName="movil">
+        </mat-form-field>
+
+      </div>
+
+
+      <div class="col-lg-6">
+
+        <mat-form-field>
+          <mat-label>Fecha Inicio de Solicitud</mat-label>
+          <input matInput [matDatepicker]="pickerInicioSolicitud">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="pickerInicioSolicitud"></mat-datepicker-toggle>
+          <mat-datepicker #pickerInicioSolicitud></mat-datepicker>
+        </mat-form-field>
+
+
+        <mat-form-field>
+          <mat-label>Fecha Fin de Solicitud</mat-label>
+          <input matInput [matDatepicker]="pickerFinSolicitud">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="pickerFinSolicitud"></mat-datepicker-toggle>
+          <mat-datepicker #pickerFinSolicitud></mat-datepicker>
+        </mat-form-field>
+
+      </div>
+
+
+    </div>
+    <div class="col text-right">
+      <button color="primary" mat-flat-button
+              style="margin: 20px 0 0 0; padding: 1.5rem 2rem;">
+        Agregar Item
+      </button>
+    </div>
+
+  </form>
+
+
+</mat-card-content>
+
+

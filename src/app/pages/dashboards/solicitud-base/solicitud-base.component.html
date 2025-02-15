@@ -1,57 +1,131 @@
 <div class="container">
   <div class="row">
+    <!-- Sidebar with Form Index -->
     <div class="col-lg-3">
-      <mat-card style="position: fixed; max-height: calc(100vh - 40px); overflow-y: auto;">
+      <mat-card style="position: fixed; max-height: calc(100vh - 40px); overflow-y: auto; width: 15rem; z-index: 1; ">
         <mat-card-header>
           <mat-card-title>Índice de formularios</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <ul>
-            <li *ngFor="let formulario of formularios.controls; let i = index" (click)="scrollToForm(i)" style="cursor: pointer; color: blue; text-decoration: underline;">
-              Formulario {{ i + 1 }}
-            </li>
+        <li *ngFor="let formulario of formularios.controls; let i = index" (click)="scrollToForm(i)"
+          style="cursor: pointer; color: blue; text-decoration: underline;">
+          Formulario {{ i + 1 }}
+        </li>
           </ul>
         </mat-card-content>
       </mat-card>
+
+      <mat-card style="position: fixed; max-height: calc(100vh - 40px); overflow-y: auto; overflow-x: hidden; margin-top: 7rem; width: 15rem; z-index: 1;">
+        <mat-card-header>
+          <mat-card-title>Adjuntar archivo</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <input type="file" accept=".pdf" (change)="onFileSelected($event)" />
+          <p style="color: gray;">Solo archivos .pdf</p>
+        </mat-card-content>
+      </mat-card>
     </div>
+
+    <!-- Main Form Section -->
     <div class="col-lg-9">
       <div class="form-container">
         <ng-content select="[document-data-card]"></ng-content>
         <mat-card>
-          <mat-card-header>
-            <mat-card-title>Formularios de solicitud</mat-card-title>
-          </mat-card-header>
           <mat-card-content>
-            <div *ngFor="let formulario of formularios.controls; let i = index" class="form-card" [id]="'form-' + i">
-              <h3>Formulario {{ i + 1 }}</h3>
-              <form [formGroup]="$any(formulario)">
-                <div class="row">
-                  <div class="col-lg-6">
-                    <mat-form-field appearance="outline" class="w-100">
-                      <mat-label>Seleccione el tipo de formulario</mat-label>
-                      <mat-select formControlName="tipo">
-                        <mat-option value="solicitudCreacionUsuario">Solicitud de creación de usuario</mat-option>
-                        <mat-option value="otroTipo">Otro tipo</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
+            <div class="row">
+              <div class="col">
+                <div *ngFor="let formulario of formularios.controls; let i = index" class="col" [id]="'form-' + i">
+                  <form [formGroup]="$any(formulario)">
+                    <mat-card-content class="p-l-15 p-t-0">
+                      <div class="row">
+                        <mat-card-content class="p-l-0 p-t-0">
+                          <h2>Formulario {{ i + 1 }}</h2>
+                        </mat-card-content>
+                      </div>
+
+                      <div class="row">
+                        <!-- Form Type Dropdown -->
+                        <div class="col-lg-6 p-l-0">
+                          <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Seleccione el tipo de formulario</mat-label>
+                            <mat-select formControlName="tipo" (selectionChange)="updateSelectedTipoSolicitud(i)">
+                              <mat-option *ngFor="let item of tiposSolicitud" [value]="item.id">{{ item.value }}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </mat-card-content>
+
+                    <!-- Dynamically Load Child Component -->
+                    <div *ngIf="formulario.get('childComponent')?.value">
+                      <ng-container [ngSwitch]="formulario.get('childComponent')?.value">
+                        <app-solicitud-externo *ngSwitchCase="'externo'" [formGroup]="$any(formulario.get('form'))">
+                        </app-solicitud-externo>
+
+                        <app-solicitud-interno *ngSwitchCase="'interno'" [formGroup]="$any(formulario.get('form'))">
+                        </app-solicitud-interno>
+
+                        <app-solicitud-afpa *ngSwitchCase="'afpa'" [formGroup]="$any(formulario.get('form'))">
+                        </app-solicitud-afpa>
+
+                        <p *ngSwitchDefault style="color: red;">⚠️ No component found for the selected request type.</p>
+                      </ng-container>
+                    </div>
+
+                    <!-- User Subitems -->
+                    <div formArrayName="usuarios">
+                      <div *ngFor="let usuario of getUsuarios($any(formulario)).controls; let j = index">
+                        <ng-container *ngIf="usuario as usuarioForm">
+                          <app-solicitud-externo [formGroup]="asFormGroup(usuarioForm)"></app-solicitud-externo>
+                    
+                          <!-- Remove User Button -->
+                          <button *ngIf="getUsuarios($any(formulario)).length > 1" mat-flat-button 
+                                  (click)="removeUsuario(i, j)" color="warn">
+                            Borrar usuario {{ j + 1 }}
+                          </button>
+                        </ng-container>
+                      </div>
+                    </div>
+                    
+                    <!-- Add User Button -->
+                    <button mat-flat-button color="primary" (click)="addUsuario(i)">
+                      Agregar Usuario
+                    </button>
+
+                    <button *ngIf="formularios.length !== 1" mat-flat-button color="warn" (click)="removeFormulario(i)">
+                          Borrar formulario
+                        </button>
+                  </form>
+
+                  <!-- Delete Form Button -->
+                  <mat-card-content>
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <button *ngIf="formularios.length !== 1" mat-flat-button (click)="removeFormulario(i)"
+                          style="margin-top: 12px; padding: 1.5rem; background-color: #fa5a5a; color: white">
+                          Borrar formulario
+                        </button>
+                      </div>
+                    </div>
+                  </mat-card-content>
+
+                    <mat-divider *ngIf="i < formularios.length - 1" class="m-t-16"></mat-divider>
                 </div>
-                <div *ngIf="formulario.get('tipo')?.value === 'solicitudCreacionUsuario'">
-                  <app-solicitud-interno [formGroup]="$any(formulario)"></app-solicitud-interno>
-                </div>
-                <div *ngIf="formulario.get('tipo')?.value === 'otroTipo'">
-                  <!-- Add other form types here -->
-                </div>
-              </form>
-              <button mat-flat-button color="warn" (click)="removeFormulario(i)" style="margin-top: 16px;">Borrar formulario</button>
-              <mat-divider *ngIf="i < formularios.length - 1" style="margin-top: 16px; margin-bottom: 16px;"></mat-divider>
+              </div>
             </div>
           </mat-card-content>
         </mat-card>
       </div>
+
+      <!-- Add Form & Submit Buttons -->
       <div class="text-right m-t-16">
-        <button mat-flat-button color="primary" (click)="addFormulario()" style="margin-right: 8px;">Agregar otro formulario</button>
-        <button mat-flat-button color="accent" (click)="sendRequest()">Enviar solicitud</button>
+        <button mat-flat-button color="primary" (click)="addFormulario()" >
+          Agregar otro formulario
+        </button>
+        <button mat-flat-button color="accent" class="m-l-16" (click)="enviarFormulario()">
+          Enviar solicitud
+        </button>
       </div>
     </div>
   </div>

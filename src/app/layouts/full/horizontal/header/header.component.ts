@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { CoreService } from 'src/app/services/core.service';
 import { MatDialog } from '@angular/material/dialog';
-import { navItems } from '../../vertical/sidebar/sidebar-data';
+import { navItemsByUserType } from '../../vertical/sidebar/sidebar-data';
 import { TranslateService } from '@ngx-translate/core';
 import { RouterModule } from '@angular/router';
 import { TablerIconsModule } from 'angular-tabler-icons';
@@ -273,11 +273,11 @@ export class AppHorizontalHeaderComponent {
 })
 export class AppHorizontalSearchDialogComponent {
   searchText: string = '';
-  navItems = navItems;
+  navItemsByUserType = navItemsByUserType;
 
-  navItemsData = navItems.filter((navitem) => navitem.displayName);
+  //navItemsByUserTypeData = navItemsByUserType.filter((navitem) => navitem.displayName);
 
-  // filtered = this.navItemsData.find((obj) => {
+  // filtered = this.navItemsByUserTypeData.find((obj) => {
   //   return obj.displayName == this.searchinput;
   // });
 }

@@ -1,0 +1,201 @@
+<mat-card-content>
+  <hr class="mat-divider" style="border-color: rgb(252,183,164)">
+
+  <div class="row">
+    <mat-card-header>
+      <h2>Datos del Usuario</h2>
+    </mat-card-header>
+  </div>
+
+</mat-card-content>
+
+
+<mat-card-content>
+  <form [formGroup]="formGroup">
+    <div class="row">
+
+      <div class="col-lg-4">
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>DUI/NIT</mat-label>
+          <input matInput formControlName="duiNit">
+          <button mat-icon-button matSuffix (click)="fetchUserData()">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+      </div>
+
+      <div class="col-lg-8">
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Tipo de AFPA</mat-label>
+          <input matInput formControlName="duiNit">
+          <button mat-icon-button matSuffix (click)="fetchUserData()">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+      </div>
+
+    </div>
+
+
+    <div class="row">
+
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nombres</mat-label>
+          <input matInput formControlName="nombre">
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Apellidos</mat-label>
+          <input matInput formControlName="apellido">
+        </mat-form-field>
+      </div>
+
+      <!--      <div class="col-lg-6">-->
+      <!--        <mat-form-field appearance="outline" class="w-100">-->
+      <!--          <mat-label>Usuario</mat-label>-->
+      <!--          <input matInput formControlName="nombre">-->
+      <!--        </mat-form-field>-->
+      <!--      </div>-->
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Correo</mat-label>
+          <input matInput formControlName="correo">
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-lg-6">
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Número de telefono</mat-label>
+          <input matInput formControlName="telefono">
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Correo alternativo:</mat-label>
+          <input matInput formControlName="correoAlternativo">
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>
+            Telefono móvil:
+          </mat-label>
+          <input matInput formControlName="movil">
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-lg-6">
+
+        <mat-form-field>
+          <mat-label>Fecha Inicio de Solicitud</mat-label>
+          <input matInput [matDatepicker]="fechaInicioSolicitud" formControlName="fechaInicioSolicitud">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="fechaInicioSolicitud"></mat-datepicker-toggle>
+          <mat-datepicker #fechaInicioSolicitud></mat-datepicker>
+        </mat-form-field>
+
+
+        <mat-form-field>
+          <mat-label>Fecha Fin de Solicitud</mat-label>
+          <input matInput [matDatepicker]="fechaFinSolicitud" formControlName="fechaFinSolicitud">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="fechaFinSolicitud"></mat-datepicker-toggle>
+          <mat-datepicker #fechaFinSolicitud></mat-datepicker>
+        </mat-form-field>
+
+      </div>
+
+
+    </div>
+
+
+    <hr class="mat-divider" style="margin-top: 1rem; border-color: rgb(252,183,164)">
+
+
+    <div class="row">
+      <mat-card-header>
+        <h2>Perfil del Usuario</h2>
+      </mat-card-header>
+
+    </div>
+
+    <div class="row">
+
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Perfil</mat-label>
+          <mat-select formControlName="perfil">
+            <mat-option value="value1">Value 1</mat-option>
+            <mat-option value="value2">Value 2</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Aduana</mat-label>
+          <mat-select formControlName="aduanaPerfil">
+            <mat-option value="value1">Value 1</mat-option>
+            <mat-option value="valu2">Value 2</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-lg-6">
+        <mat-form-field>
+          <mat-label>Fecha Inicio de Sistema</mat-label>
+          <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicioSistema">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+          <mat-datepicker #pickerInicio></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-4">
+        <mat-form-field>
+          <mat-label>Fecha Fin de Sistema</mat-label>
+          <input matInput [matDatepicker]="pickerFin" formControlName="fechaFinSistema">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+          <mat-datepicker #pickerFin></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-lg-12 text-right">
+        <button color="primary" mat-flat-button
+                style="margin: 1.5rem .5rem 0 0; padding: 1.5rem 1rem;">
+          Asignar Perfil al Usuario
+        </button>
+
+        <button color="primary" mat-flat-button
+                style="margin: 1.5rem 0 0 0; padding: 1.5rem 1rem; background-color: #fa5a5a; color: white">
+          Quitar perfil del usuario
+        </button>
+      </div>
+
+    </div>
+
+
+  </form>
+
+
+</mat-card-content>
+
+

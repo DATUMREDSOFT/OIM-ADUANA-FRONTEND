@@ -1,17 +1,18 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import {Component, ViewChild, OnInit} from '@angular/core';
 // import { MatStepper } from '@angular/material/stepper';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MaterialModule } from '../../../material.module';
-import { MatCardModule } from '@angular/material/card';
-import { CommonModule } from '@angular/common';
-import { MatNativeDateModule } from '@angular/material/core';
+import {FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MaterialModule} from '../../../material.module';
+import {MatCardModule} from '@angular/material/card';
+import {CommonModule} from '@angular/common';
+import {MatNativeDateModule} from '@angular/material/core';
 import Swal from 'sweetalert2';
-import { MatAccordion } from '@angular/material/expansion';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { DatePipe } from '@angular/common';
+import {MatAccordion} from '@angular/material/expansion';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {DatePipe} from '@angular/common';
 
 // icons
-import { TablerIconsModule } from 'angular-tabler-icons';
+import {TablerIconsModule} from 'angular-tabler-icons';
+import {range} from "rxjs";
 
 @Component({
   selector: 'app-solicitud-interno',
@@ -37,16 +38,30 @@ export class AppSolicitudInternoComponent implements OnInit {
   isLoading: boolean = false;
   shouldSave: boolean = false;
 
-  constructor(private fb: FormBuilder, private datePipe: DatePipe) {}
+  constructor(private fb: FormBuilder, private datePipe: DatePipe) {
+  }
 
   ngOnInit() {
     this.formGroup = this.fb.group({
+      duiNit: ['', Validators.required],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
       telefono: ['', Validators.required],
-      organizacion: [{ value: 'DGA', disabled: true }],
-      estado: ['', Validators.required]
+      organizacion: [{value: 'DGA', disabled: true}],
+      estado: ['', Validators.required],
+      tipo: ['', Validators.required],
+      accesos: [{value: 'SIAPA', disabled: true}],
+      perfil: [''],
+      aduanaPerfil: [''],
+      rol: [''],
+      cargo: [''],
+      movil: ['', Validators.required],
+      correoAlternativo: ['', Validators.required],
+      nivel1: ['', Validators.required],
+      nivel2: ['', Validators.required],
+      nivel3: ['', Validators.required],
+      nivel4: ['', Validators.required],
     });
   }
 
@@ -144,7 +159,12 @@ export class AppSolicitudInternoComponent implements OnInit {
 
     if (perfil && aduanaPerfil && fechaInicioPerfil && fechaFinPerfil) {
       if (this.editIndex !== null) {
-        this.perfilesAsignados[this.editIndex] = { perfil, aduana: aduanaPerfil, fechaInicio: fechaInicioPerfil, fechaFin: fechaFinPerfil };
+        this.perfilesAsignados[this.editIndex] = {
+          perfil,
+          aduana: aduanaPerfil,
+          fechaInicio: fechaInicioPerfil,
+          fechaFin: fechaFinPerfil
+        };
       }
       Swal.fire('Éxito', 'Perfil actualizado', 'success').then(() => {
         // Reset the perfil fields
@@ -167,7 +187,12 @@ export class AppSolicitudInternoComponent implements OnInit {
 
     if (sistema && aduanaSistema && fechaInicioSistema && fechaFinSistema) {
       if (this.editIndex !== null) {
-        this.sistemasAsignados[this.editIndex] = { sistema, aduana: aduanaSistema, fechaInicio: fechaInicioSistema, fechaFin: fechaFinSistema };
+        this.sistemasAsignados[this.editIndex] = {
+          sistema,
+          aduana: aduanaSistema,
+          fechaInicio: fechaInicioSistema,
+          fechaFin: fechaFinSistema
+        };
       }
       Swal.fire('Éxito', 'Sistema actualizado', 'success').then(() => {
         // Reset the sistema fields
@@ -182,7 +207,6 @@ export class AppSolicitudInternoComponent implements OnInit {
   }
 
 
-
   addProfileAndSystem() {
     const perfil = this.userForm.value.perfil;
     const aduanaPerfil = this.userForm.value.aduanaPerfil;
@@ -190,7 +214,12 @@ export class AppSolicitudInternoComponent implements OnInit {
     const fechaFinPerfil = this.datePipe.transform(this.userForm.value.fechaFinPerfil, 'dd/MM/yyyy');
 
     if (perfil && aduanaPerfil && fechaInicioPerfil && fechaFinPerfil) {
-      this.perfilesAsignados.push({ perfil, aduana: aduanaPerfil, fechaInicio: fechaInicioPerfil, fechaFin: fechaFinPerfil });
+      this.perfilesAsignados.push({
+        perfil,
+        aduana: aduanaPerfil,
+        fechaInicio: fechaInicioPerfil,
+        fechaFin: fechaFinPerfil
+      });
       Swal.fire('Éxito', 'Se asignó perfil a usuario', 'success').then(() => {
         // Reset the perfil fields
         this.userForm.patchValue({
@@ -208,7 +237,12 @@ export class AppSolicitudInternoComponent implements OnInit {
     const fechaFinSistema = this.datePipe.transform(this.userForm.value.fechaFinSistema, 'dd/MM/yyyy');
 
     if (sistema && aduanaSistema && fechaInicioSistema && fechaFinSistema) {
-      this.sistemasAsignados.push({ sistema, aduana: aduanaSistema, fechaInicio: fechaInicioSistema, fechaFin: fechaFinSistema });
+      this.sistemasAsignados.push({
+        sistema,
+        aduana: aduanaSistema,
+        fechaInicio: fechaInicioSistema,
+        fechaFin: fechaFinSistema
+      });
       Swal.fire('Éxito', 'Se asignó sistema a usuario', 'success').then(() => {
         // Reset the sistema fields
         this.userForm.patchValue({
@@ -261,7 +295,7 @@ export class AppSolicitudInternoComponent implements OnInit {
   scrollToForm(index: number) {
     const formElement = document.querySelector(`#form-${index}`);
     if (formElement) {
-      formElement.scrollIntoView({ behavior: 'smooth' });
+      formElement.scrollIntoView({behavior: 'smooth'});
     }
   }
 
@@ -272,4 +306,6 @@ export class AppSolicitudInternoComponent implements OnInit {
       Swal.fire('Éxito', 'Solicitud enviada', 'success');
     }, 3000);
   }
+
+  protected readonly range = range;
 }
