@@ -1,4 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
+@import './assets/scss/variables.scss';
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.swal2-styled {
+  font-family: 'Plus Jakarta Sans', sans-serif; /* Use your project's font */
+  background-color: $primary; /* Use your project's primary color */
+  color: $white; /* Use your project's white color */
+  border: none;
+  border-radius: $border-radius; /* Use your project's border radius */
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.swal2-styled.swal2-confirm {
+  background-color: $primary; /* Use your project's primary color */
+}
+
+.swal2-styled.swal2-cancel {
+  background-color: $secondary; /* Use your project's secondary color */
+}

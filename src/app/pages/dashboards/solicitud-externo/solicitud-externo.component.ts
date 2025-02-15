@@ -1,18 +1,18 @@
-import {Component, ViewChild, OnInit, Input, SimpleChange, SimpleChanges} from '@angular/core';
+import { Component, ViewChild, OnInit, Input, SimpleChange, SimpleChanges } from '@angular/core';
 // import { MatStepper } from '@angular/material/stepper';
-import {FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from '../../../material.module';
-import {MatCardModule} from '@angular/material/card';
-import {CommonModule} from '@angular/common';
-import {MatNativeDateModule} from '@angular/material/core';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MaterialModule } from '../../../material.module';
+import { MatCardModule } from '@angular/material/card';
+import { CommonModule } from '@angular/common';
+import { MatNativeDateModule } from '@angular/material/core';
 import Swal from 'sweetalert2';
-import {MatAccordion} from '@angular/material/expansion';
-import {MatExpansionModule} from '@angular/material/expansion';
-import {DatePipe} from '@angular/common';
+import { MatAccordion } from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { DatePipe } from '@angular/common';
 
 // icons
-import {TablerIconsModule} from 'angular-tabler-icons';
-import {FormServiceService} from "../../../services/form-service.service";
+import { TablerIconsModule } from 'angular-tabler-icons';
+import { FormServiceService } from "../../../services/form-service.service";
 
 @Component({
   selector: 'app-solicitud-externo',
@@ -24,6 +24,7 @@ import {FormServiceService} from "../../../services/form-service.service";
 export class AppSolicitudExternoComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
   @Input() formGroup!: FormGroup;
+  @Input() userIndex!: number; // Add this line to accept the index from the parent component
   userForm: FormGroup;
   userRequests: any[] = [];
   perfilesAsignados: any[] = [];
@@ -32,13 +33,22 @@ export class AppSolicitudExternoComponent implements OnInit {
   editIndex: number | null = null;
   editMode: boolean = false;
   editType: 'perfil' | 'sistema' | null = null;
-  buttonText: string = 'Guardar perfil y sistema';
+
 
   selectedSolicitud: string = '';
   isLoading: boolean = false;
   shouldSave: boolean = false;
 
+  displayedColumns: string[] = ['sistema', 'fechaInicio', 'fechaFin']; // Add this line
+
   constructor(private fb: FormBuilder, private datePipe: DatePipe, private formService: FormServiceService) {
+    this.userForm = this.fb.group({
+      sistema: ['', Validators.required],
+      fechaInicioSistema: ['', Validators.required],
+      fechaFinSistema: ['', Validators.required],
+
+    });
+
   }
 
   ngOnInit() {
@@ -53,9 +63,10 @@ export class AppSolicitudExternoComponent implements OnInit {
     if (changes['formGroup']?.currentValue) {
       console.log("✅ `formGroup` Updated:", changes['formGroup'].currentValue);
     }
+    if (changes['userIndex']?.currentValue) {
+      console.log("✅ `userIndex` Updated:", changes['userIndex'].currentValue);
+    }
   }
-
-  
 
   editPerfil(index: number) {
     this.editMode = true;
@@ -142,18 +153,64 @@ export class AppSolicitudExternoComponent implements OnInit {
     }
   }
 
+  asignarSistema() {
+    const sistema = this.formGroup.get('sistema')?.value;
+    const fechaInicioSistema = this.datePipe.transform(this.formGroup.get('fechaInicioSistema')?.value, 'MM/dd/yyyy');
+    const fechaFinSistema = this.datePipe.transform(this.formGroup.get('fechaFinSistema')?.value, 'MM/dd/yyyy');
+  
+    console.log("Sistema:", sistema);
+    console.log("Fecha Inicio Sistema:", fechaInicioSistema);
+    console.log("Fecha Fin Sistema:", fechaFinSistema);
+  
+    if (sistema && fechaInicioSistema && fechaFinSistema) {
+      this.sistemasAsignados.push({
+        sistema,
+        fechaInicio: fechaInicioSistema,
+        fechaFin: fechaFinSistema
+      });
+      Swal.fire('Éxito', 'Sistema asignado al usuario', 'success');
+    } else {
+      Swal.fire('Error', 'Por favor complete todos los campos requeridos', 'error');
+    }
+  }
+
+  addProfileAndSystem() {
+    const sistema = this.userForm.value.sistema;
+    const aduanaSistema = this.userForm.value.aduanaSistema;
+    const fechaInicioSistema = this.datePipe.transform(this.userForm.value.fechaInicioSistema, 'dd/MM/yyyy');
+    const fechaFinSistema = this.datePipe.transform(this.userForm.value.fechaFinSistema, 'dd/MM/yyyy');
+
+    if (sistema && aduanaSistema && fechaInicioSistema && fechaFinSistema) {
+      this.sistemasAsignados.push({
+        sistema,
+        aduana: aduanaSistema,
+        fechaInicio: fechaInicioSistema,
+        fechaFin: fechaFinSistema
+      });
+      Swal.fire('Éxito', 'Se asignó sistema a usuario', 'success').then(() => {
+        // Reset the sistema fields
+        this.userForm.patchValue({
+          sistema: '',
+          aduanaSistema: '',
+          fechaInicioSistema: '',
+          fechaFinSistema: ''
+        });
+      });
+    }
+  }
+
   updatePerfil() {
     // Implement the logic to update the perfil
     const perfil = this.userForm.value.perfil;
-    const aduanaPerfil = this.userForm.value.aduanaPerfil;
+    const aduanaSistema = this.userForm.value.aduanaSistema;
     const fechaInicioPerfil = this.datePipe.transform(this.userForm.value.fechaInicioPerfil, 'dd/MM/yyyy');
     const fechaFinPerfil = this.datePipe.transform(this.userForm.value.fechaFinPerfil, 'dd/MM/yyyy');
 
-    if (perfil && aduanaPerfil && fechaInicioPerfil && fechaFinPerfil) {
+    if (perfil && aduanaSistema && fechaInicioPerfil && fechaFinPerfil) {
       if (this.editIndex !== null) {
         this.perfilesAsignados[this.editIndex] = {
           perfil,
-          aduana: aduanaPerfil,
+          aduana: aduanaSistema,
           fechaInicio: fechaInicioPerfil,
           fechaFin: fechaFinPerfil
         };
@@ -162,7 +219,7 @@ export class AppSolicitudExternoComponent implements OnInit {
         // Reset the perfil fields
         this.userForm.patchValue({
           perfil: '',
-          aduanaPerfil: '',
+          aduanaSistema: '',
           fechaInicioPerfil: '',
           fechaFinPerfil: ''
         });
@@ -187,55 +244,6 @@ export class AppSolicitudExternoComponent implements OnInit {
         };
       }
       Swal.fire('Éxito', 'Sistema actualizado', 'success').then(() => {
-        // Reset the sistema fields
-        this.userForm.patchValue({
-          sistema: '',
-          aduanaSistema: '',
-          fechaInicioSistema: '',
-          fechaFinSistema: ''
-        });
-      });
-    }
-  }
-
-
-  addProfileAndSystem() {
-    const perfil = this.userForm.value.perfil;
-    const aduanaPerfil = this.userForm.value.aduanaPerfil;
-    const fechaInicioPerfil = this.datePipe.transform(this.userForm.value.fechaInicioPerfil, 'dd/MM/yyyy');
-    const fechaFinPerfil = this.datePipe.transform(this.userForm.value.fechaFinPerfil, 'dd/MM/yyyy');
-
-    if (perfil && aduanaPerfil && fechaInicioPerfil && fechaFinPerfil) {
-      this.perfilesAsignados.push({
-        perfil,
-        aduana: aduanaPerfil,
-        fechaInicio: fechaInicioPerfil,
-        fechaFin: fechaFinPerfil
-      });
-      Swal.fire('Éxito', 'Se asignó perfil a usuario', 'success').then(() => {
-        // Reset the perfil fields
-        this.userForm.patchValue({
-          perfil: '',
-          aduanaPerfil: '',
-          fechaInicioPerfil: '',
-          fechaFinPerfil: ''
-        });
-      });
-    }
-
-    const sistema = this.userForm.value.sistema;
-    const aduanaSistema = this.userForm.value.aduanaSistema;
-    const fechaInicioSistema = this.datePipe.transform(this.userForm.value.fechaInicioSistema, 'dd/MM/yyyy');
-    const fechaFinSistema = this.datePipe.transform(this.userForm.value.fechaFinSistema, 'dd/MM/yyyy');
-
-    if (sistema && aduanaSistema && fechaInicioSistema && fechaFinSistema) {
-      this.sistemasAsignados.push({
-        sistema,
-        aduana: aduanaSistema,
-        fechaInicio: fechaInicioSistema,
-        fechaFin: fechaFinSistema
-      });
-      Swal.fire('Éxito', 'Se asignó sistema a usuario', 'success').then(() => {
         // Reset the sistema fields
         this.userForm.patchValue({
           sistema: '',
@@ -281,13 +289,12 @@ export class AppSolicitudExternoComponent implements OnInit {
     this.sistemasAsignados = [];
     this.editMode = false;
     this.editType = null;
-    this.buttonText = 'Guardar perfil y sistema';
   }
 
   scrollToForm(index: number) {
     const formElement = document.querySelector(`#form-${index}`);
     if (formElement) {
-      formElement.scrollIntoView({behavior: 'smooth'});
+      formElement.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
