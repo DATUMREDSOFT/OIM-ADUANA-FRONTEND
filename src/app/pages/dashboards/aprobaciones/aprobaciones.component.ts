@@ -46,6 +46,7 @@ export interface Perfiles {
   email: string;
   phoneNumber: string;
   organizationCode: string;
+  estado: string;
 
 }
 
@@ -100,7 +101,6 @@ export class AprobacionesComponent {
   displayedColumns: string[] = [Header.DGA, Header.Description, Header.Date, Header.State, Header.Action];
 
 
-
   dataSource = new MatTableDataSource<ELEMENT_DATA>([
     {
       DGA: 'DGA-001',
@@ -116,7 +116,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-02-15',
           email: 'juan.perez@example.com',
           phoneNumber: '2345678901',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Ana',
@@ -126,7 +127,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-03-20',
           email: 'ana.gomez@example.com',
           phoneNumber: '2345678902',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         }
       ]
     },
@@ -144,7 +146,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-04-12',
           email: 'carlos.ramirez@example.com',
           phoneNumber: '2345678903',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Laura',
@@ -154,7 +157,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-05-18',
           email: 'laura.fernandez@example.com',
           phoneNumber: '2345678904',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         }
       ]
     },
@@ -172,7 +176,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-06-10',
           email: 'miguel.torres@example.com',
           phoneNumber: '2345678905',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         }
       ]
     },
@@ -190,7 +195,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-08-12',
           email: 'andrea.lopez@example.com',
           phoneNumber: '2345678906',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Pedro',
@@ -200,7 +206,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-09-20',
           email: 'pedro.sanchez@example.com',
           phoneNumber: '2345678907',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Andrea',
@@ -210,7 +217,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-08-12',
           email: 'andrea.lopez@example.com',
           phoneNumber: '2345678906',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Pedro',
@@ -220,7 +228,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-09-20',
           email: 'pedro.sanchez@example.com',
           phoneNumber: '2345678907',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Andrea',
@@ -230,7 +239,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-08-12',
           email: 'andrea.lopez@example.com',
           phoneNumber: '2345678906',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Pedro',
@@ -240,7 +250,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-09-20',
           email: 'pedro.sanchez@example.com',
           phoneNumber: '2345678907',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
 
         {
@@ -251,7 +262,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-08-12',
           email: 'andrea.lopez@example.com',
           phoneNumber: '2345678906',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Pedro',
@@ -261,7 +273,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-09-20',
           email: 'pedro.sanchez@example.com',
           phoneNumber: '2345678907',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Andrea',
@@ -271,7 +284,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-08-12',
           email: 'andrea.lopez@example.com',
           phoneNumber: '2345678906',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Pedro',
@@ -281,7 +295,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-09-20',
           email: 'pedro.sanchez@example.com',
           phoneNumber: '2345678907',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Andrea',
@@ -291,7 +306,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-08-12',
           email: 'andrea.lopez@example.com',
           phoneNumber: '2345678906',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Pedro',
@@ -301,7 +317,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-09-20',
           email: 'pedro.sanchez@example.com',
           phoneNumber: '2345678907',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Andrea',
@@ -311,7 +328,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-08-12',
           email: 'andrea.lopez@example.com',
           phoneNumber: '2345678906',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'Pedro',
@@ -321,7 +339,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-09-20',
           email: 'pedro.sanchez@example.com',
           phoneNumber: '2345678907',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         }
       ]
     },
@@ -339,7 +358,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2023-11-15',
           email: 'sofia.martinez@example.com',
           phoneNumber: '2345678908',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         }
       ]
     },
@@ -357,7 +377,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2024-01-10',
           email: 'luis.garcia@example.com',
           phoneNumber: '2345678909',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         }
       ]
     },
@@ -375,7 +396,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2024-02-20',
           email: 'camila.ortega@example.com',
           phoneNumber: '2345678910',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         }
       ]
     },
@@ -393,7 +415,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2024-03-10',
           email: 'diego.morales@example.com',
           phoneNumber: '2345678911',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         },
         {
           nombre: 'María',
@@ -403,7 +426,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2024-03-20',
           email: 'maria.herrera@example.com',
           phoneNumber: '2345678912',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         }
       ]
     },
@@ -421,7 +445,8 @@ export class AprobacionesComponent {
           fechaEliminacion: '2024-04-05',
           email: 'fernando.ruiz@example.com',
           phoneNumber: '2345678913',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         }
       ]
     },
@@ -439,13 +464,12 @@ export class AprobacionesComponent {
           fechaEliminacion: '2024-04-20',
           email: 'valentina.castro@example.com',
           phoneNumber: '2345678914',
-          organizationCode: 'DGA Externo'
+          organizationCode: 'DGA Externo',
+          estado: 'pendiente'
         }
       ]
     }
   ]);
-
-
 
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;

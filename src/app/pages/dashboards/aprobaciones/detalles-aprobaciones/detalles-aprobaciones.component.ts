@@ -25,6 +25,7 @@ import {SelectionModel} from "@angular/cdk/collections";
 import {UpperCasePipe} from "@angular/common";
 import {MatIconModule} from "@angular/material/icon";
 import {MatDivider} from "@angular/material/divider";
+import {MatBadge} from "@angular/material/badge";
 
 
 export interface Aprobacion {
@@ -32,6 +33,7 @@ export interface Aprobacion {
   apellido: string;
   correo: string;
   cargo: string;
+  estado: string;
 }
 
 @Component({
@@ -60,7 +62,8 @@ export interface Aprobacion {
     MatCheckbox,
     UpperCasePipe,
     MatIconModule,
-    MatDivider
+    MatDivider,
+    MatBadge
   ],
   templateUrl: './detalles-aprobaciones.component.html',
 })
@@ -111,9 +114,12 @@ export class DetallesAprobacionesComponent {
   }
 
   approveRequest(elemento: any) {
-    // Si hay elementos seleccionados, solo aprobar esos
     const elementosAprobar = this.selection.selected.length > 0 ?
       this.selection.selected : [elemento];
+
+    // Mostrar elementos seleccionados para aprobar
+    console.log('Elementos seleccionados para aprobar:', elementosAprobar);
+    console.log('Cantidad de elementos a aprobar:', elementosAprobar.length);
 
     Swal.fire({
       title: '¿Está seguro?',
@@ -126,7 +132,13 @@ export class DetallesAprobacionesComponent {
       if (result.isConfirmed) {
         elementosAprobar.forEach(elem => {
           elem.state = 'approved';
-          console.log('Request Approved:', elem);
+          // Log detallado de cada elemento aprobado
+          console.log('Elemento aprobado:', {
+            nombre: elem.nombre,
+            apellido: elem.apellido,
+            cargo: elem.cargo,
+            estado: elem.estado
+          });
         });
         Swal.fire('Aprobado', 'Las solicitudes han sido aprobadas', 'success');
       }
@@ -134,7 +146,7 @@ export class DetallesAprobacionesComponent {
   }
 
   rejectRequest(elemento: any) {
-    // Si hay elementos seleccionados, solo rechazar esos
+
     const elementosRechazar = this.selection.selected.length > 0 ?
       this.selection.selected : [elemento];
 
@@ -147,8 +159,8 @@ export class DetallesAprobacionesComponent {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        elementosRechazar.forEach((elem: { state: string; }) => {
-          elem.state = 'rejected';
+        elementosRechazar.forEach((elem: { estado: string; }) => {
+          elem.estado = 'rejected';
           console.log('Request Rejected:', elem);
         });
         Swal.fire('Rechazado', 'Las solicitudes han sido rechazadas', 'error');
