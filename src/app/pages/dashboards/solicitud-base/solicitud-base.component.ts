@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, SimpleChanges, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, AbstractControl, FormGroupDirective } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -71,6 +71,11 @@ export class AppSolicitudBaseComponent implements OnInit {
     return control as FormGroup;
   }
 
+  getUserIndex(formIndex: number, userIndex: number): number {
+    return userIndex;
+  }
+  
+
   /** ✅ Load Request Types from Local Storage */
   private loadTiposSolicitudFromStorage(): void {
     let storedData: any;
@@ -109,7 +114,7 @@ export class AppSolicitudBaseComponent implements OnInit {
   private createFormulario(): FormGroup {
     return this.fb.group({
       tipo: ['', Validators.required],
-      childComponent: [''],
+      childComponent: [null],
       form: this.fb.group({
         uid: [''],
         nombre: [''],
@@ -120,12 +125,12 @@ export class AppSolicitudBaseComponent implements OnInit {
         correoAlternativo: [''],
         fechaInicioSolicitud: [''],
         fechaFinSolicitud: [''],
-        perfil: [''],
+        sistema: [''],
         aduanaPerfil: [''],
         fechaInicioSistema: [''],
         fechaFinSistema: ['']
       }),
-      usuarios: this.fb.array([this.createUsuarioForm()])
+      usuarios: this.fb.array([])
     });
   }
 
@@ -140,7 +145,7 @@ export class AppSolicitudBaseComponent implements OnInit {
       correoAlternativo: [''],
       fechaInicioSolicitud: [''],
       fechaFinSolicitud: [''],
-      perfil: [''],
+      sistema: [''],
       aduanaPerfil: [''],
       fechaInicioSistema: [''],
       fechaFinSistema: [''],
@@ -303,14 +308,31 @@ export class AppSolicitudBaseComponent implements OnInit {
 
   /** ✅ Add a new user to a specific form */
   addUsuario(index: number): void {
-    this.getUsuarios(this.formularios.at(index) as FormGroup).push(this.createUsuarioForm());
+    console.log('addUsuario called'); // Debugging log
+    const usuarios = this.getUsuarios(this.formularios.at(index) as FormGroup);
+    usuarios.push(this.createUsuarioForm());
+    this.cdr.detectChanges(); // Trigger change detection
   }
 
   /** ✅ Remove a user from a specific form */
   removeUsuario(formIndex: number, userIndex: number): void {
     const usuarios = this.getUsuarios(this.formularios.at(formIndex) as FormGroup);
     if (usuarios.length > 1) {
-      usuarios.removeAt(userIndex);
+      Swal.fire({
+        title: '¿Está seguro?',
+        text: `Se removerá usuario ${userIndex + 1}, ¿está seguro de continuar?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#d33', // Red color for the confirm button
+        cancelButtonColor: '#3085d6' // Blue color for the cancel button
+      }).then((result) => {
+        if (result.isConfirmed) {
+          usuarios.removeAt(userIndex);
+          Swal.fire('Eliminado', `El usuario ${userIndex + 1} ha sido eliminado`, 'success');
+        }
+      });
     }
   }
 
@@ -324,36 +346,43 @@ export class AppSolicitudBaseComponent implements OnInit {
     if (this.formularios.length > 1) {
       Swal.fire({
         title: '¿Está seguro?',
-        text: 'Esta acción eliminará el formulario seleccionado',
+        text: `Esta acción eliminará el formulario ${index + 1}`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#d33', // Red color for the confirm button
+        cancelButtonColor: '#3085d6' // Blue color for the cancel button
       }).then((result) => {
         if (result.isConfirmed) {
           this.formularios.removeAt(index);
-          Swal.fire('Eliminado', 'El formulario ha sido eliminado', 'success');
+          Swal.fire('Eliminado', `El formulario ${index + 1} ha sido eliminado`, 'success');
         }
       });
     }
   }
 
   updateSelectedTipoSolicitud(index: number) {
-    const formulario = this.formularios.at(index);
+    const formulario = this.formularios.at(index) as FormGroup;
     const selectedTipo = formulario.get('tipo')?.value;
-
+  
     if (!selectedTipo) return;
-    console.log(`🟢 Tipo de solicitud seleccionado: ${selectedTipo}`);
-
+  
     let componentToLoad = null;
     switch (selectedTipo) {
-      case 'TYREQ-1': componentToLoad = 'externo'; break;
-      case 'TYREQ-2': componentToLoad = 'interno'; break;
-      case 'TYREQ-3': componentToLoad = 'afpa'; break;
+      case 'TYREQ-1':
+        componentToLoad = 'externo';
+        break;
+      case 'TYREQ-2':
+        componentToLoad = 'interno';
+        break;
+      case 'TYREQ-3':
+        componentToLoad = 'afpa';
+        break;
       default:
         console.warn("⚠️ Tipo de solicitud no reconocido:", selectedTipo);
     }
-
+  
     formulario.patchValue({ childComponent: componentToLoad });
     this.cdr.detectChanges();
   }
