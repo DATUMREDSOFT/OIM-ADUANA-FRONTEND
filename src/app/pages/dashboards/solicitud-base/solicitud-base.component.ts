@@ -125,7 +125,7 @@ export class AppSolicitudBaseComponent implements OnInit {
         correoAlternativo: [''],
         fechaInicioSolicitud: [''],
         fechaFinSolicitud: [''],
-        perfil: [''],
+        sistema: [''],
         aduanaPerfil: [''],
         fechaInicioSistema: [''],
         fechaFinSistema: ['']
@@ -145,7 +145,7 @@ export class AppSolicitudBaseComponent implements OnInit {
       correoAlternativo: [''],
       fechaInicioSolicitud: [''],
       fechaFinSolicitud: [''],
-      perfil: [''],
+      sistema: [''],
       aduanaPerfil: [''],
       fechaInicioSistema: [''],
       fechaFinSistema: [''],

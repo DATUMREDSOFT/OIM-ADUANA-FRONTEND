@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, Input, SimpleChange, SimpleChanges } from '@angular/core';
+import { Component, ViewChild, OnInit, Input, SimpleChange, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 // import { MatStepper } from '@angular/material/stepper';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../../../material.module';
@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { MatAccordion } from '@angular/material/expansion';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { DatePipe } from '@angular/common';
+import { MatTableDataSource, MatTable } from '@angular/material/table';
 
 // icons
 import { TablerIconsModule } from 'angular-tabler-icons';
@@ -19,10 +20,11 @@ import { FormServiceService } from "../../../services/form-service.service";
   templateUrl: './solicitud-externo.component.html',
   standalone: true,
   providers: [DatePipe],
-  imports: [MaterialModule, MatCardModule, FormsModule, ReactiveFormsModule, CommonModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule],
+  imports: [MaterialModule, MatCardModule, FormsModule, ReactiveFormsModule, CommonModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, MatTable],
 })
 export class AppSolicitudExternoComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
+  @ViewChild(MatTable, { static: true }) table: MatTable<any> = Object.create(null);
   @Input() formGroup!: FormGroup;
   @Input() userIndex!: number; // Add this line to accept the index from the parent component
   userForm: FormGroup;
@@ -39,9 +41,10 @@ export class AppSolicitudExternoComponent implements OnInit {
   isLoading: boolean = false;
   shouldSave: boolean = false;
 
-  displayedColumns: string[] = ['sistema', 'fechaInicio', 'fechaFin']; // Add this line
+  displayedColumns: string[] = ['sistema', 'fechaInicioSistema', 'fechaFinSistema']; // Add this line
+  dataSource = new MatTableDataSource(this.sistemasAsignados);
 
-  constructor(private fb: FormBuilder, private datePipe: DatePipe, private formService: FormServiceService) {
+  constructor(private fb: FormBuilder, private datePipe: DatePipe, private formService: FormServiceService, private cdr: ChangeDetectorRef) {
     this.userForm = this.fb.group({
       sistema: ['', Validators.required],
       fechaInicioSistema: ['', Validators.required],
@@ -164,10 +167,15 @@ export class AppSolicitudExternoComponent implements OnInit {
   
     if (sistema && fechaInicioSistema && fechaFinSistema) {
       this.sistemasAsignados.push({
-        sistema,
-        fechaInicio: fechaInicioSistema,
-        fechaFin: fechaFinSistema
+        sistema: sistema,
+        fechaInicioSistema: fechaInicioSistema,
+        fechaFinSistema: fechaFinSistema
       });
+
+      console.log("Sistemas Asignados:", this.sistemasAsignados);
+
+      this.cdr.detectChanges();
+
       Swal.fire('Éxito', 'Sistema asignado al usuario', 'success');
     } else {
       Swal.fire('Error', 'Por favor complete todos los campos requeridos', 'error');
