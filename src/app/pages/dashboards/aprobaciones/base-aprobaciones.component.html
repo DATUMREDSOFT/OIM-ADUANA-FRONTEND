@@ -1,0 +1,10 @@
+@if (verDetalle) {
+  <app-detalles-aprobaciones
+    [elemento]="elementoSeleccionado"
+    (cerrarDetalle)="cerrarDetalles()">
+  </app-detalles-aprobaciones>
+} @else {
+  <app-aprobaciones
+    (verDetalle)="mostrarDetalles($event)">
+  </app-aprobaciones>
+}

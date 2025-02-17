@@ -1,0 +1,135 @@
+<mat-card>
+  <mat-card-content>
+
+
+    <!-- Tabla de Perfiles -->
+    <div class="col-lg-12 mt-4">
+
+
+      <div class="">
+        <div class="row flex justify-content-end">
+          <button mat-raised-button color="warn" (click)="cerrarDetalles()">Cerrar</button>
+        </div>
+
+        <div class="">
+          <div class="">
+            <h2>DGA: {{ elemento?.DGA }}</h2>
+          </div>
+
+
+
+
+          <div class="">
+            <div class="status">
+              <span class="label f-w-800">Descripción:</span>
+              <span class="value">{{ elemento?.description }}</span>
+            </div>
+            <div class="date">
+              <span class="label f-w-800">Fecha de Creación:</span>
+              <span class="value">{{ elemento?.date }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <mat-card>
+        <mat-card-content>
+          <div class="col-lg-12">
+            <div class="d-flex justify-content-between m-b-14 align-items-center">
+              <div class="pb-12">
+
+                <div [matBadge]="selection.selected.length" matBadgeSize="medium" class="d-line">
+                  <span class="f-w-600">perfiles seleccionados</span>
+                </div>
+
+              </div>
+              <div class="d-flex gap-16">
+                <button mat-raised-button
+                        color="primary"
+                        [disabled]="!selection.hasValue()"
+                        (click)="approveRequest(null)">
+                  <mat-icon>check</mat-icon>
+                  Aprobar
+                </button>
+                <button mat-raised-button
+                        color="warn"
+                        [disabled]="!selection.hasValue()"
+                        (click)="rejectRequest(null)">
+                  <mat-icon>close</mat-icon>
+                  Rechazar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <mat-divider class="m-y-16"></mat-divider>
+
+          <!-- Added table-responsive and example-container classes -->
+          <div class="table-responsive" style="max-height: 325px; overflow-y: auto;">
+            <mat-table [dataSource]="dataSource" class="w-100">
+              <!-- Checkbox Column -->
+              <ng-container matColumnDef="select">
+                <mat-header-cell *matHeaderCellDef>
+                  <mat-checkbox
+                    (change)="$event ? masterToggle() : null"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()"
+                    [aria-label]="checkboxLabel()">
+                  </mat-checkbox>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <mat-checkbox
+                    (click)="$event.stopPropagation()"
+                    (change)="$event ? selection.toggle(row) : null"
+                    [checked]="selection.isSelected(row)"
+                    [aria-label]="checkboxLabel(row)">
+                  </mat-checkbox>
+                </mat-cell>
+              </ng-container>
+
+              <!-- Other columns remain the same -->
+              <ng-container matColumnDef="nombre">
+                <mat-header-cell class="f-w-600 mat-subtitle-2 f-s-14" *matHeaderCellDef>Nombre
+                </mat-header-cell>
+                <mat-cell *matCellDef="let perfil">{{ perfil.nombre }}</mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="apellido">
+                <mat-header-cell class="f-w-600 mat-subtitle-2 f-s-14" *matHeaderCellDef> Apellido
+                </mat-header-cell>
+                <mat-cell *matCellDef="let perfil">{{ perfil.apellido }}</mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="cargo">
+                <mat-header-cell class="f-w-600 mat-subtitle-2 f-s-14" *matHeaderCellDef>Cargo
+                </mat-header-cell>
+                <mat-cell *matCellDef="let perfil">{{ perfil.cargo }}</mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="fecha de creacion">
+                <mat-header-cell class="f-w-600 mat-subtitle-2 f-s-14"
+                                 *matHeaderCellDef>fecha de creacion
+                </mat-header-cell>
+                <mat-cell *matCellDef="let perfil">{{ perfil.fechaCreacion }}</mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="fecha de eliminacion">
+                <mat-header-cell class="f-w-600 mat-subtitle-2 f-s-14"
+                                 *matHeaderCellDef>fecha de eliminacion
+                </mat-header-cell>
+                <mat-cell *matCellDef="let perfil">{{ perfil.fechaEliminacion }}</mat-cell>
+              </ng-container>
+
+              <!-- Modified header row to make it sticky -->
+              <mat-header-row style="background-color: #fafafa"
+                              *matHeaderRowDef="displayedColumnsPerfiles; sticky: true"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumnsPerfiles"
+                       (click)="selection.toggle(row)">
+              </mat-row>
+            </mat-table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </mat-card-content>
+</mat-card>
