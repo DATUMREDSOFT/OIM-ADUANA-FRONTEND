@@ -22,10 +22,11 @@ import {MatPaginator} from "@angular/material/paginator";
 import Swal from "sweetalert2";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {SelectionModel} from "@angular/cdk/collections";
-import {UpperCasePipe} from "@angular/common";
+
 import {MatIconModule} from "@angular/material/icon";
 import {MatDivider} from "@angular/material/divider";
 import {MatBadge} from "@angular/material/badge";
+import {ReactiveFormsModule} from "@angular/forms";
 
 
 export interface Aprobacion {
@@ -60,17 +61,17 @@ export interface Aprobacion {
     MatInput,
     MatPaginator,
     MatCheckbox,
-    UpperCasePipe,
     MatIconModule,
     MatDivider,
-    MatBadge
+    MatBadge,
+    ReactiveFormsModule,
   ],
   templateUrl: './detalles-aprobaciones.component.html',
 })
 export class DetallesAprobacionesComponent {
 
 
-  @Output() cerrar = new EventEmitter<void>();
+  @Output() cerrarDetalle = new EventEmitter<void>();
   @Input() elemento: any;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -84,11 +85,7 @@ export class DetallesAprobacionesComponent {
     }
   }
 
-  ngAfterViewInit() {
-    if (this.paginator) {
-      this.dataSource.paginator = this.paginator;
-    }
-  }
+
 
   isAllSelected(): boolean {
     const numSelected = this.selection.selected.length;
@@ -110,7 +107,7 @@ export class DetallesAprobacionesComponent {
   }
 
   cerrarDetalles() {
-    this.cerrar.emit();
+    this.cerrarDetalle.emit();
   }
 
   approveRequest(elemento: any) {
@@ -132,13 +129,6 @@ export class DetallesAprobacionesComponent {
       if (result.isConfirmed) {
         elementosAprobar.forEach(elem => {
           elem.state = 'approved';
-          // Log detallado de cada elemento aprobado
-          console.log('Elemento aprobado:', {
-            nombre: elem.nombre,
-            apellido: elem.apellido,
-            cargo: elem.cargo,
-            estado: elem.estado
-          });
         });
         Swal.fire('Aprobado', 'Las solicitudes han sido aprobadas', 'success');
       }
@@ -161,7 +151,6 @@ export class DetallesAprobacionesComponent {
       if (result.isConfirmed) {
         elementosRechazar.forEach((elem: { estado: string; }) => {
           elem.estado = 'rejected';
-          console.log('Request Rejected:', elem);
         });
         Swal.fire('Rechazado', 'Las solicitudes han sido rechazadas', 'error');
       }

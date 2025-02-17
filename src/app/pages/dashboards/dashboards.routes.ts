@@ -7,7 +7,8 @@ import {AppDashboardAfpaComponent} from './dashboard-afpa/dashboard-afpa.compone
 import {AppDashboardExternoComponent} from './dashboard_externo/dashboard-externo.component';
 import {AppSolicitudAfpaComponent} from './solicitud-nuevo-afpa/solicitud-afpa.component';
 import {AppSolicitudBaseComponent} from './solicitud-base/solicitud-base.component';
-import {AprobacionesComponent} from "./aprobaciones/aprobaciones.component";
+import {AprobacionesComponent} from "./aprobaciones/aprobaciones/aprobaciones.component";
+import {BaseAprobacionesComponent} from "./aprobaciones/base-aprobaciones.component";
 
 
 export const DashboardsRoutes: Routes = [
@@ -94,7 +95,7 @@ export const DashboardsRoutes: Routes = [
       },
       {
         path: 'aprobaciones',
-        component: AprobacionesComponent,
+        component: BaseAprobacionesComponent,
         canActivate: [AuthGuard],
         data: {
           role: 'INTERNO',

@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Output, ViewChild} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -20,7 +20,7 @@ import {MatInput} from "@angular/material/input";
 import {MatIcon, MatIconModule} from "@angular/material/icon";
 import {MatIconButton} from "@angular/material/button";
 import {Router} from "@angular/router";
-import {DetallesAprobacionesComponent} from "./detalles-aprobaciones/detalles-aprobaciones.component";
+import {DetallesAprobacionesComponent} from "../detalles-aprobaciones/detalles-aprobaciones.component";
 
 
 export enum State {
@@ -484,7 +484,7 @@ export class AprobacionesComponent {
 
     this.dataSource.filter = (event.target as HTMLInputElement).value.trim().toLowerCase();
 
-    // Configurar un predicado de filtro personalizado para filtrar solo por la columna "DGA"
+
     this.dataSource.filterPredicate = (data: ELEMENT_DATA, filter: string) => {
       return data.DGA.toLowerCase().includes(filter); // Comparar solo la columna DGA
     };
@@ -495,26 +495,13 @@ export class AprobacionesComponent {
   protected readonly State = State;
 
 
-  mostrarDetalles = false;
+  @Output() verDetalle = new EventEmitter<any>();
 
   elementoSeleccionado: any;
 
   verMas(element: any) {
-    this.mostrarDetalles = true;
-    this.elementoSeleccionado = element;
+    this.verDetalle.emit(element);
   }
 
-  cerrarDetalles() {
-    this.mostrarDetalles = false;
-
-    this.elementoSeleccionado = null;
-
-    setTimeout(() => {
-      if (this.paginator) {
-        this.dataSource.paginator = this.paginator;
-        this.paginator.firstPage(); // Regresa a la primera página
-      }
-    });
-  }
 
 }
