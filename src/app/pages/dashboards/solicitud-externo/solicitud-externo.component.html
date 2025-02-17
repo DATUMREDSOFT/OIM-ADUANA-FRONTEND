@@ -150,10 +150,10 @@
     <h2>Sistemas Asignados</h2>
   </mat-card-header>
   <mat-card-content>
-    <table mat-table [dataSource]="sistemasAsignados" class="w-100">
+    <table mat-table [dataSource]="dataSource" class="w-100">
       <ng-container matColumnDef="sistema">
       <th mat-header-cell *matHeaderCellDef> Sistema </th>
-      <td mat-cell *matCellDef="let dataSource"> {{dataSource.sistema}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.sistema}} </td>
       </ng-container>
 
       <ng-container matColumnDef="fechaInicioSistema">
