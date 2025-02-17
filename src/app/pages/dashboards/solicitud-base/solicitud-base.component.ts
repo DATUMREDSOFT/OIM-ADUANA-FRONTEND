@@ -1,34 +1,42 @@
-import { Component, OnInit, SimpleChanges, inject } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, AbstractControl, FormGroupDirective } from '@angular/forms';
-import { CommonModule, DatePipe } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { MatCardModule } from '@angular/material/card';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { TablerIconsModule } from 'angular-tabler-icons';
-import { ChangeDetectorRef } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
+import {Component, OnInit, SimpleChanges, inject, ViewChild, ElementRef} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+  FormGroupDirective
+} from '@angular/forms';
+import {CommonModule, DatePipe} from '@angular/common';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {MatCardModule} from '@angular/material/card';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {TablerIconsModule} from 'angular-tabler-icons';
+import {ChangeDetectorRef} from '@angular/core';
+import {lastValueFrom} from 'rxjs';
 import Swal from 'sweetalert2';
 
-import { ApiService } from '../../../services/api.service';
-import { ProcesoFormularioService } from '../../../services/proceso-formulario.service';
-import { UserService } from '../../../services/user.service';
-import { LocalStorageService } from '../../../services/local-storage.service';
-import { TiposSolicitudService } from '../../../services/tipos-solicitud.service';
-import { FormServiceService } from "../../../services/form-service.service";
-import { TipoUsuarioService } from "../../../services/tipo-usuario.service";
+import {ApiService} from '../../../services/api.service';
+import {ProcesoFormularioService} from '../../../services/proceso-formulario.service';
+import {UserService} from '../../../services/user.service';
+import {LocalStorageService} from '../../../services/local-storage.service';
+import {TiposSolicitudService} from '../../../services/tipos-solicitud.service';
+import {FormServiceService} from "../../../services/form-service.service";
+import {TipoUsuarioService} from "../../../services/tipo-usuario.service";
 
-import { TipoSolicitud } from '../solicitud-base/models/tipo-solicitud.model';
-import { System } from '../solicitud-externo/models/system.model';
-import { Profile } from '../solicitud-externo/models/profile.model';
-import { Aduana } from '../../../models/aduana.model';
-import { FormularioExterno } from '../solicitud-externo/models/formulario-externo.model';
+import {TipoSolicitud} from '../solicitud-base/models/tipo-solicitud.model';
+import {System} from '../solicitud-externo/models/system.model';
+import {Profile} from '../solicitud-externo/models/profile.model';
+import {Aduana} from '../../../models/aduana.model';
+import {FormularioExterno} from '../solicitud-externo/models/formulario-externo.model';
 
-import { MaterialModule } from '../../../material.module';
-import { AppSolicitudInternoComponent } from "../solicitud-interno/solicitud-interno.component";
-import { AppSolicitudAfpaComponent } from "../solicitud-nuevo-afpa/solicitud-afpa.component";
-import { AppSolicitudExternoComponent } from "../solicitud-externo/solicitud-externo.component";
-import { Roles } from '../../../enums/roles.enum';
+import {MaterialModule} from '../../../material.module';
+import {AppSolicitudInternoComponent} from "../solicitud-interno/solicitud-interno.component";
+import {AppSolicitudAfpaComponent} from "../solicitud-nuevo-afpa/solicitud-afpa.component";
+import {AppSolicitudExternoComponent} from "../solicitud-externo/solicitud-externo.component";
+import {Roles} from '../../../enums/roles.enum';
 
 @Component({
   selector: 'app-solicitud-base',
@@ -48,6 +56,24 @@ export class AppSolicitudBaseComponent implements OnInit {
   private readonly userService = inject(UserService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly cdr = inject(ChangeDetectorRef);
+
+
+  // upload file
+  @ViewChild('fileInput') fileInput: ElementRef;
+  selectedFile: File | null = null;
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/pdf') {
+      this.selectedFile = file;
+    }
+  }
+
+  removeFile() {
+    this.selectedFile = null;
+    this.fileInput.nativeElement.value = '';
+  }
+
 
   constructor() {
     this.solicitudForm = this.fb.group({
@@ -74,7 +100,7 @@ export class AppSolicitudBaseComponent implements OnInit {
   getUserIndex(formIndex: number, userIndex: number): number {
     return userIndex;
   }
-  
+
 
   /** ✅ Load Request Types from Local Storage */
   private loadTiposSolicitudFromStorage(): void {
@@ -365,9 +391,9 @@ export class AppSolicitudBaseComponent implements OnInit {
   updateSelectedTipoSolicitud(index: number) {
     const formulario = this.formularios.at(index) as FormGroup;
     const selectedTipo = formulario.get('tipo')?.value;
-  
+
     if (!selectedTipo) return;
-  
+
     let componentToLoad = null;
     switch (selectedTipo) {
       case 'TYREQ-1':
@@ -382,26 +408,26 @@ export class AppSolicitudBaseComponent implements OnInit {
       default:
         console.warn("⚠️ Tipo de solicitud no reconocido:", selectedTipo);
     }
-  
-    formulario.patchValue({ childComponent: componentToLoad });
+
+    formulario.patchValue({childComponent: componentToLoad});
     this.cdr.detectChanges();
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = () => {
-      const formulario = this.formularios.at(0);
-      formulario.get('form.file')?.setValue(reader.result);
-    };
-    reader.readAsDataURL(file);
-  }
+  // onFileSelected(event: any) {
+  //   const file = event.target.files[0];
+  //   const reader = new FileReader();
+  //   reader.onload = () => {
+  //     const formulario = this.formularios.at(0);
+  //     formulario.get('form.file')?.setValue(reader.result);
+  //   };
+  //   reader.readAsDataURL(file);
+  // }
 
   /** ✅ Scroll to a Specific Form */
   scrollToForm(index: number) {
     const form = document.getElementById(`form-${index}`);
     if (form) {
-      form.scrollIntoView({ behavior: 'smooth' });
+      form.scrollIntoView({behavior: 'smooth'});
     }
   }
 }
