@@ -23,22 +23,20 @@ import {LocalStorageService} from '../../../services/local-storage.service';
 
 
 import {TipoSolicitud} from '../solicitud-base/models/tipo-solicitud.model';
-import {System} from '../solicitud-externo/models/system.model';
-import {Profile} from '../solicitud-externo/models/profile.model';
+import {System} from './models/system.model';
+import {Profile} from './models/profile.model';
 import {Aduana} from '../../../models/aduana.model';
-import {FormularioExterno} from '../solicitud-externo/models/formulario-externo.model';
+import {FormularioExterno} from './models/formulario-externo.model';
 
 import {MaterialModule} from '../../../material.module';
-import {AppSolicitudInternoComponent} from "../solicitud-interno/solicitud-interno.component";
-import {AppSolicitudAfpaComponent} from "../solicitud-nuevo-afpa/solicitud-afpa.component";
-import {AppSolicitudExternoComponent} from "../solicitud-externo/solicitud-externo.component";
+import {AppSolicitudExternoComponent} from "./solicitud-nuevo-usuario/solicitud-externo.component";
 import {Roles} from '../../../enums/roles.enum';
 
 @Component({
   selector: 'app-solicitud-base',
   templateUrl: './solicitud-base.component.html',
   standalone: true,
-  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudExternoComponent, AppSolicitudInternoComponent, AppSolicitudAfpaComponent],
+  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudExternoComponent],
 })
 export class AppSolicitudBaseComponent implements OnInit {
   solicitudForm: FormGroup;

@@ -1,7 +1,7 @@
 import { Component, ViewChild, OnInit, Input, SimpleChange, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 // import { MatStepper } from '@angular/material/stepper';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MaterialModule } from '../../../material.module';
+import { MaterialModule } from '../../../../material.module';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -13,7 +13,7 @@ import { MatTableDataSource, MatTable } from '@angular/material/table';
 
 // icons
 import { TablerIconsModule } from 'angular-tabler-icons';
-import { FormServiceService } from "../../../services/form-service.service";
+import { FormServiceService } from "../../../../services/form-service.service";
 
 export interface sistemaAsignado{
   sistema: string;

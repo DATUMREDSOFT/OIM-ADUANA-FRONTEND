@@ -1,7 +1,7 @@
 import { CommonAttribute } from "../../../../models/common-attribute.model";
-import { Other } from "../../../dashboards/solicitud-externo/models/other.model";
-import { Profile } from "../../../dashboards/solicitud-externo/models/profile.model";
-import { System } from "../../../dashboards/solicitud-externo/models/system.model";
+import { Other } from "./other.model";
+import { Profile } from "./profile.model";
+import { System } from "./system.model";
 
 export interface SolicitanteSolicitud {
   alternativeMail: string;
