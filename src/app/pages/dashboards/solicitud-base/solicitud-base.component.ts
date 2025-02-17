@@ -1,4 +1,4 @@
-import {Component, OnInit, SimpleChanges, inject, ViewChild, ElementRef} from '@angular/core';
+import {Component, OnInit, SimpleChanges, inject, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -6,15 +6,13 @@ import {
   Validators,
   ReactiveFormsModule,
   AbstractControl,
-  FormGroupDirective
 } from '@angular/forms';
 import {CommonModule, DatePipe} from '@angular/common';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+
 import {MatCardModule} from '@angular/material/card';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {TablerIconsModule} from 'angular-tabler-icons';
-import {ChangeDetectorRef} from '@angular/core';
 import {lastValueFrom} from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -22,9 +20,7 @@ import {ApiService} from '../../../services/api.service';
 import {ProcesoFormularioService} from '../../../services/proceso-formulario.service';
 import {UserService} from '../../../services/user.service';
 import {LocalStorageService} from '../../../services/local-storage.service';
-import {TiposSolicitudService} from '../../../services/tipos-solicitud.service';
-import {FormServiceService} from "../../../services/form-service.service";
-import {TipoUsuarioService} from "../../../services/tipo-usuario.service";
+
 
 import {TipoSolicitud} from '../solicitud-base/models/tipo-solicitud.model';
 import {System} from '../solicitud-externo/models/system.model';
@@ -106,7 +102,7 @@ export class AppSolicitudBaseComponent implements OnInit {
   private loadTiposSolicitudFromStorage(): void {
     let storedData: any;
 
-    const rawStoredData = localStorage.getItem('tipos-solicitud');
+    const rawStoredData = localStorage.getItem('tipo-solicitud');
     console.log("🔍 Directly Retrieved from localStorage:", rawStoredData);
 
     if (rawStoredData) {
@@ -234,7 +230,6 @@ export class AppSolicitudBaseComponent implements OnInit {
       return;
     }
 
-    const currentTimestamp = new Date().getTime().toString();
 
     const formData: FormularioExterno = {
       id: '',
@@ -413,15 +408,7 @@ export class AppSolicitudBaseComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // onFileSelected(event: any) {
-  //   const file = event.target.files[0];
-  //   const reader = new FileReader();
-  //   reader.onload = () => {
-  //     const formulario = this.formularios.at(0);
-  //     formulario.get('form.file')?.setValue(reader.result);
-  //   };
-  //   reader.readAsDataURL(file);
-  // }
+
 
   /** ✅ Scroll to a Specific Form */
   scrollToForm(index: number) {
