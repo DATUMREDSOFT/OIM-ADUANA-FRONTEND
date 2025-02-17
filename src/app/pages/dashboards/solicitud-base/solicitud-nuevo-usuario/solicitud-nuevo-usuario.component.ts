@@ -10,6 +10,7 @@ import { MatAccordion } from '@angular/material/expansion';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { DatePipe } from '@angular/common';
 import { MatTableDataSource, MatTable } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 
 // icons
 import { TablerIconsModule } from 'angular-tabler-icons';
@@ -24,13 +25,13 @@ export interface sistemaAsignado{
 const sistemasAsignados: sistemaAsignado[] = [];
 
 @Component({
-  selector: 'app-solicitud-externo',
-  templateUrl: './solicitud-externo.component.html',
+  selector: 'app-solicitud-nuevo-usuario',
+  templateUrl: './solicitud-nuevo-usuario.component.html',
   standalone: true,
   providers: [DatePipe],
-  imports: [MaterialModule, MatCardModule, FormsModule, ReactiveFormsModule, CommonModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, MatTable],
+  imports: [MaterialModule, MatCardModule, FormsModule, ReactiveFormsModule, CommonModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, MatTable, MatTabsModule],
 })
-export class AppSolicitudExternoComponent implements OnInit {
+export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
   @ViewChild(MatTable, { static: true }) table: MatTable<any> = Object.create(null);
   @Input() formGroup!: FormGroup;

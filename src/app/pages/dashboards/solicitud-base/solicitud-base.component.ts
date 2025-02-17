@@ -29,14 +29,14 @@ import {Aduana} from '../../../models/aduana.model';
 import {FormularioExterno} from './models/formulario-externo.model';
 
 import {MaterialModule} from '../../../material.module';
-import {AppSolicitudExternoComponent} from "./solicitud-nuevo-usuario/solicitud-externo.component";
+import {AppSolicitudNuevoUsuarioComponent} from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
 import {Roles} from '../../../enums/roles.enum';
 
 @Component({
   selector: 'app-solicitud-base',
   templateUrl: './solicitud-base.component.html',
   standalone: true,
-  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudExternoComponent],
+  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent],
 })
 export class AppSolicitudBaseComponent implements OnInit {
   solicitudForm: FormGroup;

@@ -8,7 +8,7 @@ import {AppDashboardAfpaComponent} from './dashboard-afpa/dashboard-afpa.compone
 import {AppDashboardInternoComponent} from './dasboard-interno/dashboard-interno.component';
 import {AppDashboardExternoComponent} from './dashboard_externo/dashboard-externo.component';
 import {AppSolicitudBaseComponent} from './solicitud-base/solicitud-base.component';
-import {AppSolicitudExternoComponent} from './solicitud-base/solicitud-nuevo-usuario/solicitud-externo.component';
+import {AppSolicitudNuevoUsuarioComponent} from './solicitud-base/solicitud-nuevo-usuario/solicitud-nuevo-usuario.component';
 import {AprobacionesComponent} from "./aprobaciones/aprobaciones/aprobaciones.component";
 import {BaseAprobacionesComponent} from "./aprobaciones/base-aprobaciones.component";
 
@@ -19,7 +19,7 @@ import {BaseAprobacionesComponent} from "./aprobaciones/base-aprobaciones.compon
     AppDashboardInternoComponent,
     AppDashboardExternoComponent,
     AppSolicitudBaseComponent,
-    AppSolicitudExternoComponent,
+    AppSolicitudNuevoUsuarioComponent,
     BaseAprobacionesComponent
   ],
 
