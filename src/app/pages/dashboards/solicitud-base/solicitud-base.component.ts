@@ -164,6 +164,8 @@ export class AppSolicitudBaseComponent implements OnInit {
   /** ✅ Create a new `usuario` FormGroup */
   private createUsuarioForm(): FormGroup {
     return this.fb.group({
+      dui: [''],
+      uid: [''],
       nombre: [''],
       apellido: [''],
       telefono: [''],
