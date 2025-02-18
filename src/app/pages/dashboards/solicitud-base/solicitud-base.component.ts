@@ -33,13 +33,13 @@ import {AppSolicitudNuevoUsuarioComponent} from "./solicitud-nuevo-usuario/solic
 import {Roles} from '../../../enums/roles.enum';
 import {
   AppSolicitudModificarUsuarioComponent
-} from "./solicitud-modifcar-usuario/solicitud-modificar-usuario.component";
+} from "./solicitud-modificar-usuario/solicitud-modificar-usuario.component";
 
 @Component({
   selector: 'app-solicitud-base',
   templateUrl: './solicitud-base.component.html',
   standalone: true,
-  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent, AppSolicitudModificarUsuarioComponent],
+  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent ],
 })
 export class AppSolicitudBaseComponent implements OnInit {
   solicitudForm: FormGroup;
@@ -155,7 +155,7 @@ export class AppSolicitudBaseComponent implements OnInit {
         aduanaPerfil: [''],
         fechaInicioPerfil: [''],
         fechaFinPerfil: ['']
-        
+
       }),
       usuarios: this.fb.array([])
     });
@@ -402,7 +402,7 @@ export class AppSolicitudBaseComponent implements OnInit {
     let componentToLoad = null;
     switch (selectedTipo) {
       case 'TYREQ-1':
-        componentToLoad = 'nuevo-usuario';
+        componentToLoad = 'modificar-usuario';
         break;
       case 'TYREQ-2':
         componentToLoad = 'modificar-usuario';
