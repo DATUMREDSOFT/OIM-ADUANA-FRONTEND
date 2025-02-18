@@ -32,13 +32,13 @@
                    accept=".pdf"
                    (change)="onFileSelected($event)"/>
 
-            <div>
-              <button mat-stroked-button
-                      color="primary"
-                      (click)="fileInput.click()">
-                Subir archivo
-              </button>
-            </div>
+           <div>
+             <button mat-stroked-button
+                     color="primary"
+                     (click)="fileInput.click()">
+               Subir archivo
+             </button>
+           </div>
 
             <p class="file-info">Solo archivos .pdf</p>
           </div>
@@ -94,19 +94,9 @@
                     <!-- Dynamically Load Child Component -->
                     <div *ngIf="formulario.get('childComponent')?.value">
                       <ng-container [ngSwitch]="formulario.get('childComponent')?.value">
-                        <app-solicitud-nuevo-usuario *ngSwitchCase="'externo'"
-                                                     [formGroup]="$any(formulario.get('form'))">
+                        <app-solicitud-nuevo-usuario *ngSwitchCase="'nuevo-usuario'" [formGroup]="$any(formulario.get('form'))">
                         </app-solicitud-nuevo-usuario>
 
-                        <app-solicitud-interno *ngSwitchCase="'interno'" [formGroup]="$any(formulario.get('form'))">
-                        </app-solicitud-interno>
-
-                        <!--                        <app-solicitud-afpa *ngSwitchCase="'afpa'" [formGroup]="$any(formulario.get('form'))">-->
-                        <!--                        </app-solicitud-afpa>-->
-
-                        <app-solicitud-modificar-usuario *ngSwitchCase="'modificar-usuario'"
-                                                         [formGroup]="$any(formulario.get('form'))">
-                        </app-solicitud-modificar-usuario>
 
                         <p *ngSwitchDefault style="color: red;">⚠️ No component found for the selected request type.</p>
                       </ng-container>
@@ -117,7 +107,7 @@
                       <div *ngFor="let usuario of getUsuarios($any(formulario)).controls; let j = index" class="m-b-16">
                         <ng-container *ngIf="usuario as usuarioForm">
                           <app-solicitud-nuevo-usuario [formGroup]="asFormGroup(usuarioForm)"
-                                                       [userIndex]="j"></app-solicitud-nuevo-usuario>
+                                                 [userIndex]="j"></app-solicitud-nuevo-usuario>
 
                           <button *ngIf="j === getUsuarios($any(formulario)).length - 1" mat-flat-button color="primary"
                                   (click)="addUsuario(i)">

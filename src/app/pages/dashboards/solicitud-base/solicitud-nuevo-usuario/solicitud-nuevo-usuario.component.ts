@@ -22,7 +22,15 @@ export interface sistemaAsignado{
   fechaFinSistema: string;
 }
 
+export interface perfilAsignado {
+  perfil: string;
+  aduanaPerfil: string;
+  fechaInicioPerfil: string;
+  fechaFinPerfil: string;
+}
+
 const sistemasAsignados: sistemaAsignado[] = [];
+const perfilesAsignados: perfilAsignado[] = [];
 
 @Component({
   selector: 'app-solicitud-nuevo-usuario',
@@ -38,8 +46,6 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   @Input() userIndex!: number; // Add this line to accept the index from the parent component
   userForm: FormGroup;
   userRequests: any[] = [];
-  perfilesAsignados: any[] = [];
-
   currentUser: any = null;
   editIndex: number | null = null;
   editMode: boolean = false;
@@ -53,7 +59,9 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   shouldSave: boolean = false;
 
   displayedColumns: string[] = ['sistema', 'fechaInicioSistema', 'fechaFinSistema']; // Add this line
-  dataSource = new MatTableDataSource(sistemasAsignados);
+  displayedColumnsPerfil: string[] = ['perfil', 'aduanaPerfil', 'fechaInicioPerfil', 'fechaFinPerfil'];
+  dataSourceSistemas = new MatTableDataSource(sistemasAsignados);
+  dataSourcePerfil = new MatTableDataSource(perfilesAsignados);
 
   constructor(private fb: FormBuilder, private datePipe: DatePipe, private formService: FormServiceService, private cdr: ChangeDetectorRef) {
     this.userForm = this.fb.group({
@@ -66,6 +74,8 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.dataSourcePerfil.data = perfilesAsignados;
+    this.dataSourceSistemas.data = sistemasAsignados;
     if (!this.formGroup) {
       console.warn("❌ Warning: `formGroup` is undefined in `solicitud-externo.component.ts`.");
     } else {
@@ -82,18 +92,18 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
     }
   }
 
-  editPerfil(index: number) {
+  /*editPerfil(index: number) {
     this.editMode = true;
     this.editType = 'perfil';
     this.editIndex = index;
     const perfil = this.perfilesAsignados[index];
     this.userForm.patchValue({
       perfil: perfil.perfil,
-      aduanaPerfil: perfil.aduana,
+      aduanaPerfil: perfil.aduanaPerfil,
       fechaInicioPerfil: perfil.fechaInicio,
       fechaFinPerfil: perfil.fechaFin
     });
-  }
+  }*/
 
   /*editSistema(index: number) {
     this.editMode = true;
@@ -163,7 +173,7 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
       }
     } else {
       this.addProfileAndSystem();
-
+    }
   }*/
 
   asignarSistema(): void {
@@ -172,13 +182,36 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
     const fechaFinSistema = this.datePipe.transform(this.formGroup.get('fechaFinSistema')?.value, 'MM/dd/yyyy');
 
     if (sistema && fechaInicioSistema && fechaFinSistema) {
-      this.dataSource.data.unshift({
+      this.dataSourceSistemas.data.unshift({
         sistema: sistema,
         fechaInicioSistema: fechaInicioSistema,
         fechaFinSistema: fechaFinSistema,
       });
       this.table.renderRows(); // Refresh the table
       this.userForm.reset(); // Reset the form after adding the system
+      this.cdr.detectChanges();
+    } else {
+      Swal.fire('Error', 'Por favor complete todos los campos requeridos', 'error');
+    }
+  }
+
+  asignarPerfil(): void {
+    const perfil = this.formGroup.get('perfil')?.value;
+    const aduanaPerfil = this.formGroup.get('aduanaPerfil')?.value;
+    const fechaInicioPerfil = this.datePipe.transform(this.formGroup.get('fechaInicioPerfil')?.value, 'MM/dd/yyyy');
+    const fechaFinPerfil = this.datePipe.transform(this.formGroup.get('fechaFinPerfil')?.value, 'MM/dd/yyyy');
+
+    if (perfil && aduanaPerfil && fechaInicioPerfil && fechaFinPerfil) {
+      this.dataSourcePerfil.data.unshift({
+        perfil: perfil,
+        aduanaPerfil: aduanaPerfil,
+        fechaInicioPerfil: fechaInicioPerfil,
+        fechaFinPerfil: fechaFinPerfil,
+      });
+      console.log('Data Source Perfil:', this.dataSourcePerfil.data);
+      this.table.renderRows(); // Refresh the table
+      this.userForm.reset(); // Reset the form after adding the system
+      this.cdr.detectChanges();
     } else {
       Swal.fire('Error', 'Por favor complete todos los campos requeridos', 'error');
     }
@@ -186,11 +219,11 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
 
   /*addProfileAndSystem() {
     const sistema = this.userForm.value.sistema;
-    const aduanaSistema = this.userForm.value.aduanaSistema;
+    const aduanaPerfilSistema = this.userForm.value.aduanaPerfilSistema;
     const fechaInicioSistema = this.datePipe.transform(this.userForm.value.fechaInicioSistema, 'dd/MM/yyyy');
     const fechaFinSistema = this.datePipe.transform(this.userForm.value.fechaFinSistema, 'dd/MM/yyyy');
 
-    if (sistema && aduanaSistema && fechaInicioSistema && fechaFinSistema) {
+    if (sistema && aduanaPerfilSistema && fechaInicioSistema && fechaFinSistema) {
       this.sistemasAsignados.push({
         sistema,
         fechaInicioSistema: fechaInicioSistema,
@@ -200,7 +233,7 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
         // Reset the sistema fields
         this.userForm.patchValue({
           sistema: '',
-          aduanaSistema: '',
+          aduanaPerfilSistema: '',
           fechaInicioSistema: '',
           fechaFinSistema: ''
         });
@@ -211,15 +244,15 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   /*updatePerfil() {
     // Implement the logic to update the perfil
     const perfil = this.userForm.value.perfil;
-    const aduanaSistema = this.userForm.value.aduanaSistema;
+    const aduanaPerfilSistema = this.userForm.value.aduanaPerfilSistema;
     const fechaInicioPerfil = this.datePipe.transform(this.userForm.value.fechaInicioPerfil, 'dd/MM/yyyy');
     const fechaFinPerfil = this.datePipe.transform(this.userForm.value.fechaFinPerfil, 'dd/MM/yyyy');
 
-    if (perfil && aduanaSistema && fechaInicioPerfil && fechaFinPerfil) {
+    if (perfil && aduanaPerfilSistema && fechaInicioPerfil && fechaFinPerfil) {
       if (this.editIndex !== null) {
         this.perfilesAsignados[this.editIndex] = {
           perfil,
-          aduana: aduanaSistema,
+          aduanaPerfil: aduanaPerfilSistema,
           fechaInicio: fechaInicioPerfil,
           fechaFin: fechaFinPerfil
         };
@@ -228,7 +261,7 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
         // Reset the perfil fields
         this.userForm.patchValue({
           perfil: '',
-          aduanaSistema: '',
+          aduanaPerfilSistema: '',
           fechaInicioPerfil: '',
           fechaFinPerfil: ''
         });
@@ -239,11 +272,11 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   /*updateSistema() {
     // Implement the logic to update the sistema
     const sistema = this.userForm.value.sistema;
-    const aduanaSistema = this.userForm.value.aduanaSistema;
+    const aduanaPerfilSistema = this.userForm.value.aduanaPerfilSistema;
     const fechaInicioSistema = this.datePipe.transform(this.userForm.value.fechaInicioSistema, 'dd/MM/yyyy');
     const fechaFinSistema = this.datePipe.transform(this.userForm.value.fechaFinSistema, 'dd/MM/yyyy');
 
-    if (sistema && aduanaSistema && fechaInicioSistema && fechaFinSistema) {
+    if (sistema && aduanaPerfilSistema && fechaInicioSistema && fechaFinSistema) {
       if (this.editIndex !== null) {
         this.sistemasAsignados[this.editIndex] = {
           sistema,
@@ -255,7 +288,7 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
         // Reset the sistema fields
         this.userForm.patchValue({
           sistema: '',
-          aduanaSistema: '',
+          aduanaPerfilSistema: '',
           fechaInicioSistema: '',
           fechaFinSistema: ''
         });

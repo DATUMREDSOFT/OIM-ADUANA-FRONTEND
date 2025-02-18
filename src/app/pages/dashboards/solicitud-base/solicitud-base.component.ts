@@ -149,9 +149,13 @@ export class AppSolicitudBaseComponent implements OnInit {
         fechaInicioSolicitud: [''],
         fechaFinSolicitud: [''],
         sistema: [''],
-        aduanaPerfil: [''],
         fechaInicioSistema: [''],
-        fechaFinSistema: ['']
+        fechaFinSistema: [''],
+        perfil: [''],
+        aduanaPerfil: [''],
+        fechaInicioPerfil: [''],
+        fechaFinPerfil: ['']
+        
       }),
       usuarios: this.fb.array([])
     });
@@ -169,9 +173,12 @@ export class AppSolicitudBaseComponent implements OnInit {
       fechaInicioSolicitud: [''],
       fechaFinSolicitud: [''],
       sistema: [''],
-      aduanaPerfil: [''],
       fechaInicioSistema: [''],
       fechaFinSistema: [''],
+      perfil: [''],
+      aduanaPerfil: [''],
+      fechaInicioPerfil: [''],
+      fechaFinPerfil: [''],
       sistemas: this.fb.array([this.createDefaultSistema()])
     });
   }
