@@ -32,12 +32,15 @@ import {MaterialModule} from '../../../material.module';
 import { AppSolicitudModificacionUsuarioComponent } from './solicitud-modificacion-usuario/solicitud-modificacion-usuario.component';
 import {AppSolicitudNuevoUsuarioComponent} from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
 import {Roles} from '../../../enums/roles.enum';
+import {
+  AppSolicitudModificarUsuarioComponent
+} from "./solicitud-modificar-usuario/solicitud-modificar-usuario.component";
 
 @Component({
   selector: 'app-solicitud-base',
   templateUrl: './solicitud-base.component.html',
   standalone: true,
-  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent],
+  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent ],
 })
 export class AppSolicitudBaseComponent implements OnInit {
   solicitudForm: FormGroup;
@@ -153,7 +156,7 @@ export class AppSolicitudBaseComponent implements OnInit {
         aduanaPerfil: [''],
         fechaInicioPerfil: [''],
         fechaFinPerfil: ['']
-        
+
       }),
       usuarios: this.fb.array([])
     });

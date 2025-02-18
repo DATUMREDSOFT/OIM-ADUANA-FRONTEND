@@ -32,13 +32,13 @@
                    accept=".pdf"
                    (change)="onFileSelected($event)"/>
 
-           <div>
-             <button mat-stroked-button
-                     color="primary"
-                     (click)="fileInput.click()">
-               Subir archivo
-             </button>
-           </div>
+            <div>
+              <button mat-stroked-button
+                      color="primary"
+                      (click)="fileInput.click()">
+                Subir archivo
+              </button>
+            </div>
 
             <p class="file-info">Solo archivos .pdf</p>
           </div>
@@ -96,7 +96,7 @@
                       <div *ngFor="let usuario of getUsuarios($any(formulario)).controls; let j = index" class="m-b-16">
                         <ng-container *ngIf="usuario as usuarioForm">
                           <app-solicitud-nuevo-usuario [formGroup]="asFormGroup(usuarioForm)"
-                                                 [userIndex]="j"></app-solicitud-nuevo-usuario>
+                                                       [userIndex]="j"></app-solicitud-nuevo-usuario>
 
                           <button *ngIf="j === getUsuarios($any(formulario)).length - 1" mat-flat-button color="primary"
                                   (click)="addUsuario(i)">
