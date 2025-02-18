@@ -29,18 +29,15 @@ import {Aduana} from '../../../models/aduana.model';
 import {FormularioExterno} from './models/formulario-externo.model';
 
 import {MaterialModule} from '../../../material.module';
-import { AppSolicitudModificacionUsuarioComponent } from './solicitud-modificacion-usuario/solicitud-modificacion-usuario.component';
+import { AppSolicitudModificarUsuarioComponent } from './solicitud-modificar-usuario/solicitud-modificar-usuario.component';
 import {AppSolicitudNuevoUsuarioComponent} from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
 import {Roles} from '../../../enums/roles.enum';
-import {
-  AppSolicitudModificarUsuarioComponent
-} from "./solicitud-modificar-usuario/solicitud-modificar-usuario.component";
 
 @Component({
   selector: 'app-solicitud-base',
   templateUrl: './solicitud-base.component.html',
   standalone: true,
-  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent ],
+  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent, AppSolicitudModificarUsuarioComponent ],
 })
 export class AppSolicitudBaseComponent implements OnInit {
   solicitudForm: FormGroup;
@@ -398,7 +395,9 @@ export class AppSolicitudBaseComponent implements OnInit {
     const formulario = this.formularios.at(index) as FormGroup;
     const selectedTipo = formulario.get('tipo')?.value;
 
-    if (!selectedTipo) return;
+    if (!selectedTipo) {
+      return;
+    }
 
     let componentToLoad = null;
     switch (selectedTipo) {
@@ -406,22 +405,70 @@ export class AppSolicitudBaseComponent implements OnInit {
         componentToLoad = AppSolicitudNuevoUsuarioComponent;
         break;
       case 'TYREQ-2':
-        componentToLoad = 'modificar-usuario'; // Replace with actual component if available
+        componentToLoad = AppSolicitudModificarUsuarioComponent;
         break;
       case 'TYREQ-3':
-        componentToLoad = 'afpa'; // Replace with actual component if available
+        componentToLoad = null; // Replace with actual component if available
         break;
       default:
-        console.warn("⚠️ Tipo de solicitud no reconocido:", selectedTipo);
         return;
     }
-    console.log("Tipo de solicitud seleccionado:", selectedTipo);
-    if (formulario.get('childComponent')?.value !== componentToLoad) {
-      formulario.patchValue({childComponent: componentToLoad});
-      this.cdr.detectChanges();
-    }
 
-    // Load the component with subitems
+    const currentComponent = formulario.get('childComponent')?.value;
+    if (currentComponent && currentComponent !== componentToLoad) {
+      Swal.fire({
+        title: '¿Está seguro?',
+        text: 'Esta seguro de cambiar el tipo de formulario? Se perderan todos los datos',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, cambiar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.clearFormulario(formulario);
+          console.log('Formulario cleared', formulario);
+          this.loadComponent(formulario, componentToLoad, index);
+        }
+      });
+    } else {
+      this.loadComponent(formulario, componentToLoad, index);
+    }
+  }
+
+  private clearFormulario(formulario: FormGroup) {
+    formulario.patchValue({
+      form: {
+        uid: '',
+        nombre: '',
+        apellido: '',
+        correo: '',
+        telefono: '',
+        movil: '',
+        correoAlternativo: '',
+        fechaInicioSolicitud: '',
+        fechaFinSolicitud: '',
+        sistema: '',
+        fechaInicioSistema: '',
+        fechaFinSistema: '',
+        perfil: '',
+        aduanaPerfil: '',
+        fechaInicioPerfil: '',
+        fechaFinPerfil: ''
+      },
+      usuarios: []
+    });
+    const usuarios = this.getUsuarios(formulario);
+    while (usuarios.length) {
+      usuarios.removeAt(0);
+    }
+  }
+
+  private loadComponent(formulario: FormGroup, componentToLoad: any, index: number) {
+    formulario.patchValue({ childComponent: componentToLoad });
+    this.cdr.detectChanges();
+
     if (componentToLoad) {
       const usuarios = this.getUsuarios(formulario);
       if (usuarios.length === 0) {
