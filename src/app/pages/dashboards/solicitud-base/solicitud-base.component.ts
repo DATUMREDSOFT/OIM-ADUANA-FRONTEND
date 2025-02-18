@@ -54,16 +54,35 @@ export class AppSolicitudBaseComponent implements OnInit {
   private readonly localStorageService = inject(LocalStorageService);
   private readonly cdr = inject(ChangeDetectorRef);
 
+  private readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
 
   // upload file
   @ViewChild('fileInput') fileInput: ElementRef;
   selectedFile: File | null = null;
 
   onFileSelected(event: any) {
+
+
     const file = event.target.files[0];
-    if (file && file.type === 'application/pdf') {
-      this.selectedFile = file;
+
+    if (!file) return;
+
+    // Check file type
+    if (file.type !== 'application/pdf') {
+      Swal.fire('Error', 'Solo se permiten archivos PDF', 'error');
+      this.removeFile();
+      return;
     }
+
+    // Check file size
+    if (file.size > this.MAX_FILE_SIZE) {
+      Swal.fire('Error', 'El archivo no debe exceder 5MB', 'error');
+      this.removeFile();
+      return;
+    }
+
+    this.selectedFile = file;
+
   }
 
   removeFile() {
