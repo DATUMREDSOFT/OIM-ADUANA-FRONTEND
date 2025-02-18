@@ -91,17 +91,6 @@
                       </div>
                     </mat-card-content>
 
-                    <!-- Dynamically Load Child Component -->
-                    <!--<div *ngIf="formulario.get('childComponent')?.value">
-                      <ng-container [ngSwitch]="formulario.get('childComponent')?.value">
-                        <app-solicitud-nuevo-usuario *ngSwitchCase="'nuevo-usuario'" [formGroup]="$any(formulario.get('form'))">
-                        </app-solicitud-nuevo-usuario>
-
-
-                        <p *ngSwitchDefault style="color: red;">⚠️ No component found for the selected request type.</p>
-                      </ng-container>
-                    </div>-->
-
                     <!-- User Subitems -->
                     <div formArrayName="usuarios" class="m-b-16">
                       <div *ngFor="let usuario of getUsuarios($any(formulario)).controls; let j = index" class="m-b-16">

@@ -399,20 +399,31 @@ export class AppSolicitudBaseComponent implements OnInit {
     let componentToLoad = null;
     switch (selectedTipo) {
       case 'TYREQ-1':
-        componentToLoad = 'nuevo-usuario';
+        componentToLoad = AppSolicitudNuevoUsuarioComponent;
         break;
       case 'TYREQ-2':
-        componentToLoad = 'interno';
+        componentToLoad = 'modificar-usuario'; // Replace with actual component if available
         break;
       case 'TYREQ-3':
-        componentToLoad = 'afpa';
+        componentToLoad = 'afpa'; // Replace with actual component if available
         break;
       default:
         console.warn("⚠️ Tipo de solicitud no reconocido:", selectedTipo);
+        return;
+    }
+    console.log("Tipo de solicitud seleccionado:", selectedTipo);
+    if (formulario.get('childComponent')?.value !== componentToLoad) {
+      formulario.patchValue({childComponent: componentToLoad});
+      this.cdr.detectChanges();
     }
 
-    formulario.patchValue({childComponent: componentToLoad});
-    this.cdr.detectChanges();
+    // Load the component with subitems
+    if (componentToLoad) {
+      const usuarios = this.getUsuarios(formulario);
+      if (usuarios.length === 0) {
+        this.addUsuario(index);
+      }
+    }
   }
 
 
