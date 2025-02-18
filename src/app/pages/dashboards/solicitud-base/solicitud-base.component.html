@@ -94,14 +94,9 @@
                     <!-- Dynamically Load Child Component -->
                     <div *ngIf="formulario.get('childComponent')?.value">
                       <ng-container [ngSwitch]="formulario.get('childComponent')?.value">
-                        <app-solicitud-nuevo-usuario *ngSwitchCase="'externo'" [formGroup]="$any(formulario.get('form'))">
+                        <app-solicitud-nuevo-usuario *ngSwitchCase="'nuevo-usuario'" [formGroup]="$any(formulario.get('form'))">
                         </app-solicitud-nuevo-usuario>
 
-                        <app-solicitud-interno *ngSwitchCase="'interno'" [formGroup]="$any(formulario.get('form'))">
-                        </app-solicitud-interno>
-
-                        <app-solicitud-afpa *ngSwitchCase="'afpa'" [formGroup]="$any(formulario.get('form'))">
-                        </app-solicitud-afpa>
 
                         <p *ngSwitchDefault style="color: red;">⚠️ No component found for the selected request type.</p>
                       </ng-container>
