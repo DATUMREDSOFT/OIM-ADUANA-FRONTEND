@@ -29,9 +29,6 @@ export interface perfilAsignado {
   fechaFinPerfil: string;
 }
 
-const sistemasAsignados: sistemaAsignado[] = [];
-const perfilesAsignados: perfilAsignado[] = [];
-
 @Component({
   selector: 'app-solicitud-nuevo-usuario',
   templateUrl: './solicitud-nuevo-usuario.component.html',
@@ -60,22 +57,22 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
 
   displayedColumns: string[] = ['sistema', 'fechaInicioSistema', 'fechaFinSistema']; // Add this line
   displayedColumnsPerfil: string[] = ['perfil', 'aduanaPerfil', 'fechaInicioPerfil', 'fechaFinPerfil'];
-  dataSourceSistemas = new MatTableDataSource(sistemasAsignados);
-  dataSourcePerfil = new MatTableDataSource(perfilesAsignados);
+  dataSourceSistemas = new MatTableDataSource<sistemaAsignado>([]);
+  dataSourcePerfil = new MatTableDataSource<perfilAsignado>([]);
 
-  constructor(private fb: FormBuilder, private datePipe: DatePipe, private formService: FormServiceService, private cdr: ChangeDetectorRef) {
+  constructor(private fb: FormBuilder, private datePipe: DatePipe, private cdr: ChangeDetectorRef) {
     this.userForm = this.fb.group({
       sistema: ['', Validators.required],
       fechaInicioSistema: ['', Validators.required],
       fechaFinSistema: ['', Validators.required],
-
+      perfil: ['', Validators.required],
+      aduanaPerfil: ['', Validators.required],
+      fechaInicioPerfil: ['', Validators.required],
+      fechaFinPerfil: ['', Validators.required],
     });
-
   }
 
   ngOnInit() {
-    this.dataSourcePerfil.data = perfilesAsignados;
-    this.dataSourceSistemas.data = sistemasAsignados;
     if (!this.formGroup) {
       console.warn("❌ Warning: `formGroup` is undefined in `solicitud-externo.component.ts`.");
     } else {
