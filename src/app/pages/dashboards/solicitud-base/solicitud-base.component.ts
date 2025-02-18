@@ -146,9 +146,13 @@ export class AppSolicitudBaseComponent implements OnInit {
         fechaInicioSolicitud: [''],
         fechaFinSolicitud: [''],
         sistema: [''],
-        aduanaPerfil: [''],
         fechaInicioSistema: [''],
-        fechaFinSistema: ['']
+        fechaFinSistema: [''],
+        perfil: [''],
+        aduanaPerfil: [''],
+        fechaInicioPerfil: [''],
+        fechaFinPerfil: ['']
+        
       }),
       usuarios: this.fb.array([])
     });
@@ -166,9 +170,12 @@ export class AppSolicitudBaseComponent implements OnInit {
       fechaInicioSolicitud: [''],
       fechaFinSolicitud: [''],
       sistema: [''],
-      aduanaPerfil: [''],
       fechaInicioSistema: [''],
       fechaFinSistema: [''],
+      perfil: [''],
+      aduanaPerfil: [''],
+      fechaInicioPerfil: [''],
+      fechaFinPerfil: [''],
       sistemas: this.fb.array([this.createDefaultSistema()])
     });
   }
@@ -390,7 +397,7 @@ export class AppSolicitudBaseComponent implements OnInit {
     let componentToLoad = null;
     switch (selectedTipo) {
       case 'TYREQ-1':
-        componentToLoad = 'externo';
+        componentToLoad = 'nuevo-usuario';
         break;
       case 'TYREQ-2':
         componentToLoad = 'interno';
