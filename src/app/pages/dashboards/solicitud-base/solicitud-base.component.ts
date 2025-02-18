@@ -29,6 +29,7 @@ import {Aduana} from '../../../models/aduana.model';
 import {FormularioExterno} from './models/formulario-externo.model';
 
 import {MaterialModule} from '../../../material.module';
+import { AppSolicitudModificacionUsuarioComponent } from './solicitud-modificacion-usuario/solicitud-modificacion-usuario.component';
 import {AppSolicitudNuevoUsuarioComponent} from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
 import {Roles} from '../../../enums/roles.enum';
 
