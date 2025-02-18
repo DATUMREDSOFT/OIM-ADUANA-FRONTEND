@@ -32,13 +32,13 @@
                    accept=".pdf"
                    (change)="onFileSelected($event)"/>
 
-            <div>
-              <button mat-stroked-button
-                      color="primary"
-                      (click)="fileInput.click()">
-                Subir archivo
-              </button>
-            </div>
+           <div>
+             <button mat-stroked-button
+                     color="primary"
+                     (click)="fileInput.click()">
+               Subir archivo
+             </button>
+           </div>
 
             <p class="file-info">Solo archivos .pdf</p>
           </div>
@@ -91,45 +91,39 @@
                       </div>
                     </mat-card-content>
 
-                    <!-- Dynamically Load Child Component -->
-                    <!--<div *ngIf="formulario.get('childComponent')?.value">
-                      <ng-container [ngSwitch]="formulario.get('childComponent')?.value">
-                        <app-solicitud-nuevo-usuario *ngSwitchCase="'nuevo-usuario'" [formGroup]="$any(formulario.get('form'))">
-                        </app-solicitud-nuevo-usuario>
-
-
-                        <p *ngSwitchDefault style="color: red;">⚠️ No component found for the selected request type.</p>
-                      </ng-container>
-                    </div>-->
 
                     <!-- User Subitems -->
                     <div formArrayName="usuarios" class="m-b-16">
                       <div *ngFor="let usuario of getUsuarios($any(formulario)).controls; let j = index" class="m-b-16">
-                        <ng-container *ngIf="usuario as usuarioForm">
-                          <app-solicitud-nuevo-usuario [formGroup]="asFormGroup(usuarioForm)"
-                                                       [userIndex]="j"></app-solicitud-nuevo-usuario>
-
-                          <button *ngIf="j === getUsuarios($any(formulario)).length - 1" mat-flat-button color="primary"
-                                  (click)="addUsuario(i)">
-                            Agregar Usuario
-                          </button>
-                          <!-- Remove User Button -->
-                          <button *ngIf="getUsuarios($any(formulario)).length > 1" mat-flat-button
-                                  (click)="removeUsuario(i, j)" color="warn"
-                                  [class.m-l-16]="j === getUsuarios($any(formulario)).length - 1">
-                            Borrar usuario {{ j + 1 }}
-                          </button>
-
-                          <button *ngIf="formularios.length !== 1" mat-flat-button color="warn" style="float: right;"
-                                  (click)="removeFormulario(i)">
-                            Borrar formulario
-                          </button>
+                      <ng-container *ngIf="usuario as usuarioForm">
+                        <ng-container [ngSwitch]="formulario.get('tipo')?.value">
+                        <app-solicitud-nuevo-usuario *ngSwitchCase="'TYREQ-1'" [formGroup]="asFormGroup(usuarioForm)"
+                                       [userIndex]="j"></app-solicitud-nuevo-usuario>
+                        <app-solicitud-modificar-usuario *ngSwitchCase="'TYREQ-2'" [formGroup]="asFormGroup(usuarioForm)"
+                                         [userIndex]="j"></app-solicitud-modificar-usuario>
                         </ng-container>
+
+                        <button *ngIf="j === getUsuarios($any(formulario)).length - 1" mat-flat-button color="primary"
+                            (click)="addUsuario(i)">
+                        Agregar Usuario
+                        </button>
+                        <!-- Remove User Button -->
+                        <button *ngIf="getUsuarios($any(formulario)).length > 1" mat-flat-button
+                            (click)="removeUsuario(i, j)" color="warn"
+                            [class.m-l-16]="j === getUsuarios($any(formulario)).length - 1">
+                        Borrar usuario {{ j + 1 }}
+                        </button>
+
+                        <button *ngIf="formularios.length !== 1" mat-flat-button color="warn" style="float: right;"
+                            (click)="removeFormulario(i)">
+                        Borrar formulario
+                        </button>
+                      </ng-container>
                       </div>
                       <!-- Show when no users are present -->
                       <button *ngIf="getUsuarios($any(formulario)).length === 0 && formulario.get('tipo')?.value"
-                              mat-flat-button color="primary" (click)="addUsuario(i)">
-                        Agregar Usuario
+                          mat-flat-button color="primary" (click)="addUsuario(i)">
+                      Agregar Usuario
                       </button>
                     </div>
                   </form>

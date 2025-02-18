@@ -9,6 +9,7 @@ import {AppDashboardInternoComponent} from './dasboard-interno/dashboard-interno
 import {AppDashboardExternoComponent} from './dashboard_externo/dashboard-externo.component';
 import {AppSolicitudBaseComponent} from './solicitud-base/solicitud-base.component';
 import {AppSolicitudNuevoUsuarioComponent} from './solicitud-base/solicitud-nuevo-usuario/solicitud-nuevo-usuario.component';
+import { AppSolicitudModificarUsuarioComponent } from './solicitud-base/solicitud-modificar-usuario/solicitud-modificar-usuario.component';
 import {AprobacionesComponent} from "./aprobaciones/aprobaciones/aprobaciones.component";
 import {BaseAprobacionesComponent} from "./aprobaciones/base-aprobaciones.component";
 
@@ -20,6 +21,7 @@ import {BaseAprobacionesComponent} from "./aprobaciones/base-aprobaciones.compon
     AppDashboardExternoComponent,
     AppSolicitudBaseComponent,
     AppSolicitudNuevoUsuarioComponent,
+    AppSolicitudModificarUsuarioComponent,
     BaseAprobacionesComponent
   ],
 
