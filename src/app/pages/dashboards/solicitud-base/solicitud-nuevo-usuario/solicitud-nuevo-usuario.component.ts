@@ -39,7 +39,7 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   userForm: FormGroup;
   userRequests: any[] = [];
   perfilesAsignados: any[] = [];
-  
+
   currentUser: any = null;
   editIndex: number | null = null;
   editMode: boolean = false;
@@ -163,7 +163,7 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
       }
     } else {
       this.addProfileAndSystem();
-    }
+
   }*/
 
   asignarSistema(): void {

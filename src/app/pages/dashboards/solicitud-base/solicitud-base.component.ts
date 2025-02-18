@@ -31,12 +31,15 @@ import {FormularioExterno} from './models/formulario-externo.model';
 import {MaterialModule} from '../../../material.module';
 import {AppSolicitudNuevoUsuarioComponent} from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
 import {Roles} from '../../../enums/roles.enum';
+import {
+  AppSolicitudModificarUsuarioComponent
+} from "./solicitud-modifcar-usuario/solicitud-modificar-usuario.component";
 
 @Component({
   selector: 'app-solicitud-base',
   templateUrl: './solicitud-base.component.html',
   standalone: true,
-  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent],
+  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent, AppSolicitudModificarUsuarioComponent],
 })
 export class AppSolicitudBaseComponent implements OnInit {
   solicitudForm: FormGroup;
@@ -390,10 +393,10 @@ export class AppSolicitudBaseComponent implements OnInit {
     let componentToLoad = null;
     switch (selectedTipo) {
       case 'TYREQ-1':
-        componentToLoad = 'externo';
+        componentToLoad = 'nuevo-usuario';
         break;
       case 'TYREQ-2':
-        componentToLoad = 'interno';
+        componentToLoad = 'modificar-usuario';
         break;
       case 'TYREQ-3':
         componentToLoad = 'afpa';
@@ -405,7 +408,6 @@ export class AppSolicitudBaseComponent implements OnInit {
     formulario.patchValue({childComponent: componentToLoad});
     this.cdr.detectChanges();
   }
-
 
 
   /** ✅ Scroll to a Specific Form */
