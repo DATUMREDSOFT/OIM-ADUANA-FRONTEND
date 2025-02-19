@@ -27,15 +27,31 @@ export class TipoUsuarioService {
       [FormType.PersonalNoAFPA]: Roles.NOAFPA,
       [FormType.AgenteAFPA]: Roles.AFPA,
       [FormType.Interno]: Roles.INTERNO,
-      [FormType.SolicitudNoAFPA]: Roles.NOAFPA, // Default fallbacks
+      [FormType.SolicitudNoAFPA]: Roles.NOAFPA,
       [FormType.Aplicante]: Roles.NOAFPA,
       [FormType.Elaborador]: Roles.INTERNO
     };
     return mapping[tipo] || Roles.NOAFPA;
   }
 
+  /**
+   * ✅ Get user role, but return "Externo" for NOAFPA users
+   */
   getTipoUsuario(): Roles {
-    const stored = this.localStorageSrv.getItem<{ value: Roles }>(this.environment.localStorageTipoUsuarioKey);
-    return stored?.value || this.tipoUsuario;
+    const rawStoredData = localStorage.getItem(this.environment.localStorageTipoUsuarioKey);
+    console.log("🔍 Raw Local Storage Value:", rawStoredData); // Check raw storage data
+  
+    const stored = this.localStorageSrv.getItem<{ value?: Roles }>(this.environment.localStorageTipoUsuarioKey);
+    console.log("🔍 Parsed Local Storage Data:", stored); // Check parsed version
+  
+    if (!stored || !stored.value) {
+      console.warn("⚠️ No valid role found in Local Storage! Using fallback.");
+      return this.tipoUsuario || Roles.NOAFPA;
+    }
+  
+    console.log("✅ Retrieved User Role from Local Storage:", stored.value);
+    return stored.value;
   }
+   
+
 }

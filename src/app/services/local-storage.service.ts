@@ -12,9 +12,25 @@ export class LocalStorageService {
   }
 
   getItem<T>(key: string): T | null {
-    const item = localStorage.getItem(key);
-    return item ? JSON.parse(item).value : null;
+  const item = localStorage.getItem(key);
+  if (!item) {
+    console.warn(`⚠️ No item found in Local Storage for key: ${key}`);
+    return null;
   }
+
+  try {
+    console.log(`🔍 Raw Data from Local Storage (${key}):`, item);
+    
+    const parsed = JSON.parse(item);
+    console.log("✅ Parsed Data:", parsed);
+
+    return parsed; // Return parsed object
+  } catch (error) {
+    console.error("❌ Error Parsing Local Storage Item:", error);
+    return null;
+  }
+}
+
 
   removeItem(key: string): void {
     localStorage.removeItem(key);
