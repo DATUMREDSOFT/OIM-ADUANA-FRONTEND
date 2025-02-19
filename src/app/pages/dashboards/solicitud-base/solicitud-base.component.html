@@ -2,60 +2,44 @@
   <div class="row">
     <!-- Sidebar with Form Index -->
     <div class="col-lg-3">
-      <mat-card style="position: fixed; max-height: calc(100vh - 40px); overflow-y: auto; width: 15rem;">
-        <mat-card-header>
-          <mat-card-title>Índice de formularios</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <ul>
-            <li *ngFor="let formulario of formularios.controls; let i = index" (click)="scrollToForm(i)"
-                style="cursor: pointer; color: blue; text-decoration: underline;">
-              Formulario {{ i + 1 }}
-            </li>
-          </ul>
-        </mat-card-content>
-      </mat-card>
-
-
-      <mat-card class="upload-card ">
-        <mat-card-header class="">
-          <mat-card-title class="f-w-400 text-center">Adjuntar archivo</mat-card-title>
-        </mat-card-header>
-
-        <mat-card-content>
-          <div class="upload-area ">
-            <mat-icon class="upload-icon">cloud_upload</mat-icon>
-
-            <input type="file"
-                   #fileInput
-                   class="file-input"
-                   accept=".pdf"
-                   (change)="onFileSelected($event)"/>
-
-           <div>
-             <button mat-stroked-button
-                     color="primary"
-                     (click)="fileInput.click()">
-               Subir archivo
-             </button>
-           </div>
-
-            <p class="file-info">Solo archivos .pdf</p>
-          </div>
-
-          <div *ngIf="selectedFile" class="selected-file-container">
-            <mat-icon class="file-icon">description</mat-icon>
-            <span class="file-name">{{ selectedFile.name }}</span>
-            <button mat-icon-button
-                    class="remove-button"
-                    (click)="removeFile()">
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-
+      <div style="display:flex; flex-direction: column; position:fixed; max-height: calc(100vh-40px); overflow-y: auto; width: 15rem;">
+        <mat-card class="m-b-16">
+          <mat-card-header>
+            <mat-card-title>Índice de formularios</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <ul>
+              <li *ngFor="let formulario of formularios.controls; let i = index" (click)="scrollToForm(i)"
+                  style="cursor: pointer; color: blue; text-decoration: underline;">
+                Formulario {{ i + 1 }}
+              </li>
+            </ul>
+          </mat-card-content>
+        </mat-card>
+    
+        <mat-card class="fixed-card upload-card m-t-16">
+          <mat-card-header>
+            <mat-card-title class="f-w-400 text-center">Adjuntar archivo</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="upload-area">
+              <mat-icon class="upload-icon">cloud_upload</mat-icon>
+              <input type="file" #fileInput class="file-input" accept=".pdf" (change)="onFileSelected($event)"/>
+              <div>
+                <button mat-stroked-button color="primary" (click)="fileInput.click()">Subir archivo</button>
+              </div>
+              <p class="file-info">Solo archivos .pdf</p>
+            </div>
+            <div *ngIf="selectedFile" class="selected-file-container">
+              <mat-icon class="file-icon">description</mat-icon>
+              <span class="file-name">{{ selectedFile.name }}</span>
+              <button mat-icon-button class="remove-button" (click)="removeFile()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
 
     <!-- Main Form Section -->
