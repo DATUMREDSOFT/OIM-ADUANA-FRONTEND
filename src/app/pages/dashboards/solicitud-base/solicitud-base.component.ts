@@ -413,31 +413,33 @@ export class AppSolicitudBaseComponent implements OnInit {
   updateSelectedTipoSolicitud(index: number) {
     const formulario = this.formularios.at(index) as FormGroup;
     const selectedTipo = formulario.get('tipo')?.value;
-
+  
     if (!selectedTipo) {
       return;
     }
-
-    let componentToLoad = null;
+  
+    let componentToLoad: string | null = null;
     switch (selectedTipo) {
       case 'TYREQ-1':
-        componentToLoad = AppSolicitudNuevoUsuarioComponent;
+        componentToLoad = 'TYREQ-1';
         break;
       case 'TYREQ-2':
-        componentToLoad = AppSolicitudModificarUsuarioComponent;
+        componentToLoad = 'TYREQ-2';
         break;
       case 'TYREQ-3':
-        componentToLoad = null; // Replace with actual component if available
+        componentToLoad = null; // O asigna otro string si corresponde
         break;
       default:
         return;
     }
-
-    const currentComponent = formulario.get('childComponent')?.value;
-    if (currentComponent && currentComponent !== componentToLoad) {
+  
+    // Obtenemos el valor actual de childComponent (string)
+    const currentChild = formulario.get('childComponent')?.value;
+  
+    if (currentChild && currentChild !== componentToLoad) {
       Swal.fire({
         title: '¿Está seguro?',
-        text: 'Esta seguro de cambiar el tipo de formulario? Se perderan todos los datos',
+        text: '¿Desea cambiar el tipo de formulario? Se perderán todos los datos',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí, cambiar',
@@ -447,14 +449,29 @@ export class AppSolicitudBaseComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           this.clearFormulario(formulario);
-          console.log('Formulario cleared', formulario);
           this.loadComponent(formulario, componentToLoad, index);
+        } else {
+          // Si se cancela, revertimos el select al valor anterior
+          formulario.get('tipo')?.setValue(currentChild, { emitEvent: false });
         }
       });
     } else {
       this.loadComponent(formulario, componentToLoad, index);
     }
   }
+  
+  private loadComponent(formulario: FormGroup, componentToLoad: string | null, index: number) {
+    formulario.patchValue({ childComponent: componentToLoad });
+    this.cdr.detectChanges();
+  
+    if (componentToLoad) {
+      const usuarios = this.getUsuarios(formulario);
+      if (usuarios.length === 0) {
+        this.addUsuario(index);
+      }
+    }
+  }
+  
 
   private clearFormulario(formulario: FormGroup) {
     formulario.patchValue({
@@ -483,20 +500,6 @@ export class AppSolicitudBaseComponent implements OnInit {
       usuarios.removeAt(0);
     }
   }
-
-  private loadComponent(formulario: FormGroup, componentToLoad: any, index: number) {
-    formulario.patchValue({ childComponent: componentToLoad });
-    this.cdr.detectChanges();
-
-    if (componentToLoad) {
-      const usuarios = this.getUsuarios(formulario);
-      if (usuarios.length === 0) {
-        this.addUsuario(index);
-      }
-    }
-  }
-
-
 
   /** ✅ Scroll to a Specific Form */
   scrollToForm(index: number) {
