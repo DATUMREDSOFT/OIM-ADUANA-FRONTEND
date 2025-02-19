@@ -14,10 +14,8 @@ import {
   MatTable,
   MatTableDataSource
 } from "@angular/material/table";
-import {MatFormField} from "@angular/material/form-field";
 import {NgApexchartsModule} from "ng-apexcharts";
 import {TablerIconsModule} from "angular-tabler-icons";
-import {MatInput} from "@angular/material/input";
 import {MatPaginator} from "@angular/material/paginator";
 import Swal from "sweetalert2";
 import {MatCheckbox} from "@angular/material/checkbox";
@@ -55,11 +53,8 @@ export interface Aprobacion {
     MatHeaderRowDef,
     MatRow,
     MatCard,
-    MatFormField,
     NgApexchartsModule,
     TablerIconsModule,
-    MatInput,
-    MatPaginator,
     MatCheckbox,
     MatIconModule,
     MatDivider,
@@ -84,7 +79,6 @@ export class DetallesAprobacionesComponent {
       this.dataSource.data = this.elemento.perfiles;
     }
   }
-
 
 
   isAllSelected(): boolean {
