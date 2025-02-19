@@ -82,7 +82,9 @@
                       <ng-container *ngIf="usuario as usuarioForm">
                         <ng-container [ngSwitch]="formulario.get('childComponent')?.value">
                         <app-solicitud-nuevo-usuario *ngSwitchCase="'TYREQ-1'" [formGroup]="asFormGroup(usuarioForm)"
-                                       [userIndex]="j"></app-solicitud-nuevo-usuario>
+                                       [userIndex]="j" [sistemas]="sistemas()"
+                                       [perfiles]="perfiles()"
+                                       [aduanas]="aduanas()"></app-solicitud-nuevo-usuario>
                         <app-solicitud-modificar-usuario *ngSwitchCase="'TYREQ-2'" [formGroup]="asFormGroup(usuarioForm)"
                                          [userIndex]="j"></app-solicitud-modificar-usuario>
                         </ng-container>
