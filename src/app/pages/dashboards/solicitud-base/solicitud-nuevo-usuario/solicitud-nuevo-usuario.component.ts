@@ -14,19 +14,18 @@ import { MatTabsModule } from '@angular/material/tabs';
 
 // icons
 import { TablerIconsModule } from 'angular-tabler-icons';
-import { FormServiceService } from "../../../../services/form-service.service";
 
-export interface sistemaAsignado{
+export interface sistemaAsignado {
   sistema: string;
-  fechaInicioSistema: string;
-  fechaFinSistema: string;
+  fechaInicioSistema: Date;
+  fechaFinSistema: Date;
 }
 
 export interface perfilAsignado {
   perfil: string;
   aduanaPerfil: string;
-  fechaInicioPerfil: string;
-  fechaFinPerfil: string;
+  fechaInicioPerfil: Date;
+  fechaFinPerfil: Date;
 }
 
 @Component({
@@ -50,13 +49,18 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
 
   sistemaAsignado: [sistemaAsignado];
 
+  isEditingSistema: boolean = false;
+  isEditingPerfil: boolean = false;
+  editingIndexSistema: number | null = null;
+  editingIndexPerfil: number | null = null;
 
   selectedSolicitud: string = '';
   isLoading: boolean = false;
   shouldSave: boolean = false;
 
-  displayedColumns: string[] = ['sistema', 'fechaInicioSistema', 'fechaFinSistema']; // Add this line
-  displayedColumnsPerfil: string[] = ['perfil', 'aduanaPerfil', 'fechaInicioPerfil', 'fechaFinPerfil'];
+  displayedColumns: string[] = ['sistema', 'fechaInicioSistema', 'fechaFinSistema', 'accion'];
+  displayedColumnsPerfil: string[] = ['perfil', 'aduanaPerfil', 'fechaInicioPerfil', 'fechaFinPerfil', 'accion'];
+
   dataSourceSistemas = new MatTableDataSource<sistemaAsignado>([]);
   dataSourcePerfil = new MatTableDataSource<perfilAsignado>([]);
 
@@ -89,57 +93,6 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
     }
   }
 
-  /*editPerfil(index: number) {
-    this.editMode = true;
-    this.editType = 'perfil';
-    this.editIndex = index;
-    const perfil = this.perfilesAsignados[index];
-    this.userForm.patchValue({
-      perfil: perfil.perfil,
-      aduanaPerfil: perfil.aduanaPerfil,
-      fechaInicioPerfil: perfil.fechaInicio,
-      fechaFinPerfil: perfil.fechaFin
-    });
-  }*/
-
-  /*editSistema(index: number) {
-    this.editMode = true;
-    this.editType = 'sistema';
-    this.editIndex = index;
-    const sistema = this.dataSource[index];
-    this.userForm.patchValue({
-      sistema: sistema.sistema,
-      fechaInicioSistema: sistema.fechaInicioSistema,
-      fechaFinSistema: sistema.fechaFinSistema
-    });
-  }*/
-
-  /*deletePerfil(index: number) {
-    this.perfilesAsignados.splice(index, 1);
-    Swal.fire('Éxito', 'Perfil eliminado', 'success');
-  }*/
-
-  /*deleteSistema(index: number) {
-    this.sistemasAsignados.splice(index, 1);
-    Swal.fire('Éxito', 'Sistema eliminado', 'success');
-  }*/
-
-  /*onSolicitudChange(event: any, index: number) {
-    const selectedType = event.value;
-    this.userRequests[index].tipoSolicitud = selectedType;
-  }*/
-
-  /*fetchUserData() {
-    // Mock data for now
-    this.userForm.patchValue({
-      nombre: 'John',
-      apellido: 'Doe',
-      usuario: 'jdoe',
-      correo: 'jdoe@example.com',
-      estado: 'Activo',
-    });
-  }*/
-
   addAnotherForm() {
     this.userRequests.push({
       duiNit: '',
@@ -157,36 +110,33 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
     });
   }
 
-  /*deleteForm(index: number) {
-    this.userRequests.splice(index, 1);
-  }*/
-
-  /*saveProfileAndSystem() {
-    if (this.editMode) {
-      if (this.editType === 'perfil') {
-        this.updatePerfil();
-      } else if (this.editType === 'sistema') {
-        this.updateSistema();
-      }
-    } else {
-      this.addProfileAndSystem();
-    }
-  }*/
-
   asignarSistema(): void {
     const sistema = this.formGroup.get('sistema')?.value;
-    const fechaInicioSistema = this.datePipe.transform(this.formGroup.get('fechaInicioSistema')?.value, 'MM/dd/yyyy');
-    const fechaFinSistema = this.datePipe.transform(this.formGroup.get('fechaFinSistema')?.value, 'MM/dd/yyyy');
-
+    const fechaInicioSistema = this.formGroup.get('fechaInicioSistema')?.value;
+    const fechaFinSistema = this.formGroup.get('fechaFinSistema')?.value;
+  
     if (sistema && fechaInicioSistema && fechaFinSistema) {
-      this.dataSourceSistemas.data.unshift({
-        sistema: sistema,
-        fechaInicioSistema: fechaInicioSistema,
-        fechaFinSistema: fechaFinSistema,
-      });
-      this.table.renderRows(); // Refresh the table
-      this.userForm.reset(); // Reset the form after adding the system
-      this.cdr.detectChanges();
+      if (this.isEditingSistema && this.editingIndexSistema !== null) {
+        // Update the selected row
+        const updatedData = [...this.dataSourceSistemas.data]; // Clone the array
+        updatedData[this.editingIndexSistema] = {
+          sistema,
+          fechaInicioSistema: new Date(fechaInicioSistema),
+          fechaFinSistema: new Date(fechaFinSistema),
+        };
+        this.dataSourceSistemas.data = updatedData; // Assign new reference
+  
+        this.isEditingSistema = false;
+        this.editingIndexSistema = null;
+      } else {
+        // Add new entry
+        this.dataSourceSistemas.data = [
+          ...this.dataSourceSistemas.data,
+          { sistema, fechaInicioSistema: new Date(fechaInicioSistema), fechaFinSistema: new Date(fechaFinSistema) },
+        ];
+      }
+  
+      this.resetForm();
     } else {
       Swal.fire('Error', 'Por favor complete todos los campos requeridos', 'error');
     }
@@ -195,139 +145,83 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   asignarPerfil(): void {
     const perfil = this.formGroup.get('perfil')?.value;
     const aduanaPerfil = this.formGroup.get('aduanaPerfil')?.value;
-    const fechaInicioPerfil = this.datePipe.transform(this.formGroup.get('fechaInicioPerfil')?.value, 'MM/dd/yyyy');
-    const fechaFinPerfil = this.datePipe.transform(this.formGroup.get('fechaFinPerfil')?.value, 'MM/dd/yyyy');
-
+    const fechaInicioPerfil = this.formGroup.get('fechaInicioPerfil')?.value;
+    const fechaFinPerfil = this.formGroup.get('fechaFinPerfil')?.value;
+  
     if (perfil && aduanaPerfil && fechaInicioPerfil && fechaFinPerfil) {
-      this.dataSourcePerfil.data.unshift({
-        perfil: perfil,
-        aduanaPerfil: aduanaPerfil,
-        fechaInicioPerfil: fechaInicioPerfil,
-        fechaFinPerfil: fechaFinPerfil,
-      });
-      console.log('Data Source Perfil:', this.dataSourcePerfil.data);
-      this.table.renderRows(); // Refresh the table
-      this.userForm.reset(); // Reset the form after adding the system
-      this.cdr.detectChanges();
+      if (this.isEditingPerfil && this.editingIndexPerfil !== null) {
+        // Update the selected row
+        const updatedData = [...this.dataSourcePerfil.data]; // Clone the array
+        updatedData[this.editingIndexPerfil] = {
+          perfil,
+          aduanaPerfil,
+          fechaInicioPerfil: new Date(fechaInicioPerfil),
+          fechaFinPerfil: new Date(fechaFinPerfil),
+        };
+        this.dataSourcePerfil.data = updatedData; // Assign new reference
+  
+        this.isEditingPerfil = false;
+        this.editingIndexPerfil = null;
+      } else {
+        // Add new entry
+        this.dataSourcePerfil.data = [
+          ...this.dataSourcePerfil.data,
+          { perfil, aduanaPerfil, fechaInicioPerfil: new Date(fechaInicioPerfil), fechaFinPerfil: new Date(fechaFinPerfil) },
+        ];
+      }
+  
+      this.resetForm();
     } else {
       Swal.fire('Error', 'Por favor complete todos los campos requeridos', 'error');
     }
   }
+  
+  editarSistema(index: number): void {
+    const item = this.dataSourceSistemas.data[index];
+    this.formGroup.patchValue({
+      sistema: item.sistema,
+      fechaInicioSistema: new Date(item.fechaInicioSistema),
+      fechaFinSistema: new Date(item.fechaFinSistema),
+    });
 
-  /*addProfileAndSystem() {
-    const sistema = this.userForm.value.sistema;
-    const aduanaPerfilSistema = this.userForm.value.aduanaPerfilSistema;
-    const fechaInicioSistema = this.datePipe.transform(this.userForm.value.fechaInicioSistema, 'dd/MM/yyyy');
-    const fechaFinSistema = this.datePipe.transform(this.userForm.value.fechaFinSistema, 'dd/MM/yyyy');
+    this.isEditingSistema = true;
+    this.editingIndexSistema = index;
+  }
 
-    if (sistema && aduanaPerfilSistema && fechaInicioSistema && fechaFinSistema) {
-      this.sistemasAsignados.push({
-        sistema,
-        fechaInicioSistema: fechaInicioSistema,
-        fechaFinSistema: fechaFinSistema
-      });
-      Swal.fire('Éxito', 'Se asignó sistema a usuario', 'success').then(() => {
-        // Reset the sistema fields
-        this.userForm.patchValue({
-          sistema: '',
-          aduanaPerfilSistema: '',
-          fechaInicioSistema: '',
-          fechaFinSistema: ''
-        });
-      });
-    }
-  }*/
+  editarPerfil(index: number): void {
+    const item = this.dataSourcePerfil.data[index];
+    this.formGroup.patchValue({
+      perfil: item.perfil,
+      aduanaPerfil: item.aduanaPerfil,
+      fechaInicioPerfil: new Date(item.fechaInicioPerfil),
+      fechaFinPerfil: new Date(item.fechaFinPerfil),
+    });
 
-  /*updatePerfil() {
-    // Implement the logic to update the perfil
-    const perfil = this.userForm.value.perfil;
-    const aduanaPerfilSistema = this.userForm.value.aduanaPerfilSistema;
-    const fechaInicioPerfil = this.datePipe.transform(this.userForm.value.fechaInicioPerfil, 'dd/MM/yyyy');
-    const fechaFinPerfil = this.datePipe.transform(this.userForm.value.fechaFinPerfil, 'dd/MM/yyyy');
+    this.isEditingPerfil = true;
+    this.editingIndexPerfil = index;
+  }
 
-    if (perfil && aduanaPerfilSistema && fechaInicioPerfil && fechaFinPerfil) {
-      if (this.editIndex !== null) {
-        this.perfilesAsignados[this.editIndex] = {
-          perfil,
-          aduanaPerfil: aduanaPerfilSistema,
-          fechaInicio: fechaInicioPerfil,
-          fechaFin: fechaFinPerfil
-        };
-      }
-      Swal.fire('Éxito', 'Perfil actualizado', 'success').then(() => {
-        // Reset the perfil fields
-        this.userForm.patchValue({
-          perfil: '',
-          aduanaPerfilSistema: '',
-          fechaInicioPerfil: '',
-          fechaFinPerfil: ''
-        });
-      });
-    }
-  }*/
+  eliminarSistema(index: number): void {
+    this.dataSourceSistemas.data.splice(index, 1);
+    this.dataSourceSistemas.data = [...this.dataSourceSistemas.data];
+    this.resetForm();
+  }
 
-  /*updateSistema() {
-    // Implement the logic to update the sistema
-    const sistema = this.userForm.value.sistema;
-    const aduanaPerfilSistema = this.userForm.value.aduanaPerfilSistema;
-    const fechaInicioSistema = this.datePipe.transform(this.userForm.value.fechaInicioSistema, 'dd/MM/yyyy');
-    const fechaFinSistema = this.datePipe.transform(this.userForm.value.fechaFinSistema, 'dd/MM/yyyy');
+  eliminarPerfil(index: number): void {
+    this.dataSourcePerfil.data.splice(index, 1);
+    this.dataSourcePerfil.data = [...this.dataSourcePerfil.data];
+    this.resetForm();
+  }
 
-    if (sistema && aduanaPerfilSistema && fechaInicioSistema && fechaFinSistema) {
-      if (this.editIndex !== null) {
-        this.sistemasAsignados[this.editIndex] = {
-          sistema,
-          fechaInicioSistema: fechaInicioSistema,
-          fechaFinSistema: fechaFinSistema
-        };
-      }
-      Swal.fire('Éxito', 'Sistema actualizado', 'success').then(() => {
-        // Reset the sistema fields
-        this.userForm.patchValue({
-          sistema: '',
-          aduanaPerfilSistema: '',
-          fechaInicioSistema: '',
-          fechaFinSistema: ''
-        });
-      });
-    }
-  }*/
+  resetForm(): void {
+    this.formGroup.reset();
+    this.isEditingSistema = false;
+    this.isEditingPerfil = false;
+    this.editingIndexSistema = null;
+    this.editingIndexPerfil = null;
+    this.cdr.detectChanges();
+  }
 
-  /*saveCurrentUser() {
-    if (this.userForm.invalid) {
-      Swal.fire('Error', 'Por favor complete todos los campos requeridos', 'error');
-      return;
-    }
-
-    this.currentUser = {
-      duiNit: this.userForm.get('duiNit')?.value,
-      nombre: this.userForm.get('nombre')?.value,
-      apellido: this.userForm.get('apellido')?.value,
-      usuario: this.userForm.get('usuario')?.value,
-      correo: this.userForm.get('correo')?.value,
-      organizacion: this.userForm.get('organizacion')?.value,
-      estado: this.userForm.get('estado')?.value,
-      rol: this.userForm.get('rol')?.value,
-      cargo: this.userForm.get('cargo')?.value,
-      perfiles: this.perfilesAsignados,
-      sistemas: this.sistemasAsignados,
-      tipoSolicitud: this.userForm.get('tipoSolicitud')?.value
-    };
-
-    if (this.editIndex !== null) {
-      this.userRequests[this.editIndex] = this.currentUser;
-      this.editIndex = null;
-    } else {
-      this.userRequests.push(this.currentUser);
-    }
-
-    this.currentUser = null;
-    this.userForm.reset();
-    this.perfilesAsignados = [];
-    this.sistemasAsignados = [];
-    this.editMode = false;
-    this.editType = null;
-  }*/
 
   scrollToForm(index: number) {
     const formElement = document.querySelector(`#form-${index}`);
