@@ -3,14 +3,16 @@ import {Observable, of} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {Request} from "../enums/request.enum";
 import {ApiService} from "./api.service";
+import {TipoUsuarioService} from "./tipo-usuario.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MockAprobacionesService {
 
-  constructor(private http: HttpClient, private api: ApiService) {
+  constructor(private http: HttpClient, private api: ApiService, private tipoUsuarioService: TipoUsuarioService) {
   }
+
 
 
   getSolicitudes(): Observable<any[]> {
@@ -362,9 +364,16 @@ export class MockAprobacionesService {
   }
 
 
+
+
+
   getAllRequests(): Observable<any[]> {
-    const url = `dga/dashboard/pending/USC,ELABORADOR,APROBADOR,SERVICIO_AL_CLIENTE,null,-/KOBE.BRYANT`;
-    // const url = `dga/dashboard/pending/`;
+
+    const roles = this.tipoUsuarioService.getTipoUsuario();
+
+    // const url = `dga/dashboard/pending/USC,ELABORADOR,APROBADOR,SERVICIO_AL_CLIENTE,null,-/KOBE.BRYANT`;
+    const url = `dga/dashboard/pending/${roles}/KOBE.BRYANT`;
+    // const url = `dga/dashboard/pending/${rol}/${uuid}`;
     return this.api.request<any>(Request.GET, url);
   }
 

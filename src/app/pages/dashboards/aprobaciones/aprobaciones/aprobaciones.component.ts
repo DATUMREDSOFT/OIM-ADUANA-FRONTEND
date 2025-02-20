@@ -82,10 +82,6 @@ export class AprobacionesComponent implements OnInit {
 
     this.mockService.getAllRequests().subscribe((response) => {
       console.log('Solicitudes obtenidas:', response);
-    });
-
-    // 1) Obtener la lista de solicitudes (resumida)
-    this.mockService.getSolicitudes().subscribe((response) => {
       this.dataSource.data = response.map(item => ({
         DGA: item.id,
         formType: item.formType || 'Sin tipo',
@@ -94,7 +90,21 @@ export class AprobacionesComponent implements OnInit {
         status: item.status || 'Desconocido',
         step: item.step || 'Sin paso'
       }));
+
+
     });
+
+    // 1) Obtener la lista de solicitudes (resumida)
+    // this.mockService.getSolicitudes().subscribe((response) => {
+    //   this.dataSource.data = response.map(item => ({
+    //     DGA: item.id,
+    //     formType: item.formType || 'Sin tipo',
+    //     applicant: item?.applicant?.name || 'Desconocido',
+    //     creationDate: this.formatDate(item.createdOn),
+    //     status: item.status || 'Desconocido',
+    //     step: item.step || 'Sin paso'
+    //   }));
+    // });
   }
 
   ngAfterViewInit() {
