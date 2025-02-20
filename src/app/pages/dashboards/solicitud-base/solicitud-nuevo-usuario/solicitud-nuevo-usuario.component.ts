@@ -52,6 +52,10 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   editingIndexSistema: number | null = null;
   editingIndexPerfil: number | null = null;
 
+  @Input() sistemas: any[] = []; // ✅ Receive from parent
+  @Input() perfiles: any[] = []; // ✅ Receive from parent
+  @Input() aduanas: any[] = []; // ✅ Receive from parent
+
   selectedSolicitud: string = '';
   isLoading: boolean = false;
   shouldSave: boolean = false;
@@ -66,12 +70,16 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
 
   }
 
-  ngOnInit() {
+  ngOnInit():void {
     if (!this.formGroup) {
       console.warn("❌ Warning: `formGroup` is undefined in `solicitud-externo.component.ts`.");
     } else {
       console.log("✅ Received `formGroup` on Init:", this.formGroup.value);
     }
+
+    console.log('✅ Sistemas:', this.sistemas);
+    console.log('✅ Perfiles:', this.perfiles);
+    console.log('✅ Aduanas:', this.aduanas);
   }
 
   ngOnChanges(changes: SimpleChanges) {

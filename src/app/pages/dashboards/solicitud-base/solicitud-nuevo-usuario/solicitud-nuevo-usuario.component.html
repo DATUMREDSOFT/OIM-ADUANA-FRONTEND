@@ -223,8 +223,9 @@
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Sistema</mat-label>
                 <mat-select formControlName="sistema">
-                  <mat-option value="value1">Value 1</mat-option>
-                  <mat-option value="value2">Value 2</mat-option>
+                  <mat-option *ngFor="let sistema of sistemas" [value]="sistema.id">
+                    {{ sistema.value }}
+                  </mat-option>              
                 </mat-select>
               </mat-form-field>
             </div>
@@ -309,8 +310,9 @@
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Perfil</mat-label>
                 <mat-select formControlName="perfil">
-                  <mat-option value="perfil1">Perfil 1</mat-option>
-                  <mat-option value="perfil2">Perfil 2</mat-option>
+                  <mat-option *ngFor="let perfil of perfiles" [value]="perfil.id">
+                    {{ perfil.value }}
+                  </mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -319,8 +321,9 @@
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Aduana</mat-label>
                 <mat-select formControlName="aduanaPerfil">
-                  <mat-option value="aduana1">Aduana 1</mat-option>
-                  <mat-option value="aduana2">Aduana 2</mat-option>
+                  <mat-option *ngFor="let aduana of aduanas" [value]="aduana.id">
+                    {{ aduana.value }}
+                  </mat-option>
                 </mat-select>
               </mat-form-field>
             </div>

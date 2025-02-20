@@ -1,39 +1,27 @@
-import {Component, OnInit, inject, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormArray,
-  Validators,
-  ReactiveFormsModule,
-  AbstractControl, ValidationErrors,
-} from '@angular/forms';
-import {CommonModule} from '@angular/common';
-
-import {MatCardModule} from '@angular/material/card';
-import {MatNativeDateModule} from '@angular/material/core';
-import {MatExpansionModule} from '@angular/material/expansion';
-import {TablerIconsModule} from 'angular-tabler-icons';
-import {lastValueFrom} from 'rxjs';
+import { Component, OnInit, SimpleChanges, inject, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { TablerIconsModule } from 'angular-tabler-icons';
 import Swal from 'sweetalert2';
 
-import {ApiService} from '../../../services/api.service';
-import {ProcesoFormularioService} from '../../../services/proceso-formulario.service';
-import {UserService} from '../../../services/user.service';
-import {LocalStorageService} from '../../../services/local-storage.service';
+import { ApiService } from '../../../services/api.service';
+import { ProcesoFormularioService } from '../../../services/proceso-formulario.service';
+import { UserService } from '../../../services/user.service';
+import { LocalStorageService } from '../../../services/local-storage.service';
+import { DropdownDataService } from 'src/app/services/dropdown-data.service';
 
+import { TipoSolicitud } from '../solicitud-base/models/tipo-solicitud.model';
+import { FormularioExterno } from './models/formulario-externo.model';
 
-import {TipoSolicitud} from './models/tipo-solicitud.model';
-import {System} from './models/system.model';
-import {Profile} from './models/profile.model';
-import {Aduana} from '../../../models/aduana.model';
-import {FormularioExterno} from './models/formulario-externo.model';
-
-import {MaterialModule} from '../../../material.module';
+import { MaterialModule } from '../../../material.module';
 import {
   AppSolicitudModificarUsuarioComponent
 } from './solicitud-modificar-usuario/solicitud-modificar-usuario.component';
-import {AppSolicitudNuevoUsuarioComponent} from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
-import {Roles} from '../../../enums/roles.enum';
+import { AppSolicitudNuevoUsuarioComponent } from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
+import { Roles } from '../../../enums/roles.enum';
 
 @Component({
   selector: 'app-solicitud-base',
@@ -44,52 +32,21 @@ import {Roles} from '../../../enums/roles.enum';
 export class AppSolicitudBaseComponent implements OnInit {
   solicitudForm: FormGroup;
   tiposSolicitud: TipoSolicitud[] = [];
-  sistemas: System[] = [];
-  perfiles: Profile[] = [];
-  aduanas: Aduana[] = [];
+
   private readonly fb = inject(FormBuilder);
   private readonly apiService = inject(ApiService);
   private readonly procesoFormulario = inject(ProcesoFormularioService);
   private readonly userService = inject(UserService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly dropdownDataService = inject(DropdownDataService);
 
-  private readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
-
+  sistemas = this.dropdownDataService.sistemas;
+  perfiles = this.dropdownDataService.perfiles;
+  aduanas = this.dropdownDataService.aduanas;
 
   @ViewChild('fileInput') fileInput: ElementRef;
   selectedFile: File | null = null;
-
-  onFileSelected(event: any) {
-
-
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    // Check file type
-    if (file.type !== 'application/pdf') {
-      Swal.fire('Error', 'Solo se permiten archivos PDF', 'error');
-      this.removeFile();
-      return;
-    }
-
-    // Check file size
-    if (file.size > this.MAX_FILE_SIZE) {
-      Swal.fire('Error', 'El archivo no debe exceder 5MB', 'error');
-      this.removeFile();
-      return;
-    }
-
-    this.selectedFile = file;
-
-  }
-
-  removeFile() {
-    this.selectedFile = null;
-    this.fileInput.nativeElement.value = '';
-  }
-
 
   constructor() {
     this.solicitudForm = this.fb.group({
@@ -97,14 +54,13 @@ export class AppSolicitudBaseComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.loadTiposSolicitudFromStorage();
-    this.obtenerSistemas();
-    this.obtenerPerfiles();
-    this.obtenerAduanas();
+    await this.dropdownDataService.obtenerSistemas();
+    await this.dropdownDataService.obtenerPerfiles();
+    await this.dropdownDataService.obtenerAduanas();
   }
 
-  /** ✅ Get FormArray */
   get formularios(): FormArray {
     return this.solicitudForm.get('formularios') as FormArray;
   }
@@ -117,11 +73,8 @@ export class AppSolicitudBaseComponent implements OnInit {
     return userIndex;
   }
 
-
-  /** ✅ Load Request Types from Local Storage */
   private loadTiposSolicitudFromStorage(): void {
     let storedData: any;
-
     const rawStoredData = localStorage.getItem('tipo-solicitud');
     console.log("🔍 Directly Retrieved from localStorage:", rawStoredData);
 
@@ -152,16 +105,15 @@ export class AppSolicitudBaseComponent implements OnInit {
     console.log("✅ Successfully loaded tipos-solicitud:", this.tiposSolicitud);
   }
 
-
   private createFormulario(): FormGroup {
     return this.fb.group({
       tipo: ['', Validators.required],
       childComponent: [null],
       form: this.fb.group({
-        uid: [{value: this.generateUID(), disabled: true}],
+        uid: [''],
         nombre: [''],
         apellido: [''],
-        correo: ['', [Validators.email]],
+        correo: [''],
         telefono: [''],
         movil: [''],
         correoAlternativo: [''],
@@ -183,23 +135,21 @@ export class AppSolicitudBaseComponent implements OnInit {
         aduanaPerfil: [''],
         fechaInicioPerfil: [''],
         fechaFinPerfil: ['']
-
       }),
       usuarios: this.fb.array([])
     });
   }
 
-  /** ✅ Create a new `usuario` FormGroup */
   private createUsuarioForm(): FormGroup {
     return this.fb.group({
-      dui: [],
-      uid: [{value: this.generateUID(), disabled: true}],
+      dui: [''],
+      uid: [''],
       nombre: [''],
       apellido: [''],
       telefono: [''],
       movil: [''],
-      correo: ['', [Validators.email]],
-      correoAlternativo: ['', [Validators.email]],
+      correo: [''],
+      correoAlternativo: [''],
       fechaInicioSolicitud: [''],
       fechaFinSolicitud: [''],
       tipo: [''],
@@ -230,49 +180,19 @@ export class AppSolicitudBaseComponent implements OnInit {
     });
   }
 
-  generateUID() {
-    const uuid = Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
-    return `usr_${uuid}`;
+  generateUID(index: number) {
+    const formulario = this.formularios.at(index);
+    const nombres = formulario.get('form.nombres')?.value.trim().split(' ')[0] || '';
+    const apellidos = formulario.get('form.apellidos')?.value.trim().split(' ')[0] || '';
+    const uid = `${nombres.toLowerCase()}.${apellidos.toLowerCase()}`;
+    formulario.get('form.uid')?.setValue(uid);
   }
 
-  /** ✅ Fetch External Systems */
-  async obtenerSistemas() {
-    try {
-      const response = await lastValueFrom(this.apiService.request<System[]>('GET', 'dga/form/request/list/ext/system'));
-      this.sistemas = response;
-    } catch (error) {
-      Swal.fire('Error', 'No se pudieron cargar los sistemas', 'error');
-    }
-  }
-
-  /** ✅ Fetch User Profiles */
-  async obtenerPerfiles() {
-    try {
-      const userType = this.userService.getTipoUsuario();
-      const response = await lastValueFrom(this.apiService.request<Profile[]>('GET', `dga/form/request/list/profile/${userType}`));
-      this.perfiles = response;
-    } catch (error) {
-      Swal.fire('Error', 'No se pudieron cargar los perfiles', 'error');
-    }
-  }
-
-  /** ✅ Fetch Customs (Aduanas) */
-  async obtenerAduanas() {
-    try {
-      const response = await lastValueFrom(this.apiService.request<Aduana[]>('GET', 'dga/form/request/list/customs'));
-      this.aduanas = response;
-    } catch (error) {
-      Swal.fire('Error', 'No se pudieron cargar las aduanas', 'error');
-    }
-  }
-
-  /** ✅ Send Form Request */
   async enviarFormulario() {
     if (this.solicitudForm.invalid) {
       Swal.fire('Error', 'Por favor complete todos los campos obligatorios', 'error');
       return;
     }
-
 
     const formData: FormularioExterno = {
       id: '',
@@ -293,7 +213,6 @@ export class AppSolicitudBaseComponent implements OnInit {
       status: 'PENDING',
       createdName: 'Solicitante',
       formType: this.userService.getTipoUsuario() === Roles.INTERNO ? 'Interno' : 'Externo',
-
       applicant: {
         id: '',
         document: "123456789",
@@ -316,7 +235,6 @@ export class AppSolicitudBaseComponent implements OnInit {
         externalRepLegal: '',
         externalCodeDeclarant: ''
       },
-
       requests: this.formularios.value.map((form: any) => ({
         id: "",
         typeRequest: {
@@ -360,27 +278,21 @@ export class AppSolicitudBaseComponent implements OnInit {
     }
   }
 
-  /** ✅ Ensure that each 'usuario' retrieved is cast to a FormGroup */
   getUsuarioForm(formulario: AbstractControl, index: number): FormArray {
     return (formulario.get('usuarios') as FormArray);
   }
 
-  /** ✅ Get the `usuarios` FormArray safely */
   getUsuarios(formulario: FormGroup): FormArray {
     return formulario.get('usuarios') as FormArray;
   }
 
-  /** ✅ Add a new user to a specific form */
   addUsuario(index: number): void {
     console.log('addUsuario called'); // Debugging log
     const usuarios = this.getUsuarios(this.formularios.at(index) as FormGroup);
     usuarios.push(this.createUsuarioForm());
     this.cdr.detectChanges(); // Trigger change detection
-
-
   }
 
-  /** ✅ Remove a user from a specific form */
   removeUsuario(formIndex: number, userIndex: number): void {
     const usuarios = this.getUsuarios(this.formularios.at(formIndex) as FormGroup);
     if (usuarios.length > 1) {
@@ -402,12 +314,10 @@ export class AppSolicitudBaseComponent implements OnInit {
     }
   }
 
-  /** ✅ Add a new Formulario */
   addFormulario() {
     this.formularios.push(this.createFormulario());
   }
 
-  /** ✅ Remove an Existing Formulario */
   removeFormulario(index: number) {
     if (this.formularios.length > 1) {
       Swal.fire({
@@ -445,13 +355,12 @@ export class AppSolicitudBaseComponent implements OnInit {
         componentToLoad = 'TYREQ-2';
         break;
       case 'TYREQ-3':
-        componentToLoad = null; // O asigna otro string si corresponde
+        componentToLoad = null;
         break;
       default:
         return;
     }
 
-    // Obtenemos el valor actual de childComponent (string)
     const currentChild = formulario.get('childComponent')?.value;
 
     if (currentChild && currentChild !== componentToLoad) {
@@ -469,8 +378,7 @@ export class AppSolicitudBaseComponent implements OnInit {
           this.clearFormulario(formulario);
           this.loadComponent(formulario, componentToLoad, index);
         } else {
-          // Si se cancela, revertimos el select al valor anterior
-          formulario.get('tipo')?.setValue(currentChild, {emitEvent: false});
+          formulario.get('tipo')?.setValue(currentChild, { emitEvent: false });
         }
       });
     } else {
@@ -479,7 +387,7 @@ export class AppSolicitudBaseComponent implements OnInit {
   }
 
   private loadComponent(formulario: FormGroup, componentToLoad: string | null, index: number) {
-    formulario.patchValue({childComponent: componentToLoad});
+    formulario.patchValue({ childComponent: componentToLoad });
     this.cdr.detectChanges();
 
     if (componentToLoad) {
@@ -519,11 +427,22 @@ export class AppSolicitudBaseComponent implements OnInit {
     }
   }
 
-  /** ✅ Scroll to a Specific Form */
   scrollToForm(index: number) {
     const form = document.getElementById(`form-${index}`);
     if (form) {
-      form.scrollIntoView({behavior: 'smooth'});
+      form.scrollIntoView({ behavior: 'smooth' });
     }
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/pdf') {
+      this.selectedFile = file;
+    }
+  }
+
+  removeFile() {
+    this.selectedFile = null;
+    this.fileInput.nativeElement.value = '';
   }
 }
