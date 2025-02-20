@@ -1,13 +1,13 @@
-import {Component, OnInit, SimpleChanges, inject, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, inject, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   FormArray,
   Validators,
   ReactiveFormsModule,
-  AbstractControl,
+  AbstractControl, ValidationErrors,
 } from '@angular/forms';
-import {CommonModule, DatePipe} from '@angular/common';
+import {CommonModule} from '@angular/common';
 
 import {MatCardModule} from '@angular/material/card';
 import {MatNativeDateModule} from '@angular/material/core';
@@ -22,14 +22,16 @@ import {UserService} from '../../../services/user.service';
 import {LocalStorageService} from '../../../services/local-storage.service';
 
 
-import {TipoSolicitud} from '../solicitud-base/models/tipo-solicitud.model';
+import {TipoSolicitud} from './models/tipo-solicitud.model';
 import {System} from './models/system.model';
 import {Profile} from './models/profile.model';
 import {Aduana} from '../../../models/aduana.model';
 import {FormularioExterno} from './models/formulario-externo.model';
 
 import {MaterialModule} from '../../../material.module';
-import { AppSolicitudModificarUsuarioComponent } from './solicitud-modificar-usuario/solicitud-modificar-usuario.component';
+import {
+  AppSolicitudModificarUsuarioComponent
+} from './solicitud-modificar-usuario/solicitud-modificar-usuario.component';
 import {AppSolicitudNuevoUsuarioComponent} from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
 import {Roles} from '../../../enums/roles.enum';
 
@@ -37,7 +39,7 @@ import {Roles} from '../../../enums/roles.enum';
   selector: 'app-solicitud-base',
   templateUrl: './solicitud-base.component.html',
   standalone: true,
-  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent, AppSolicitudModificarUsuarioComponent ],
+  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent, AppSolicitudModificarUsuarioComponent],
 })
 export class AppSolicitudBaseComponent implements OnInit {
   solicitudForm: FormGroup;
@@ -54,7 +56,7 @@ export class AppSolicitudBaseComponent implements OnInit {
 
   private readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-  // upload file
+
   @ViewChild('fileInput') fileInput: ElementRef;
   selectedFile: File | null = null;
 
@@ -150,21 +152,30 @@ export class AppSolicitudBaseComponent implements OnInit {
     console.log("✅ Successfully loaded tipos-solicitud:", this.tiposSolicitud);
   }
 
-  /** ✅ Create a new Formulario */
+
   private createFormulario(): FormGroup {
     return this.fb.group({
       tipo: ['', Validators.required],
       childComponent: [null],
       form: this.fb.group({
-        uid: [''],
+        uid: [{value: this.generateUID(), disabled: true}],
         nombre: [''],
         apellido: [''],
-        correo: [''],
+        correo: ['', [Validators.email]],
         telefono: [''],
         movil: [''],
         correoAlternativo: [''],
         fechaInicioSolicitud: [''],
         fechaFinSolicitud: [''],
+        tipo: [''],
+        rol: [''],
+        cargo: [''],
+        nivel1: [''],
+        nivel2: [''],
+        nivel3: [''],
+        nivel4: [''],
+        fechaInicio: [''],
+        fechaFin: [''],
         sistema: [''],
         fechaInicioSistema: [''],
         fechaFinSistema: [''],
@@ -181,16 +192,25 @@ export class AppSolicitudBaseComponent implements OnInit {
   /** ✅ Create a new `usuario` FormGroup */
   private createUsuarioForm(): FormGroup {
     return this.fb.group({
-      dui: [''],
-      uid: [''],
+      dui: [],
+      uid: [{value: this.generateUID(), disabled: true}],
       nombre: [''],
       apellido: [''],
       telefono: [''],
       movil: [''],
-      correo: [''],
-      correoAlternativo: [''],
+      correo: ['', [Validators.email]],
+      correoAlternativo: ['', [Validators.email]],
       fechaInicioSolicitud: [''],
       fechaFinSolicitud: [''],
+      tipo: [''],
+      rol: [''],
+      cargo: [''],
+      nivel1: [''],
+      nivel2: [''],
+      nivel3: [''],
+      nivel4: [''],
+      fechaInicio: [''],
+      fechaFin: [''],
       sistema: [''],
       fechaInicioSistema: [''],
       fechaFinSistema: [''],
@@ -210,13 +230,9 @@ export class AppSolicitudBaseComponent implements OnInit {
     });
   }
 
-  /** ✅ Generate UID based on First & Last Name */
-  generateUID(index: number) {
-    const formulario = this.formularios.at(index);
-    const nombres = formulario.get('form.nombres')?.value.trim().split(' ')[0] || '';
-    const apellidos = formulario.get('form.apellidos')?.value.trim().split(' ')[0] || '';
-    const uid = `${nombres.toLowerCase()}.${apellidos.toLowerCase()}`;
-    formulario.get('form.uid')?.setValue(uid);
+  generateUID() {
+    const uuid = Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
+    return `usr_${uuid}`;
   }
 
   /** ✅ Fetch External Systems */
@@ -360,6 +376,8 @@ export class AppSolicitudBaseComponent implements OnInit {
     const usuarios = this.getUsuarios(this.formularios.at(index) as FormGroup);
     usuarios.push(this.createUsuarioForm());
     this.cdr.detectChanges(); // Trigger change detection
+
+
   }
 
   /** ✅ Remove a user from a specific form */
@@ -413,11 +431,11 @@ export class AppSolicitudBaseComponent implements OnInit {
   updateSelectedTipoSolicitud(index: number) {
     const formulario = this.formularios.at(index) as FormGroup;
     const selectedTipo = formulario.get('tipo')?.value;
-  
+
     if (!selectedTipo) {
       return;
     }
-  
+
     let componentToLoad: string | null = null;
     switch (selectedTipo) {
       case 'TYREQ-1':
@@ -432,10 +450,10 @@ export class AppSolicitudBaseComponent implements OnInit {
       default:
         return;
     }
-  
+
     // Obtenemos el valor actual de childComponent (string)
     const currentChild = formulario.get('childComponent')?.value;
-  
+
     if (currentChild && currentChild !== componentToLoad) {
       Swal.fire({
         title: '¿Está seguro?',
@@ -452,18 +470,18 @@ export class AppSolicitudBaseComponent implements OnInit {
           this.loadComponent(formulario, componentToLoad, index);
         } else {
           // Si se cancela, revertimos el select al valor anterior
-          formulario.get('tipo')?.setValue(currentChild, { emitEvent: false });
+          formulario.get('tipo')?.setValue(currentChild, {emitEvent: false});
         }
       });
     } else {
       this.loadComponent(formulario, componentToLoad, index);
     }
   }
-  
+
   private loadComponent(formulario: FormGroup, componentToLoad: string | null, index: number) {
-    formulario.patchValue({ childComponent: componentToLoad });
+    formulario.patchValue({childComponent: componentToLoad});
     this.cdr.detectChanges();
-  
+
     if (componentToLoad) {
       const usuarios = this.getUsuarios(formulario);
       if (usuarios.length === 0) {
@@ -471,7 +489,7 @@ export class AppSolicitudBaseComponent implements OnInit {
       }
     }
   }
-  
+
 
   private clearFormulario(formulario: FormGroup) {
     formulario.patchValue({
