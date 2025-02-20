@@ -1,13 +1,15 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component} from '@angular/core';
 import {AprobacionesComponent} from "./aprobaciones/aprobaciones.component";
 import {DetallesAprobacionesComponent} from "./detalles-aprobaciones/detalles-aprobaciones.component";
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-base-aprobaciones',
   standalone: true,
   imports: [
     AprobacionesComponent,
-    DetallesAprobacionesComponent
+    DetallesAprobacionesComponent,
+    NgIf
   ],
   templateUrl: './base-aprobaciones.component.html',
   styles: ``
