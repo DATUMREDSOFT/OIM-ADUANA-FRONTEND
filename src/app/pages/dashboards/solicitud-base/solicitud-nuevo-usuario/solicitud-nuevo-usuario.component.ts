@@ -1,19 +1,21 @@
-import { Component, ViewChild, OnInit, Input, SimpleChange, SimpleChanges, ChangeDetectorRef } from '@angular/core';
-// import { MatStepper } from '@angular/material/stepper';
+import { Component, ViewChild, OnInit, Input, SimpleChanges, ChangeDetectorRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MaterialModule } from '../../../../material.module';
+import { CommonModule, DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { CommonModule } from '@angular/common';
 import { MatNativeDateModule } from '@angular/material/core';
-import Swal from 'sweetalert2';
-import { MatAccordion } from '@angular/material/expansion';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { DatePipe } from '@angular/common';
 import { MatTableDataSource, MatTable } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatAccordion } from '@angular/material/expansion';
+import { MatDividerModule } from '@angular/material/divider';
+import Swal from 'sweetalert2';
+import { TablerIconsModule } from 'angular-tabler-icons';
+import { Roles } from 'src/app/enums/roles.enum';
+import { LocalStorageService } from 'src/app/services/local-storage.service';
+import { MaterialModule } from 'src/app/material.module';
 
 // icons
-import { TablerIconsModule } from 'angular-tabler-icons';
+
 
 export interface sistemaAsignado {
   sistema: string;
@@ -54,6 +56,8 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   editingIndexSistema: number | null = null;
   editingIndexPerfil: number | null = null;
 
+  userType: string = ''; // Stores the user type
+
   @Input() sistemas: any[] = []; // ✅ Receive from parent
   @Input() perfiles: any[] = []; // ✅ Receive from parent
   @Input() aduanas: any[] = []; // ✅ Receive from parent
@@ -68,7 +72,7 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   dataSourceSistemas = new MatTableDataSource<sistemaAsignado>([]);
   dataSourcePerfil = new MatTableDataSource<perfilAsignado>([]);
 
-  constructor(private fb: FormBuilder, private datePipe: DatePipe, private cdr: ChangeDetectorRef) {
+  constructor(private fb: FormBuilder, private datePipe: DatePipe, private cdr: ChangeDetectorRef, private localStorageService: LocalStorageService) {
     this.userForm = this.fb.group({
       sistema: ['', Validators.required],
       fechaInicioSistema: ['', Validators.required],
@@ -81,6 +85,7 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   }
 
   ngOnInit():void {
+    this.loadUserType();
     if (!this.formGroup) {
       console.warn("❌ Warning: `formGroup` is undefined in `solicitud-externo.component.ts`.");
     } else {
@@ -100,6 +105,26 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
       console.log("✅ `userIndex` Updated:", changes['userIndex'].currentValue);
     }
   }
+
+  private loadUserType() {
+    const storedUser = this.localStorageService.getItem<{ value: string }>('tipo-usuario');
+    this.userType = storedUser?.value || '';
+
+    console.log('🔍 Loaded User Type:', this.userType);
+  }
+
+  /** ✅ Get Filtered Systems (Only CATSYS-12 for NOAFPA Users) */
+  get filteredSistemas(): any[] {
+    return this.userType === Roles.NOAFPA
+      ? this.sistemas.filter(sistema => sistema.id === 'CATSYS-12')
+      : this.sistemas;
+  }
+
+  /** ✅ Check if Perfil Tab Should Be Hidden */
+  get shouldShowPerfilTab(): boolean {
+    return this.userType !== Roles.NOAFPA;
+  }
+
 
   addAnotherForm() {
     this.userRequests.push({

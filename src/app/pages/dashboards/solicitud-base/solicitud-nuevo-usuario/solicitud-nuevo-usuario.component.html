@@ -97,9 +97,9 @@
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Sistema</mat-label>
                 <mat-select formControlName="sistema">
-                  <mat-option *ngFor="let sistema of sistemas" [value]="sistema.id">
+                  <mat-option *ngFor="let sistema of filteredSistemas" [value]="sistema.id">
                     {{ sistema.value }}
-                  </mat-option>              
+                  </mat-option>             
                 </mat-select>
               </mat-form-field>
             </div>
@@ -175,7 +175,7 @@
         </div>
       </mat-tab>
 
-      <mat-tab label="Perfiles">
+      <mat-tab *ngIf="shouldShowPerfilTab" label="Perfiles">
         <div class="mat-body-1 p-t-16 rounded m-b-12" style="overflow-x: hidden;">
           <div class="row">
             <div class="col-lg-6">
