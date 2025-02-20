@@ -17,7 +17,9 @@ import { TipoSolicitud } from '../solicitud-base/models/tipo-solicitud.model';
 import { FormularioExterno } from './models/formulario-externo.model';
 
 import { MaterialModule } from '../../../material.module';
-import { AppSolicitudModificarUsuarioComponent } from './solicitud-modificar-usuario/solicitud-modificar-usuario.component';
+import {
+  AppSolicitudModificarUsuarioComponent
+} from './solicitud-modificar-usuario/solicitud-modificar-usuario.component';
 import { AppSolicitudNuevoUsuarioComponent } from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
 import { Roles } from '../../../enums/roles.enum';
 
@@ -25,17 +27,7 @@ import { Roles } from '../../../enums/roles.enum';
   selector: 'app-solicitud-base',
   templateUrl: './solicitud-base.component.html',
   standalone: true,
-  imports: [
-    CommonModule,
-    MaterialModule,
-    MatCardModule,
-    MatNativeDateModule,
-    MatExpansionModule,
-    TablerIconsModule,
-    ReactiveFormsModule,
-    AppSolicitudNuevoUsuarioComponent,
-    AppSolicitudModificarUsuarioComponent
-  ],
+  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent, AppSolicitudModificarUsuarioComponent],
 })
 export class AppSolicitudBaseComponent implements OnInit {
   solicitudForm: FormGroup;
@@ -127,6 +119,15 @@ export class AppSolicitudBaseComponent implements OnInit {
         correoAlternativo: [''],
         fechaInicioSolicitud: [''],
         fechaFinSolicitud: [''],
+        tipo: [''],
+        rol: [''],
+        cargo: [''],
+        nivel1: [''],
+        nivel2: [''],
+        nivel3: [''],
+        nivel4: [''],
+        fechaInicio: [''],
+        fechaFin: [''],
         sistema: [''],
         fechaInicioSistema: [''],
         fechaFinSistema: [''],
@@ -151,6 +152,15 @@ export class AppSolicitudBaseComponent implements OnInit {
       correoAlternativo: [''],
       fechaInicioSolicitud: [''],
       fechaFinSolicitud: [''],
+      tipo: [''],
+      rol: [''],
+      cargo: [''],
+      nivel1: [''],
+      nivel2: [''],
+      nivel3: [''],
+      nivel4: [''],
+      fechaInicio: [''],
+      fechaFin: [''],
       sistema: [''],
       fechaInicioSistema: [''],
       fechaFinSistema: [''],
@@ -162,6 +172,7 @@ export class AppSolicitudBaseComponent implements OnInit {
     });
   }
 
+  /** ✅ Add SIAP System Automatically (deactivated by default) */
   private createDefaultSistema(): FormGroup {
     return this.fb.group({
       nombre: ['SIAP'],
@@ -386,6 +397,7 @@ export class AppSolicitudBaseComponent implements OnInit {
       }
     }
   }
+
 
   private clearFormulario(formulario: FormGroup) {
     formulario.patchValue({

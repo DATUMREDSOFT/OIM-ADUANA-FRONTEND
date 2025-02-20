@@ -1,7 +1,11 @@
 <mat-divider></mat-divider>
 
 <mat-card-header class="p-l-0 p-t-0">
-  <h2>Datos del Usuario Externo {{ userIndex + 1 }}</h2>
+  <h2>Datos del Usuario Externo
+    <span class="bg-light-primary text-primary rounded m-x-4 p-x-10 p-y-2 f-w-800  f-s-20">
+       {{ userIndex + 1 }}
+  </span>
+  </h2>
 </mat-card-header>
 
 <form [formGroup]="formGroup">
@@ -10,7 +14,7 @@
     <div class="col-lg-6">
       <mat-form-field appearance="outline" class="search-field w-100">
         <mat-label>DUI/NIT</mat-label>
-        <input matInput placeholder="Ingrese su búsqueda" />
+        <input matInput placeholder="Ingrese su búsqueda"/>
         <button mat-icon-button matSuffix>
           <mat-icon>search</mat-icon>
         </button>
@@ -21,7 +25,7 @@
     <div class="col-lg-6">
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>UID</mat-label>
-        <input matInput disabled>
+        <input matInput formControlName="uid">
       </mat-form-field>
     </div>
 
@@ -45,7 +49,7 @@
     <div class="col-lg-6">
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Correo</mat-label>
-        <input matInput formControlName="correo">
+        <input type="email" matInput formControlName="correo">
       </mat-form-field>
     </div>
 
@@ -75,17 +79,139 @@
     </div>
 
 
-
   </div>
 
 
   <mat-divider></mat-divider>
 
 
+  <mat-card-header class="p-l-0 p-t-0">
+    <h2>Roles y Permisos</h2>
+  </mat-card-header>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Organizacion</mat-label>
+        <mat-select formControlName="sistema">
+          <mat-option value="value1">Value 1</mat-option>
+          <mat-option value="value2">Value 2</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Tipo de Usuario</mat-label>
+        <mat-select formControlName="tipo">
+          <mat-option value="value1">Value 1</mat-option>
+          <mat-option value="value2">Value 2</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Rol</mat-label>
+        <mat-select formControlName="rol">
+          <mat-option value="value1">Value 1</mat-option>
+          <mat-option value="value2">Value 2</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Cargo</mat-label>
+        <mat-select formControlName="cargo">
+          <mat-option value="value1">Value 1</mat-option>
+          <mat-option value="value2">Value 2</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+    </div>
+
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Nivel 1</mat-label>
+        <mat-select formControlName="nivel1">
+          <mat-option value="value1">Value 1</mat-option>
+          <mat-option value="value2">Value 2</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Nivel 2</mat-label>
+        <mat-select formControlName="nivel2">
+          <mat-option value="value1">Value 1</mat-option>
+          <mat-option value="value2">Value 2</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Nivel 3</mat-label>
+        <mat-select formControlName="nivel3">
+          <mat-option value="value1">Value 1</mat-option>
+          <mat-option value="value2">Value 2</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Nivel 4</mat-label>
+        <mat-select formControlName="nivel4">
+          <mat-option value="value1">Value 1</mat-option>
+          <mat-option value="value2">Value 2</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Fecha Inicio</mat-label>
+        <input matInput [matDatepicker]="fechaInicio" formControlName="fechaInicio">
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="fechaInicio"></mat-datepicker-toggle>
+        <mat-datepicker #fechaInicio></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <div class="col-lg-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Fecha Fin</mat-label>
+        <input matInput [matDatepicker]="fechaFin" formControlName="fechaFin">
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="fechaFin"></mat-datepicker-toggle>
+        <mat-datepicker #fechaFin></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+
+  </div>
+
 
   <mat-card-header class="p-l-0 p-t-0">
-    <h2>Accesos de usuario {{ userIndex + 1 }}</h2>
+    <h2>Accesos de usuario
+      <span class="bg-light-primary text-primary rounded m-x-4 p-x-10 p-y-2 f-w-800  f-s-20">
+       {{ userIndex + 1 }}
+  </span>
+    </h2>
+
   </mat-card-header>
+
+
+  <mat-divider></mat-divider>
+
+  <mat-card-content>
+
+  </mat-card-content>
 
 
   <mat-card-content class="b-t-1 p-0">
@@ -130,7 +256,7 @@
           <div class="col-lg-12 text-right p-t-16 p-b-16 p-r-0">
             <button mat-flat-button color="primary" (click)="asignarSistema()">
               {{ isEditingSistema ? 'Guardar Edición' : 'Asignar sistema al usuario' }}
-            </button>            
+            </button>
           </div>
 
           <mat-divider></mat-divider>
@@ -141,36 +267,38 @@
           <mat-card-content class="p-0">
             <table mat-table [dataSource]="dataSourceSistemas" class="w-100">
               <ng-container matColumnDef="sistema">
-                <th mat-header-cell *matHeaderCellDef> Sistema </th>
-                <td mat-cell *matCellDef="let element"> {{element.sistema}} </td>
+                <th mat-header-cell *matHeaderCellDef> Sistema</th>
+                <td mat-cell *matCellDef="let element"> {{ element.sistema }}</td>
               </ng-container>
-            
+
               <ng-container matColumnDef="fechaInicioSistema">
-                <th mat-header-cell *matHeaderCellDef> Fecha Inicio </th>
-                <td mat-cell *matCellDef="let element"> {{element.fechaInicioSistema | date}} </td>
+                <th mat-header-cell *matHeaderCellDef> Fecha Inicio</th>
+                <td mat-cell *matCellDef="let element"> {{ element.fechaInicioSistema | date }}</td>
               </ng-container>
-            
+
               <ng-container matColumnDef="fechaFinSistema">
-                <th mat-header-cell *matHeaderCellDef> Fecha Fin </th>
-                <td mat-cell *matCellDef="let element"> {{element.fechaFinSistema | date}} </td>
+                <th mat-header-cell *matHeaderCellDef> Fecha Fin</th>
+                <td mat-cell *matCellDef="let element"> {{ element.fechaFinSistema | date }}</td>
               </ng-container>
-            
+
               <ng-container matColumnDef="accion">
-                <th mat-header-cell *matHeaderCellDef> Acción </th>
+                <th mat-header-cell *matHeaderCellDef> Acción</th>
                 <td mat-cell *matCellDef="let element; let i = index">
-                  <button mat-icon-button (click)="editarSistema(i)">
+                  <button [disabled]="isEditingSistema && editingIndexSistema === i" mat-icon-button
+                          (click)="editarSistema(i)">
                     <mat-icon>edit</mat-icon>
                   </button>
-                  <button mat-icon-button color="warn" (click)="eliminarSistema(i)">
+                  <button [disabled]="isEditingSistema && editingIndexSistema === i" mat-icon-button color="warn"
+                          (click)="eliminarSistema(i)">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </td>
               </ng-container>
-            
+
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-            
+
           </mat-card-content>
         </div>
       </mat-tab>
@@ -226,8 +354,9 @@
           <div class="col-lg-12 text-right p-t-16 p-b-16">
             <button mat-flat-button color="primary" (click)="asignarPerfil()">
               {{ isEditingPerfil ? 'Guardar Edición' : 'Asignar perfil al usuario' }}
-            </button>            
+            </button>
           </div>
+
 
           <mat-divider></mat-divider>
 
@@ -237,41 +366,43 @@
           <mat-card-content class="p-0">
             <table mat-table [dataSource]="dataSourcePerfil" class="w-100">
               <ng-container matColumnDef="perfil">
-                <th mat-header-cell *matHeaderCellDef> Perfil </th>
-                <td mat-cell *matCellDef="let element"> {{element.perfil}} </td>
+                <th mat-header-cell *matHeaderCellDef> Perfil</th>
+                <td mat-cell *matCellDef="let element"> {{ element.perfil }}</td>
               </ng-container>
-            
+
               <ng-container matColumnDef="aduanaPerfil">
-                <th mat-header-cell *matHeaderCellDef> Aduana </th>
-                <td mat-cell *matCellDef="let element"> {{element.aduanaPerfil}} </td>
+                <th mat-header-cell *matHeaderCellDef> Aduana</th>
+                <td mat-cell *matCellDef="let element"> {{ element.aduanaPerfil }}</td>
               </ng-container>
-            
+
               <ng-container matColumnDef="fechaInicioPerfil">
-                <th mat-header-cell *matHeaderCellDef> Fecha Inicio </th>
-                <td mat-cell *matCellDef="let element"> {{element.fechaInicioPerfil | date}} </td>
+                <th mat-header-cell *matHeaderCellDef> Fecha Inicio</th>
+                <td mat-cell *matCellDef="let element"> {{ element.fechaInicioPerfil | date }}</td>
               </ng-container>
-            
+
               <ng-container matColumnDef="fechaFinPerfil">
-                <th mat-header-cell *matHeaderCellDef> Fecha Fin </th>
-                <td mat-cell *matCellDef="let element"> {{element.fechaFinPerfil | date}} </td>
+                <th mat-header-cell *matHeaderCellDef> Fecha Fin</th>
+                <td mat-cell *matCellDef="let element"> {{ element.fechaFinPerfil | date }}</td>
               </ng-container>
-            
+
               <ng-container matColumnDef="accion">
-                <th mat-header-cell *matHeaderCellDef> Acción </th>
+                <th mat-header-cell *matHeaderCellDef> Acción</th>
                 <td mat-cell *matCellDef="let element; let i = index">
-                  <button mat-icon-button (click)="editarPerfil(i)">
+                  <button [disabled]="isEditingPerfil && editingIndexPerfil === i" mat-icon-button
+                          (click)="editarPerfil(i)">
                     <mat-icon>edit</mat-icon>
                   </button>
-                  <button mat-icon-button color="warn" (click)="eliminarPerfil(i)">
+                  <button [disabled]="isEditingPerfil && editingIndexPerfil === i" mat-icon-button color="warn"
+                          (click)="eliminarPerfil(i)">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </td>
               </ng-container>
-            
+
               <tr mat-header-row *matHeaderRowDef="displayedColumnsPerfil"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumnsPerfil;"></tr>
             </table>
-            
+
           </mat-card-content>
         </div>
       </mat-tab>
