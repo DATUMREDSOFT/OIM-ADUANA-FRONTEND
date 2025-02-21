@@ -1,8 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
 @import './assets/scss/variables.scss';
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 .swal2-styled {
   font-family: 'Plus Jakarta Sans', sans-serif; /* Use your project's font */
@@ -21,3 +27,74 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .swal2-styled.swal2-cancel {
   background-color: $secondary; /* Use your project's secondary color */
 }
+
+.upload-card {
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 7rem;
+  width: 15rem;
+}
+
+.upload-area {
+  border: 2px dashed $gray-300;
+  border-radius: $border-radius;
+  padding: 1rem;
+  text-align: center;
+  margin: 1rem 0;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: $primary;
+    background-color: rgba($primary, 0.08);
+  }
+}
+
+.upload-icon {
+  color: $gray-500;
+  font-size: 1.5rem;
+  height: 1rem;
+  width: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-info {
+  color: $gray-800;
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0;
+}
+
+.selected-file-container {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background: $gray-50;
+  border-radius: $border-radius;
+  margin-top: 0.5rem;
+}
+
+.file-icon {
+  color: $primary;
+  margin-right: 0.5rem;
+}
+
+.file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: $gray-600;
+}
+
+.remove-button {
+  color: $gray-600;
+
+  &:hover {
+    color: $gray-800;
+  }
+}
+
+

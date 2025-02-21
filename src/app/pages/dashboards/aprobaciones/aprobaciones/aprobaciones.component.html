@@ -1,0 +1,83 @@
+<mat-card>
+  <mat-card-content>
+    <div>
+      <!-- Filtro -->
+      <mat-form-field appearance="outline">
+        <span>Buscar DGA</span>
+        <input
+          matInput
+          (keyup)="applyFilter($event)"
+          placeholder="Ingrese ID de solicitud"
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- Tabla principal de solicitudes -->
+    <div class="table-responsive">
+      <mat-table [dataSource]="dataSource">
+
+        <ng-container matColumnDef="Número de solicitud">
+          <mat-header-cell *matHeaderCellDef> # Solicitud</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.DGA }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Tipo de formulario">
+          <mat-header-cell *matHeaderCellDef> Formulario</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.formType }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Solicitante">
+          <mat-header-cell *matHeaderCellDef> Solicitante</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.applicant }}</mat-cell>
+        </ng-container>
+
+
+
+
+        <ng-container matColumnDef="Fecha de inicio">
+          <mat-header-cell *matHeaderCellDef> Fecha</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.creationDate }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Estado">
+          <mat-header-cell *matHeaderCellDef> Estado</mat-header-cell>
+          <mat-cell *matCellDef="let element">
+
+            <span class="bg-light-primary text-primary rounded f-w-600 p-6 p-y-4 f-s-12">
+              {{ element.status }}
+            </span>
+
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Paso">
+          <mat-header-cell *matHeaderCellDef> Paso</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.step }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Acción">
+          <mat-header-cell *matHeaderCellDef> Acción</mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <button mat-icon-button (click)="verMas(element)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row
+          *matHeaderRowDef="displayedColumns">
+        </mat-header-row>
+        <mat-row
+          *matRowDef="let row; columns: displayedColumns">
+        </mat-row>
+      </mat-table>
+    </div>
+
+    <mat-paginator
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 10]">
+    </mat-paginator>
+  </mat-card-content>
+</mat-card>
+
+

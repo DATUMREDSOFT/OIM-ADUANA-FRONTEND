@@ -1,15 +1,15 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { MaterialModule } from '../../../material.module';
-import { AuthService } from 'src/app/services/auth.service';
-import { CookieService } from 'ngx-cookie-service';
-import { LocalStorageService } from '../../../services/local-storage.service';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {Router, RouterModule} from '@angular/router';
+import {MaterialModule} from '../../../material.module';
+import {AuthService} from 'src/app/services/auth.service';
+import {CookieService} from 'ngx-cookie-service';
+import {LocalStorageService} from '../../../services/local-storage.service';
 
-import { ApiService } from 'src/app/services/api.service';
+import {ApiService} from 'src/app/services/api.service';
 import Swal from 'sweetalert2';
-import { firstValueFrom } from 'rxjs';
+import {firstValueFrom} from 'rxjs';
 
 @Component({
   selector: 'app-boxed-login',
@@ -20,7 +20,7 @@ import { firstValueFrom } from 'rxjs';
 export class AppBoxedLoginComponent implements OnInit {
   form: FormGroup;
   loading = false;
-  options = { theme: 'light' };
+  options = {theme: 'light'};
   private authService = inject(AuthService);
   private localStorageService = inject(LocalStorageService);
   private apiService = inject(ApiService);
@@ -33,26 +33,29 @@ export class AppBoxedLoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+  }
 
-  get f() { return this.form.controls; }
+  get f() {
+    return this.form.controls;
+  }
 
-    async submit() {
+  async submit() {
     if (this.form.invalid) return;
     this.loading = true;
-  
-    const { user, password } = this.form.value;
+
+    const {user, password} = this.form.value;
     try {
-      const response: any = await this.authService.login({ user, password, role: null }).toPromise();
+      const response: any = await this.authService.login({user, password, role: null}).toPromise();
       console.log('Login Response:', response);
-  
+
       if (response && response.token) {
         const tokenData = {
           token: response.token,
           expiracion: response.expiracion,
           roles: response.roles
         };
-        this.cookieService.set('authToken', JSON.stringify(tokenData), { path: '/' });
+        this.cookieService.set('authToken', JSON.stringify(tokenData), {path: '/'});
         await this.initializeUserSession();
       } else {
         console.error('Invalid response structure:', response);
@@ -66,35 +69,39 @@ export class AppBoxedLoginComponent implements OnInit {
     }
   }
 
-    private async initializeUserSession(): Promise<void> {
+  private async initializeUserSession(): Promise<void> {
     try {
       const tokenResponse = this.cookieService.get('authToken');
       if (!tokenResponse) throw new Error('JWT token not found');
-  
+
       const parsedTokenResponse = JSON.parse(tokenResponse);
       const token = parsedTokenResponse.token;
       if (!token) throw new Error('Token not found in response');
-  
+
       const decodedToken = this.decodeJWT(token);
       console.log('Decoded Token:', decodedToken);
-  
+
       const userlogin = decodedToken?.sub;
       if (!userlogin) throw new Error('User login not found in token');
       console.log('Extracted User Login:', userlogin);
-  
+
       const applicantData = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/user/applicant/${userlogin}`));
       const userType = applicantData.userType === 'EXTERNO DGA' ? 'AFPA' : 'INTERNO';
       const document = applicantData.document;
-  
+
+      this.localStorageService.setItem('userUID', {
+        value: userlogin
+      }, 1440);
+
       this.localStorageService.setItem('solicitante', {
         value: applicantData
       }, 1440);
-  
+
       this.localStorageService.setItem('tipo-usuario', {
         value: userType
       }, 1440);
-      console.log('User Type Stored:', userType);
-  
+
+
       const requestTypeUrl = userType === 'INTERNO' ? 'interno' : 'AFPA';
       const requestTypes = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/requestype/list/${requestTypeUrl}`));
       const formattedRequestTypes = requestTypes.map((req: any) => ({
@@ -102,16 +109,16 @@ export class AppBoxedLoginComponent implements OnInit {
         value: req.name,
         status: req.status
       }));
-  
+
       this.localStorageService.setItem('tipo-solicitud', formattedRequestTypes, 1440);
       console.log('Request Types Stored:', formattedRequestTypes);
-  
+
       const applicantRequest = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/request/applicant/Aplicante/${document}`));
       console.log('Applicant Request Data:', applicantRequest);
-  
+
       const requestFlow = await firstValueFrom(this.apiService.request<any>('GET', `dga/form/requestflow/list/${document}`));
       console.log('Request Flow Data:', requestFlow);
-  
+
       // Ensure redirection happens at the end of session initialization
       const redirectTo = userType === 'AFPA' ? '/dashboards/dashboard-afpa' : '/dashboards/dashboard-interno';
       console.log('Redirecting to:', redirectTo);
@@ -132,4 +139,6 @@ export class AppBoxedLoginComponent implements OnInit {
       return null;
     }
   }
+
+
 }

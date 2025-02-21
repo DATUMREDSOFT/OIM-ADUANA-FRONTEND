@@ -27,15 +27,23 @@ export class TipoUsuarioService {
       [FormType.PersonalNoAFPA]: Roles.NOAFPA,
       [FormType.AgenteAFPA]: Roles.AFPA,
       [FormType.Interno]: Roles.INTERNO,
-      [FormType.SolicitudNoAFPA]: Roles.NOAFPA, // Default fallbacks
+      [FormType.SolicitudNoAFPA]: Roles.NOAFPA,
       [FormType.Aplicante]: Roles.NOAFPA,
       [FormType.Elaborador]: Roles.INTERNO
     };
     return mapping[tipo] || Roles.NOAFPA;
   }
 
+  /**
+   * ✅ Get user role, but return "Externo" for NOAFPA users
+   */
   getTipoUsuario(): Roles {
-    const stored = this.localStorageSrv.getItem<{ value: Roles }>(this.environment.localStorageTipoUsuarioKey);
-    return stored?.value || this.tipoUsuario;
+    const stored = this.localStorageSrv.getItem<{ value?: Roles }>(this.environment.localStorageTipoUsuarioKey);
+  
+    if (!stored || !stored.value) {
+      return this.tipoUsuario || Roles.NOAFPA;
+    }
+  
+    return stored.value;
   }
 }

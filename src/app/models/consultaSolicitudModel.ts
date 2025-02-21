@@ -1,6 +1,6 @@
 // app.models.ts
 
-import { Other } from "../pages/dashboards/solicitud-externo/models/other.model";
+import { Other } from "../pages/dashboards/solicitud-base/models/other.model";
 
 export interface Attribute {
     id: string;
