@@ -1,5 +1,5 @@
-import { Component, ViewChild, OnInit, Input, SimpleChanges, ChangeDetectorRef, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, ViewChild, OnInit, Input, SimpleChanges, ChangeDetectorRef, inject, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -41,7 +41,9 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
   @ViewChild(MatTable, { static: true }) table: MatTable<any> = Object.create(null);
   @Input() formGroup!: FormGroup;
+  @Input() formIndex!: number; // ✅ Receives the form index
   @Input() userIndex!: number; // Add this line to accept the index from the parent component
+  @Output() userDataUpdated = new EventEmitter<{ userIndex: number, formIndex: number, data: any }>();
   userForm: FormGroup;
   userRequests: any[] = [];
   currentUser: any = null;
@@ -99,6 +101,8 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
       console.warn("❌ Warning: `formGroup` is undefined in `solicitud-externo.component.ts`.");
     } else {
       console.log("✅ Received `formGroup` on Init:", this.formGroup.value);
+      console.log(`✅ Child Component Initialized - Formulario ${this.formIndex}, User ${this.userIndex}`);
+      
     }
 
     console.log('✅ Sistemas:', this.sistemas);
@@ -115,79 +119,93 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
       console.log("✅ `userIndex` Updated:", changes['userIndex'].currentValue);
     }
   }
+  get usuariosArray(): FormArray {
+    return this.formGroup.get('formularios')?.get([this.formIndex])?.get('usuarios') as FormArray;
+  }
+
+  emitChanges(): void {
+    this.userDataUpdated.emit({
+      formIndex: this.formIndex,
+      userIndex: this.userIndex,
+      data: this.formGroup.value
+    });
+  }
+
+  onFormChange(): void {
+    this.emitChanges();
+  }
 
   async fetchUserData(): Promise<void> {
     this.loading = true;
-    this.formGroup.get('dui')?.disable(); // ✅ Disable field while fetching
-
-    let documentValue = this.formGroup.get('dui')?.value?.replace(/\D/g, '') || ''; // ✅ Remove dashes
-
-    // ✅ DUI = 9 Digits (Ej: 12345678-9)
-    // ✅ NIT = 14 Digits (Ej: 0614-240354-007-0)
+    this.formGroup.get('dui')?.disable(); 
+  
+    let documentValue = this.formGroup.get('dui')?.value?.replace(/\D/g, '') || '';
+  
     if (!(documentValue.length === 9 || documentValue.length === 14)) {
       Swal.fire('Error', 'Por favor, ingrese un número de DUI/NIT válido.', 'error');
       this.loading = false;
-      this.formGroup.get('dui')?.enable(); // ✅ Re-enable field
+      this.formGroup.get('dui')?.enable();
       return;
     }
-
-    this.loading = true; // ✅ Show spinner
-    this.cdr.detectChanges(); // ✅ Update UI
-
+  
+    this.loading = true;
+    this.cdr.detectChanges();
+  
     const formType = this.userType === 'NOAFPA' ? 'SolicitudNoAFPA' : 'SolicitudAFPA';
     const requestType = 'TYREQ-1';
-
+  
     try {
       const response = await this.apiService.request<any>(
         'GET',
-        `dga/form/request/user/load/${formType}/${requestType}/${documentValue}` // ✅ Send clean number
+        `dga/form/request/user/load/${formType}/${requestType}/${documentValue}`
       ).toPromise();
-
+  
       if (!response) {
         Swal.fire('No encontrado', 'No se encontraron datos para el documento ingresado.', 'warning');
         return;
       }
-
+  
       this.populateUserForm(response);
       console.log('✅ User Data Loaded:', response);
-
-      // ✅ Enable Editable Fields after fetching user data
+  
+      // ✅ Emit event to parent with updated user data
+      this.userDataUpdated.emit({
+        formIndex: this.formIndex,
+        userIndex: this.userIndex,
+        data: response
+      });
+  
+      // ✅ Enable fields after data fetch
       this.formGroup.get('correo')?.enable();
       this.formGroup.get('telefono')?.enable();
       this.formGroup.get('movil')?.enable();
-
-      // ✅ Show success toast
-      Swal.mixin({
+  
+      Swal.fire({
         toast: true,
         position: "top-end",
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.onmouseenter = Swal.stopTimer;
-          toast.onmouseleave = Swal.resumeTimer;
-        }
-      }).fire({
         icon: "success",
         title: `Usuario encontrado: ${response.fullName}`
       });
-
+  
     } catch (error) {
       console.error('❌ Error fetching user data:', error);
       Swal.fire('Error', 'No se pudo recuperar los datos del usuario.', 'error');
     } finally {
-      this.loading = false; // ✅ Hide spinner
-      this.formGroup.get('dui')?.enable(); // ✅ Re-enable DUI field
-      this.cdr.detectChanges(); // ✅ Update UI
+      this.loading = false;
+      this.formGroup.get('dui')?.enable();
+      this.cdr.detectChanges();
     }
   }
 
   private populateUserForm(data: any): void {
     if (!this.formGroup) {
-        console.error("❌ Parent FormGroup is undefined.");
-        return;
+      console.error("❌ Parent FormGroup is undefined.");
+      return;
     }
-
+  
     this.formGroup.patchValue({
       uid: data.uid || '',
       nombre: data.surName || '',
@@ -198,15 +216,6 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
       correoAlternativo: data.correoAlternativo || '',
       fechaInicioSolicitud: data.fechaInicioSolicitud || '',
       fechaFinSolicitud: data.fechaFinSolicitud || '',
-      tipo: data.tipo || '',
-      rol: data.rol || '',
-      cargo: data.cargo || '',
-      nivel1: data.nivel1 || '',
-      nivel2: data.nivel2 || '',
-      nivel3: data.nivel3 || '',
-      nivel4: data.nivel4 || '',
-      fechaInicio: data.fechaInicio || '',
-      fechaFin: data.fechaFin || '',
       sistema: data.sistema || '',
       fechaInicioSistema: data.fechaInicioSistema || '',
       fechaFinSistema: data.fechaFinSistema || '',
@@ -215,9 +224,19 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
       fechaInicioPerfil: data.fechaInicioPerfil || '',
       fechaFinPerfil: data.fechaFinPerfil || ''
     });
-
-    console.log("✅ Updated Parent Form:", this.formGroup.value);
-}
+  
+    console.log(`✅ Updated Formulario ${this.formIndex}, User ${this.userIndex}:`, this.formGroup.value);
+  
+    // 🔥 Emit event with correct `formIndex` and `userIndex`
+    this.userDataUpdated.emit({
+      formIndex: this.formIndex,  // ✅ Fix: Ensure this is included
+      userIndex: this.userIndex,  // ✅ Fix: Ensure this is included
+      data: this.formGroup.value
+    });
+  
+    console.log(`📢 Emitted userDataUpdated event for Formulario ${this.formIndex}, User ${this.userIndex}`);
+  }
+  
 
 
   
@@ -285,10 +304,10 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
     const sistema = this.formGroup.get('sistema')?.value;
     const fechaInicioSistema = this.formGroup.get('fechaInicioSistema')?.value;
     const fechaFinSistema = this.formGroup.get('fechaFinSistema')?.value;
-
+  
     if (sistema && fechaInicioSistema && fechaFinSistema) {
       if (this.isEditingSistema && this.editingIndexSistema !== null) {
-        // ✅ Update the selected row without clearing other form data
+        // ✅ Update existing entry
         const updatedData = [...this.dataSourceSistemas.data]; // Clone the array
         updatedData[this.editingIndexSistema] = {
           sistema,
@@ -296,23 +315,40 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
           fechaFinSistema: new Date(fechaFinSistema),
         };
         this.dataSourceSistemas.data = updatedData; // Assign new reference
-
+  
         this.isEditingSistema = false;
         this.editingIndexSistema = null;
       } else {
-        // ✅ Add new entry without resetting the entire form
+        // ✅ Add new entry without resetting everything
         this.dataSourceSistemas.data = [
           ...this.dataSourceSistemas.data,
           { sistema, fechaInicioSistema: new Date(fechaInicioSistema), fechaFinSistema: new Date(fechaFinSistema) },
         ];
       }
-
-      // ✅ Only reset the dropdowns (sistema, fechaInicioSistema, fechaFinSistema)
-      this.resetSistemaFields();
+  
+      console.log("✅ Updated Sistemas Data:", this.dataSourceSistemas.data);
+  
+      // ✅ Reset ONLY the sistema-related fields
+      this.formGroup.patchValue({
+        sistema: '',
+        fechaInicioSistema: '',
+        fechaFinSistema: ''
+      });
+  
+      // ✅ Emit updated user data to parent
+      this.userDataUpdated.emit({
+        formIndex: this.formIndex,
+        userIndex: this.userIndex,
+        data: this.formGroup.value  // 🔥 Send full updated form
+      });
+  
+      console.log(`📢 Emitted userDataUpdated event for Formulario ${this.formIndex}, User ${this.userIndex}`);
+  
     } else {
       Swal.fire('Error', 'Por favor complete todos los campos requeridos', 'error');
     }
   }
+  
 
   // ✅ Function to reset only the Sistema-related dropdowns
   private resetSistemaFields(): void {

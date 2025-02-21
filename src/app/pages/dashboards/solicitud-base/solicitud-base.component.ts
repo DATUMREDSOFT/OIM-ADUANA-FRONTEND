@@ -71,10 +71,47 @@ export class AppSolicitudBaseComponent implements OnInit {
     return control as FormGroup;
   }
 
-  getUserIndex(formIndex: number, userIndex: number): number {
+  getUserIndex(formularioIndex: number, userIndex: number): number {
     return userIndex;
   }
 
+  onUserDataUpdated(event: { formIndex: number; userIndex: number; data: any }) {
+    console.log('📢 Received user data update:', event);
+  
+    if (event.formIndex === undefined || event.userIndex === undefined) {
+      console.error('❌ Missing `formIndex` or `userIndex` in userDataUpdated event!', event);
+      return;
+    }
+  
+    const formulario = this.formularios.at(event.formIndex) as FormGroup;
+    if (!formulario) {
+      console.error(`❌ Formulario at index ${event.formIndex} does not exist.`);
+      return;
+    }
+  
+    const usuarios = this.getUsuarios(formulario);
+    if (event.userIndex >= usuarios.length) {
+      console.error(`❌ User index ${event.userIndex} out of bounds for form ${event.formIndex}.`);
+      return;
+    }
+  
+    const usuario = usuarios.at(event.userIndex) as FormGroup;
+    if (!usuario) {
+      console.error(`❌ User at index ${event.userIndex} not found.`);
+      return;
+    }
+  
+    console.log(`✅ Updating Form ${event.formIndex}, User ${event.userIndex}:`, event.data);
+  
+    // ✅ Apply the new data
+    usuario.patchValue(event.data);
+  
+    // ✅ Ensure UI is updated
+    this.cdr.detectChanges();
+  
+    console.log(`✅ User ${event.userIndex} in Formulario ${event.formIndex} updated successfully.`);
+  }
+  
   private loadTiposSolicitudFromStorage(): void {
     let storedData: any;
     const rawStoredData = localStorage.getItem('tipo-solicitud');
@@ -143,37 +180,51 @@ export class AppSolicitudBaseComponent implements OnInit {
 }
 
 
-  private createUsuarioForm(): FormGroup {
-    return this.fb.group({
-      dui: [{ value: '', disabled: false }],
-      uid: [{ value: '', disabled: true }],
-      nombre:[{ value: '', disabled: true }],
-      apellido: [{ value: '', disabled: true }],
-      correo: [{ value: '', disabled: true }, Validators.required], // ✅ Starts disabled
-      telefono: [{ value: '', disabled: true }, Validators.email], // ✅ Starts disabled
-      movil: [{ value: '', disabled: true }, Validators.required], // ✅ Starts disabled
-      correoAlternativo: ['', Validators.email],
-      fechaInicioSolicitud: [''],
-      fechaFinSolicitud: [''],
-      tipo: [''],
-      rol: [''],
-      cargo: [''],
-      nivel1: [''],
-      nivel2: [''],
-      nivel3: [''],
-      nivel4: [''],
-      fechaInicio: [''],
-      fechaFin: [''],
-      sistema: [''], // This will be populated from the child component
-      fechaInicioSistema: [''],
-      fechaFinSistema: [''],
-      perfil: [''],
-      aduanaPerfil: [''],
-      fechaInicioPerfil: [''],
-      fechaFinPerfil: [''],
-      sistemas: this.fb.array([]) // This will be populated from the child component
-    });
-  }
+private createUsuarioForm(): FormGroup {
+  return this.fb.group({
+    // ✅ Core user details
+    document: [{ value: '', disabled: false }],  // DUI/NIT
+    uid: [{ value: '', disabled: true }],
+    surName: [{ value: '', disabled: true }],  // First name
+    lastName: [{ value: '', disabled: true }], // Last name
+    fullName: [{ value: '', disabled: true }],
+    mail: [{ value: '', disabled: true }, Validators.required],
+    phoneNumber: [{ value: '', disabled: true }],
+    mobile: [{ value: '', disabled: true }],
+    alternativeMail: ['', Validators.email],
+
+    // ✅ Dates
+    fechaInicioSolicitud: [''],
+    fechaFinSolicitud: [''],
+    startDate: [''],
+    endDate: [''],
+
+    // ✅ Job Information
+    position: this.fb.group({
+      id: [''],
+      value: [''],
+      status: ['']
+    }),
+
+    // ✅ Organizational Levels
+    levelOne: this.fb.group({ id: [''], value: [''], status: [''] }),
+    levelTwo: this.fb.group({ id: [''], value: [''], status: [''] }),
+    levelThree: this.fb.group({ id: [''], value: [''], status: [''] }),
+    levelFour: this.fb.group({ id: [''], value: [''], status: [''] }),
+
+    // ✅ User Type Information
+    userType: [''],
+    OrganizationCode: ['DGA Externo'],
+    state: ['PENDING'],
+    resolution: [''],
+    approveAFPA: [''],
+
+    // ✅ Assigned Profiles & Systems
+    profiles: this.fb.array([]), // 🔥 This will be dynamically populated
+    systems: this.fb.array([]),  // 🔥 This will be dynamically populated
+  });
+}
+
 
   generateUID(index: number) {
     const formulario = this.formularios.at(index);
@@ -188,38 +239,43 @@ export class AppSolicitudBaseComponent implements OnInit {
   }
 
   getUsuarios(formulario: FormGroup): FormArray {
+    if (!formulario.get('usuarios')) {
+      console.warn("⚠️ 'usuarios' array not found, initializing it now...");
+      formulario.setControl('usuarios', this.fb.array([])); // ✅ Ensure array exists
+    }
     return formulario.get('usuarios') as FormArray;
   }
+  
 
   addUsuario(index: number): void {
-    console.log('🛠️ addUsuario called for form index:', index);
-
     const formulario = this.formularios.at(index) as FormGroup;
-
-    // 🔥 Fix: Ensure usuarios exists
-    if (!formulario.get('usuarios')) {
-        console.warn("⚠️ 'usuarios' array not found in form, initializing...");
-        formulario.setControl('usuarios', this.fb.array([]));
-    }
-
-    const usuarios = formulario.get('usuarios') as FormArray;
-    if (!usuarios) {
-        console.error("❌ `usuarios` array not found in form after creation.");
+    const usuarios = this.getUsuarios(formulario);
+  
+    if (usuarios.length > 0) {
+      const lastUser = usuarios.at(usuarios.length - 1).value;
+      
+      // 🔍 Check if the last user is empty before adding a new one
+      if (!lastUser.dui && !lastUser.correo) {
+        Swal.fire("Advertencia", "Complete el usuario actual antes de agregar otro.", "warning");
         return;
+      }
     }
-
+  
     const newUser = this.createUsuarioForm();
     usuarios.push(newUser);
-
+  
     console.log(`✅ Added user at index ${usuarios.length - 1}:`, newUser.value);
+    console.log(`📌 Current users in Formulario #${index}:`, usuarios.value);
     
     this.cdr.detectChanges();
-}
+  }
+  
+  
 
 
 
-  removeUsuario(formIndex: number, userIndex: number): void {
-    const usuarios = this.getUsuarios(this.formularios.at(formIndex) as FormGroup);
+  removeUsuario(formularioIndex: number, userIndex: number): void {
+    const usuarios = this.getUsuarios(this.formularios.at(formularioIndex) as FormGroup);
     if (usuarios.length > 1) {
       Swal.fire({
         title: '¿Está seguro?',
@@ -371,130 +427,140 @@ export class AppSolicitudBaseComponent implements OnInit {
     this.fileInput.nativeElement.value = '';
   }
 
-  private buildFormData(): FormularioExterno {
+  private buildFormData(): any {
     const formulario = this.solicitudForm.value;
-
-    console.log("🔍 Form Data Before Building JSON:", JSON.stringify(formulario, null, 2));
-
+  
+    console.log("🔍 Form Data Before Sending:", JSON.stringify(formulario, null, 2));
+  
     if (!formulario.formularios || formulario.formularios.length === 0) {
-        console.error("❌ Error: No formularios found.");
-        return {} as FormularioExterno;
+      console.error("❌ Error: No formularios found.");
+      return {};
     }
-
-    // ✅ Extract applicant data
-    const applicantData = formulario.formularios?.[0]?.form || {};
-    if (!applicantData) {
-        console.error("❌ Error: Applicant data is missing.");
-    }
-
-    const userType = this.localStorageService.getItem<{ value: string }>('tipo-usuario')?.value || 'NOAFPA';
-    const currentUserLogin = (userType === "AFPA" || userType === "INTERNO") ? this.procesoFormulario.getUserLogin() : "NA";
-
+  
+    // ✅ Get the applicant (who is sending the request)
+    const applicantData = formulario.formularios[0].form || {};
+    const currentUserLogin = this.localStorageService.getItem<{ value: string }>('tipo-usuario')?.value || 'NA';
+  
+    // ✅ Generate the request array for multiple users
     const requests = formulario.formularios.map((f: any, formIndex: number) => {
-        const usuarios = f.usuarios || [];
-        console.log(`🔍 Form ${formIndex} has ${usuarios.length} users.`);
-
-        return {
-            status: "PENDING",
-            id: "Pendiente de guardar",
-            typeRequest: { id: f.tipo, value: "Nuevo Usuario" },
-            state: "PENDING",
-            createBy: currentUserLogin,
-            createOn: Date.now().toString(),
-            profiles: userType === "AFPA" ? f.usuarios.flatMap((user: any) => user.perfiles || []) : [],
-            systems: f.usuarios.flatMap((user: any) =>
-                (user.sistemas || []).map((sistema: any) => ({
-                    id: sistema.id || "CATSYS-12",
-                    status: "PENDIENTE DE ASIGNAR",
-                    startDate: sistema.fechaInicioSistema || Date.now().toString(),
-                    endDate: sistema.fechaFinSistema || Date.now().toString(),
-                    group: { id: "CATGRP-78", value: "PAGOES", status: "ENABLED" },
-                    custom: { id: "NA", value: "N/A" }
-                }))
-            ),
-            person: usuarios.map((user: any, userIndex: number) => {
-                console.log(`🔍 User ${userIndex} inside Form ${formIndex}:`, user);
-                return {
-                    document: user.dui || "NA",
-                    surName: user.nombre || "NA",
-                    lastName: user.apellido || "NA",
-                    uid: user.uid || "NA",
-                    mail: user.correo || "unknown@example.com",
-                    phoneNumber: user.telefono || '',
-                    mobile: user.movil || '',
-                    fullName: `${user.nombre || ''} ${user.apellido || ''}`.trim(),
-                    organizationCode: "DGA Externo",
-                    state: "PENDING",
-                    userType: "Externo",
-                };
-            })
-        };
-    });
-
-    console.log("🚀 FINAL FORM DATA TO BE SENT:", JSON.stringify(requests, null, 2));
-
-    return {
-        id: "NA",
-        status: "PENDING",
-        createdOn: Date.now().toString(),
-        createdBy: currentUserLogin,
-        modifiedOn: Date.now().toString(),
-        modifiedBy: currentUserLogin,
-        closed: false,
-        step: "-",
-        requests: requests,
-        comment: "",
-        applicant: {
-            document: applicantData.dui || "NA",
-            name: applicantData.nombre || "Unknown",
-            mail: applicantData.correo || "unknown@example.com",
-            externalType: {
-                id: "PERSONAL",
-                status: "ENABLED",
-                value: "Persona Natural"
-            },
-            position: {
-                id: "NA",
-                value: applicantData.cargo || "Unknown",
-                status: "ENABLED"
-            },
-            attribute: {
-                id: "NA",
-                value: "N/A",
-                status: "ENABLED"
-            },
-            externalRepLegal: "N/A",
-            externalCodeDeclarant: "N/A",
-            id: applicantData.uid || "NA"
+      const usuarios = f.usuarios || [];
+  
+      return {
+        id: "Pendiente de guardar",
+        typeRequest: {
+          id: f.tipo,
+          value: "Nuevo Usuario",
+          status: null
         },
-        applicantViewer: "-",
-        file1: "",
-        file2: "",
-        file3: "",
-        file4: "",
-        file5: "",
-        file6: "",
+        state: "PENDIENTE DE ASIGNAR",
+        createBy: currentUserLogin,
+        createOn: Date.now().toString(),
+  
+        // ✅ Convert users into the correct structure
+        person: usuarios.map((user: any) => ({
+          document: user.document || "NA",
+          surName: user.surName || "NA",
+          lastName: user.lastName || "NA",
+          uid: user.uid || "NA",
+          mail: user.mail || "unknown@example.com",
+          phoneNumber: user.phoneNumber || '',
+          mobile: user.mobile || '',
+          fullName: `${user.surName || ''} ${user.lastName || ''}`.trim(),
+          organizationCode: "DGA Externo",
+          state: "PENDING",
+          userType: user.userType || "Externo",
+  
+          // ✅ Nested Attributes
+          position: user.position || {},
+          levelOne: user.levelOne || {},
+          levelTwo: user.levelTwo || {},
+          levelThree: user.levelThree || {},
+          levelFour: user.levelFour || {},
+          attribute: user.attribute || {},
+          typeAFPA: user.typeAFPA || {},
+  
+          // ✅ Resolutions (if AFPA)
+          resolution: user.resolution || null,
+          approveAFPA: user.approveAFPA || null,
+        })),
+  
+        // ✅ Assigned Systems
+        systems: usuarios.flatMap((user: any) =>
+          (user.systems || []).map((sistema: any) => ({
+            id: sistema.id || "CATSYS-12",
+            status: "PENDIENTE DE ASIGNAR",
+            type: "Externo",
+            startDate: sistema.startDate || Date.now().toString(),
+            endDate: sistema.endDate || Date.now().toString(),
+            group: {
+              id: "CATGRP-78",
+              status: "ENABLED",
+              value: "PAGOES",
+              system: null
+            },
+            custom: {}
+          }))
+        )
+      };
+    });
+  
+    // ✅ Construct final payload
+    return {
+      id: "NA",
+      status: "PENDING",
+      createdOn: Date.now().toString(),
+      createdBy: currentUserLogin,
+      modifiedOn: Date.now().toString(),
+      modifiedBy: currentUserLogin,
+      closed: false,
+      step: "-",
+      requests: requests,
+  
+      // ✅ Applicant information
+      applicant: {
+        document: applicantData.document || "NA",
+        name: applicantData.nombre || "Unknown",
+        mail: applicantData.mail || "unknown@example.com",
+        externalType: {
+          id: "PERSONAL",
+          status: "ENABLED",
+          value: "Persona Natural"
+        },
+        position: applicantData.position || {},
+        attribute: applicantData.attribute || {},
+        externalRepLegal: "N/A",
+        externalCodeDeclarant: "N/A",
+        id: applicantData.uid || "NA"
+      },
+      applicantViewer: "-",
+      file1: "",
+      file2: "",
+      file3: "",
+      file4: "",
+      file5: "",
+      file6: ""
     };
-}
-
-
-
-async enviarFormulario(): Promise<void> {
-  try {
-    Swal.fire({ title: 'Procesando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-    const formData = this.buildFormData();
-
-    // 🔥 Debugging: Check JSON before sending
-    console.log("🚀 FINAL FORM DATA TO BE SENT:", JSON.stringify(formData, null, 2));
-
-    const formResponse = await this.procesoFormulario.iniciarProceso(formData);
-
-    Swal.fire('Éxito', 'El formulario ha sido enviado exitosamente.', 'success');
-  } catch (error) {
-    Swal.fire('Error', 'Ocurrió un problema al enviar el formulario.', 'error');
   }
-}
+
+  async enviarFormulario(): Promise<void> {
+    try {
+      // ✅ Ensure all form updates are done
+      this.cdr.detectChanges();
+  
+      Swal.fire({ title: 'Procesando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+  
+      const formData = this.buildFormData();
+  
+      console.log("🚀 FINAL FORM DATA TO BE SENT:", JSON.stringify(formData, null, 2));
+  
+      const formResponse = await this.procesoFormulario.iniciarProceso(formData);
+  
+      Swal.fire('Éxito', 'El formulario ha sido enviado exitosamente.', 'success');
+    } catch (error) {
+      Swal.fire('Error', 'Ocurrió un problema al enviar el formulario.', 'error');
+    }
+  }
+  
 
 
   
