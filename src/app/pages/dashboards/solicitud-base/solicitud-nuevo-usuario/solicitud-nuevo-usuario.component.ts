@@ -14,6 +14,7 @@ import { TablerIconsModule } from 'angular-tabler-icons';
 import { Roles } from 'src/app/enums/roles.enum';
 import { LocalStorageService } from 'src/app/services/local-storage.service';
 import { MaterialModule } from 'src/app/material.module';
+import { ApiService } from 'src/app/services/api.service';
 
 
 export interface SistemaAsignado {
@@ -38,7 +39,7 @@ export interface PerfilAsignado {
 })
 export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
-  @ViewChild(MatTable, {static: true}) table: MatTable<any> = Object.create(null);
+  @ViewChild(MatTable, { static: true }) table: MatTable<any> = Object.create(null);
   @Input() formGroup!: FormGroup;
   @Input() userIndex!: number; // Add this line to accept the index from the parent component
   userForm: FormGroup;
@@ -47,6 +48,10 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   editIndex: number | null = null;
   editMode: boolean = false;
   editType: 'perfil' | 'sistema' | null = null;
+  minDate = new Date(); // 🔥 Today (disables past dates)
+
+  systemNameMap = new Map<string, string>();
+
 
   sistemaAsignado: [SistemaAsignado];
 
@@ -62,7 +67,7 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   @Input() aduanas: any[] = []; // ✅ Receive from parent
 
   selectedSolicitud: string = '';
-  isLoading: boolean = false;
+  loading: boolean = false;
   shouldSave: boolean = false;
 
   displayedColumns: string[] = ['sistema', 'fechaInicioSistema', 'fechaFinSistema', 'accion'];
@@ -71,7 +76,7 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   dataSourceSistemas = new MatTableDataSource<SistemaAsignado>([]);
   dataSourcePerfil = new MatTableDataSource<PerfilAsignado>([]);
 
-  constructor(private fb: FormBuilder, private datePipe: DatePipe, private cdr: ChangeDetectorRef, private localStorageService: LocalStorageService, private snackBar: MatSnackBar) {
+  constructor(private fb: FormBuilder, private datePipe: DatePipe, private cdr: ChangeDetectorRef, private localStorageService: LocalStorageService, private snackBar: MatSnackBar, private apiService: ApiService) {
     this.userForm = this.fb.group({
       sistema: ['', Validators.required],
       fechaInicioSistema: ['', Validators.required],
@@ -83,8 +88,13 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
     });
   }
 
-  ngOnInit():void {
+  ngOnInit(): void {
     this.loadUserType();
+
+    this.systemNameMap = new Map(
+      this.sistemas.map(sistema => [sistema.id, sistema.value])
+    );
+
     if (!this.formGroup) {
       console.warn("❌ Warning: `formGroup` is undefined in `solicitud-externo.component.ts`.");
     } else {
@@ -106,6 +116,125 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
     }
   }
 
+  async fetchUserData(): Promise<void> {
+    this.loading = true;
+    this.formGroup.get('dui')?.disable(); // ✅ Disable field while fetching
+
+    let documentValue = this.formGroup.get('dui')?.value?.replace(/\D/g, '') || ''; // ✅ Remove dashes
+
+    // ✅ DUI = 9 Digits (Ej: 12345678-9)
+    // ✅ NIT = 14 Digits (Ej: 0614-240354-007-0)
+    if (!(documentValue.length === 9 || documentValue.length === 14)) {
+      Swal.fire('Error', 'Por favor, ingrese un número de DUI/NIT válido.', 'error');
+      this.loading = false;
+      this.formGroup.get('dui')?.enable(); // ✅ Re-enable field
+      return;
+    }
+
+    this.loading = true; // ✅ Show spinner
+    this.cdr.detectChanges(); // ✅ Update UI
+
+    const formType = this.userType === 'NOAFPA' ? 'SolicitudNoAFPA' : 'SolicitudAFPA';
+    const requestType = 'TYREQ-1';
+
+    try {
+      const response = await this.apiService.request<any>(
+        'GET',
+        `dga/form/request/user/load/${formType}/${requestType}/${documentValue}` // ✅ Send clean number
+      ).toPromise();
+
+      if (!response) {
+        Swal.fire('No encontrado', 'No se encontraron datos para el documento ingresado.', 'warning');
+        return;
+      }
+
+      this.populateUserForm(response);
+      console.log('✅ User Data Loaded:', response);
+
+      // ✅ Enable Editable Fields after fetching user data
+      this.formGroup.get('correo')?.enable();
+      this.formGroup.get('telefono')?.enable();
+      this.formGroup.get('movil')?.enable();
+
+      // ✅ Show success toast
+      Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      }).fire({
+        icon: "success",
+        title: `Usuario encontrado: ${response.fullName}`
+      });
+
+    } catch (error) {
+      console.error('❌ Error fetching user data:', error);
+      Swal.fire('Error', 'No se pudo recuperar los datos del usuario.', 'error');
+    } finally {
+      this.loading = false; // ✅ Hide spinner
+      this.formGroup.get('dui')?.enable(); // ✅ Re-enable DUI field
+      this.cdr.detectChanges(); // ✅ Update UI
+    }
+  }
+
+  private populateUserForm(data: any): void {
+    if (!this.formGroup) {
+        console.error("❌ Parent FormGroup is undefined.");
+        return;
+    }
+
+    this.formGroup.patchValue({
+      uid: data.uid || '',
+      nombre: data.surName || '',
+      apellido: data.lastName || '',
+      correo: data.mail || '',
+      telefono: data.phoneNumber || '',
+      movil: data.mobile || '',
+      correoAlternativo: data.correoAlternativo || '',
+      fechaInicioSolicitud: data.fechaInicioSolicitud || '',
+      fechaFinSolicitud: data.fechaFinSolicitud || '',
+      tipo: data.tipo || '',
+      rol: data.rol || '',
+      cargo: data.cargo || '',
+      nivel1: data.nivel1 || '',
+      nivel2: data.nivel2 || '',
+      nivel3: data.nivel3 || '',
+      nivel4: data.nivel4 || '',
+      fechaInicio: data.fechaInicio || '',
+      fechaFin: data.fechaFin || '',
+      sistema: data.sistema || '',
+      fechaInicioSistema: data.fechaInicioSistema || '',
+      fechaFinSistema: data.fechaFinSistema || '',
+      perfil: data.perfil || '',
+      aduanaPerfil: data.aduanaPerfil || '',
+      fechaInicioPerfil: data.fechaInicioPerfil || '',
+      fechaFinPerfil: data.fechaFinPerfil || ''
+    });
+
+    console.log("✅ Updated Parent Form:", this.formGroup.value);
+}
+
+
+  
+
+  validateEndDate(controlNameInicio: string, controlNameFin: string) {
+    const fechaInicio = this.formGroup.get(controlNameInicio)?.value;
+    const fechaFin = this.formGroup.get(controlNameFin)?.value;
+
+    if (fechaInicio && fechaFin && new Date(fechaFin) < new Date(fechaInicio)) {
+      this.formGroup.get(controlNameFin)?.setErrors({ invalidEndDate: true });
+    } else {
+      this.formGroup.get(controlNameFin)?.setErrors(null);
+    }
+  }
+
+
+
   private loadUserType() {
     const storedUser = this.localStorageService.getItem<{ value: string }>('tipo-usuario');
     this.userType = storedUser?.value || '';
@@ -121,9 +250,18 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   }
 
   /** ✅ Check if Perfil Tab Should Be Hidden */
-  get shouldShowPerfilTab(): boolean {
-    return this.userType !== Roles.NOAFPA;
+  /** ✅ Universal Function to Hide Components Based on User Type */
+  shouldHideComponent(component: string): boolean {
+    switch (component) {
+      case 'perfilTab':
+        return this.userType === Roles.NOAFPA; // Hide Perfiles Tab for NOAFPA users
+      case 'rolesPermisosSection':
+        return this.userType === Roles.NOAFPA; // Hide Roles y Permisos Section for NOAFPA users
+      default:
+        return false; // Show all other components by default
+    }
   }
+
 
 
   addAnotherForm() {
@@ -150,7 +288,7 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
 
     if (sistema && fechaInicioSistema && fechaFinSistema) {
       if (this.isEditingSistema && this.editingIndexSistema !== null) {
-        // Update the selected row
+        // ✅ Update the selected row without clearing other form data
         const updatedData = [...this.dataSourceSistemas.data]; // Clone the array
         updatedData[this.editingIndexSistema] = {
           sistema,
@@ -162,18 +300,29 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
         this.isEditingSistema = false;
         this.editingIndexSistema = null;
       } else {
-        // Add new entry
+        // ✅ Add new entry without resetting the entire form
         this.dataSourceSistemas.data = [
           ...this.dataSourceSistemas.data,
-          {sistema, fechaInicioSistema: new Date(fechaInicioSistema), fechaFinSistema: new Date(fechaFinSistema)},
+          { sistema, fechaInicioSistema: new Date(fechaInicioSistema), fechaFinSistema: new Date(fechaFinSistema) },
         ];
       }
 
-      this.resetForm();
+      // ✅ Only reset the dropdowns (sistema, fechaInicioSistema, fechaFinSistema)
+      this.resetSistemaFields();
     } else {
       Swal.fire('Error', 'Por favor complete todos los campos requeridos', 'error');
     }
   }
+
+  // ✅ Function to reset only the Sistema-related dropdowns
+  private resetSistemaFields(): void {
+    this.formGroup.patchValue({
+      sistema: '',
+      fechaInicioSistema: '',
+      fechaFinSistema: ''
+    });
+  }
+
 
   asignarPerfil(): void {
     const perfil = this.formGroup.get('perfil')?.value;
@@ -363,15 +512,50 @@ export class AppSolicitudNuevoUsuarioComponent implements OnInit {
   scrollToForm(index: number) {
     const formElement = document.querySelector(`#form-${index}`);
     if (formElement) {
-      formElement.scrollIntoView({behavior: 'smooth'});
+      formElement.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
-  sendRequest() {
-    this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
-      Swal.fire('Éxito', 'Solicitud enviada', 'success');
-    }, 3000);
+  formatDocument() {
+    let value = (this.formGroup.get('dui')?.value || '').replace(/\D/g, ''); // Remove non-digits
+    if (value.length > 14) value = value.substring(0, 14);
+
+    if (value.length <= 9) {
+      this.formGroup.get('dui')?.setValue(value.replace(/(\d{8})(\d{1})/, '$1-$2'), { emitEvent: false });
+    } else {
+      this.formGroup.get('dui')?.setValue(value.replace(/(\d{4})(\d{6})(\d{3})(\d{1})/, '$1-$2-$3-$4'), { emitEvent: false });
+    }
   }
+
+  formatPhoneNumber(controlName: string): void {
+    let value = this.formGroup.get(controlName)?.value || '';
+
+    // ✅ Remove non-numeric characters
+    value = value.replace(/\D/g, '');
+
+    // ✅ Limit to 8 digits
+    if (value.length > 8) value = value.substring(0, 8);
+
+    // ✅ Format as "7777-7777" (dash added after 4th digit)
+    if (value.length > 4) {
+      value = value.replace(/(\d{4})(\d{1,4})/, '$1-$2');
+    }
+
+    this.formGroup.get(controlName)?.setValue(value, { emitEvent: false });
+  }
+
+
+  stripFormattingBeforeSubmit() {
+    const rawDUI = this.formGroup.get('dui')?.value.replace(/\D/g, '') || ''; // Strip dashes
+    const rawTelefono = this.formGroup.get('telefono')?.value.replace(/\D/g, '') || '';
+    const rawMovil = this.formGroup.get('movil')?.value.replace(/\D/g, '') || '';
+
+    this.formGroup.patchValue({
+      dui: rawDUI,
+      telefono: rawTelefono,
+      movil: rawMovil
+    });
+  }
+
+
 }

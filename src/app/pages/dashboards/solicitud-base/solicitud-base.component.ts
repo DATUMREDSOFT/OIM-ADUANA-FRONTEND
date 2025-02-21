@@ -22,6 +22,8 @@ import {
 } from './solicitud-modificar-usuario/solicitud-modificar-usuario.component';
 import { AppSolicitudNuevoUsuarioComponent } from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
 import { Roles } from '../../../enums/roles.enum';
+import { CommonAttribute } from 'src/app/models/common-attribute.model';
+import { Applicant } from './models/applicant.model';
 
 @Component({
   selector: 'app-solicitud-base',
@@ -107,49 +109,50 @@ export class AppSolicitudBaseComponent implements OnInit {
 
   private createFormulario(): FormGroup {
     return this.fb.group({
-      tipo: ['', Validators.required],
-      childComponent: [null],
-      form: this.fb.group({
-        uid: [''],
-        nombre: [''],
-        apellido: [''],
-        correo: [''],
-        telefono: [''],
-        movil: [''],
-        correoAlternativo: [''],
-        fechaInicioSolicitud: [''],
-        fechaFinSolicitud: [''],
-        tipo: [''],
-        rol: [''],
-        cargo: [''],
-        nivel1: [''],
-        nivel2: [''],
-        nivel3: [''],
-        nivel4: [''],
-        fechaInicio: [''],
-        fechaFin: [''],
-        sistema: [''],
-        fechaInicioSistema: [''],
-        fechaFinSistema: [''],
-        perfil: [''],
-        aduanaPerfil: [''],
-        fechaInicioPerfil: [''],
-        fechaFinPerfil: ['']
-      }),
-      usuarios: this.fb.array([])
+        tipo: ['', Validators.required],
+        childComponent: [null],
+        form: this.fb.group({
+            uid: [''],
+            nombre: [''],
+            apellido: [''],
+            correo: [''],
+            telefono: [''],
+            movil: [''],
+            correoAlternativo: [''],
+            fechaInicioSolicitud: [''],
+            fechaFinSolicitud: [''],
+            tipo: [''],
+            rol: [''],
+            cargo: [''],
+            nivel1: [''],
+            nivel2: [''],
+            nivel3: [''],
+            nivel4: [''],
+            fechaInicio: [''],
+            fechaFin: [''],
+            sistema: [''],
+            fechaInicioSistema: [''],
+            fechaFinSistema: [''],
+            perfil: [''],
+            aduanaPerfil: [''],
+            fechaInicioPerfil: [''],
+            fechaFinPerfil: ['']
+        }),
+        usuarios: this.fb.array([]) // 🔥 ✅ Ensure usuarios is ALWAYS initialized
     });
-  }
+}
+
 
   private createUsuarioForm(): FormGroup {
     return this.fb.group({
-      dui: [''],
-      uid: [''],
-      nombre: [''],
-      apellido: [''],
-      telefono: [''],
-      movil: [''],
-      correo: [''],
-      correoAlternativo: [''],
+      dui: [{ value: '', disabled: false }],
+      uid: [{ value: '', disabled: true }],
+      nombre:[{ value: '', disabled: true }],
+      apellido: [{ value: '', disabled: true }],
+      correo: [{ value: '', disabled: true }, Validators.required], // ✅ Starts disabled
+      telefono: [{ value: '', disabled: true }, Validators.email], // ✅ Starts disabled
+      movil: [{ value: '', disabled: true }, Validators.required], // ✅ Starts disabled
+      correoAlternativo: ['', Validators.email],
       fechaInicioSolicitud: [''],
       fechaFinSolicitud: [''],
       tipo: [''],
@@ -161,22 +164,14 @@ export class AppSolicitudBaseComponent implements OnInit {
       nivel4: [''],
       fechaInicio: [''],
       fechaFin: [''],
-      sistema: [''],
+      sistema: [''], // This will be populated from the child component
       fechaInicioSistema: [''],
       fechaFinSistema: [''],
       perfil: [''],
       aduanaPerfil: [''],
       fechaInicioPerfil: [''],
       fechaFinPerfil: [''],
-      sistemas: this.fb.array([this.createDefaultSistema()])
-    });
-  }
-
-  /** ✅ Add SIAP System Automatically (deactivated by default) */
-  private createDefaultSistema(): FormGroup {
-    return this.fb.group({
-      nombre: ['SIAP'],
-      estado: ['deactivated']
+      sistemas: this.fb.array([]) // This will be populated from the child component
     });
   }
 
@@ -197,11 +192,31 @@ export class AppSolicitudBaseComponent implements OnInit {
   }
 
   addUsuario(index: number): void {
-    console.log('addUsuario called'); // Debugging log
-    const usuarios = this.getUsuarios(this.formularios.at(index) as FormGroup);
-    usuarios.push(this.createUsuarioForm());
-    this.cdr.detectChanges(); // Trigger change detection
-  }
+    console.log('🛠️ addUsuario called for form index:', index);
+
+    const formulario = this.formularios.at(index) as FormGroup;
+
+    // 🔥 Fix: Ensure usuarios exists
+    if (!formulario.get('usuarios')) {
+        console.warn("⚠️ 'usuarios' array not found in form, initializing...");
+        formulario.setControl('usuarios', this.fb.array([]));
+    }
+
+    const usuarios = formulario.get('usuarios') as FormArray;
+    if (!usuarios) {
+        console.error("❌ `usuarios` array not found in form after creation.");
+        return;
+    }
+
+    const newUser = this.createUsuarioForm();
+    usuarios.push(newUser);
+
+    console.log(`✅ Added user at index ${usuarios.length - 1}:`, newUser.value);
+    
+    this.cdr.detectChanges();
+}
+
+
 
   removeUsuario(formIndex: number, userIndex: number): void {
     const usuarios = this.getUsuarios(this.formularios.at(formIndex) as FormGroup);
@@ -356,183 +371,131 @@ export class AppSolicitudBaseComponent implements OnInit {
     this.fileInput.nativeElement.value = '';
   }
 
-  async enviarFormulario(): Promise<void> {
-    try {
-      Swal.fire({
-        title: 'Procesando...',
-        text: 'Enviando formulario, por favor espere...',
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        }
-      });
+  private buildFormData(): FormularioExterno {
+    const formulario = this.solicitudForm.value;
 
-      // 🔥 Burnt Data for Testing (Step 1)
-      const burntFormData = {
-        createdOn: "1739997502620",
-        createdBy: "011615402",
-        modifiedOn: "1739997502620",
-        modifiedBy: "011615402",
+    console.log("🔍 Form Data Before Building JSON:", JSON.stringify(formulario, null, 2));
+
+    if (!formulario.formularios || formulario.formularios.length === 0) {
+        console.error("❌ Error: No formularios found.");
+        return {} as FormularioExterno;
+    }
+
+    // ✅ Extract applicant data
+    const applicantData = formulario.formularios?.[0]?.form || {};
+    if (!applicantData) {
+        console.error("❌ Error: Applicant data is missing.");
+    }
+
+    const userType = this.localStorageService.getItem<{ value: string }>('tipo-usuario')?.value || 'NOAFPA';
+    const currentUserLogin = (userType === "AFPA" || userType === "INTERNO") ? this.procesoFormulario.getUserLogin() : "NA";
+
+    const requests = formulario.formularios.map((f: any, formIndex: number) => {
+        const usuarios = f.usuarios || [];
+        console.log(`🔍 Form ${formIndex} has ${usuarios.length} users.`);
+
+        return {
+            status: "PENDING",
+            id: "Pendiente de guardar",
+            typeRequest: { id: f.tipo, value: "Nuevo Usuario" },
+            state: "PENDING",
+            createBy: currentUserLogin,
+            createOn: Date.now().toString(),
+            profiles: userType === "AFPA" ? f.usuarios.flatMap((user: any) => user.perfiles || []) : [],
+            systems: f.usuarios.flatMap((user: any) =>
+                (user.sistemas || []).map((sistema: any) => ({
+                    id: sistema.id || "CATSYS-12",
+                    status: "PENDIENTE DE ASIGNAR",
+                    startDate: sistema.fechaInicioSistema || Date.now().toString(),
+                    endDate: sistema.fechaFinSistema || Date.now().toString(),
+                    group: { id: "CATGRP-78", value: "PAGOES", status: "ENABLED" },
+                    custom: { id: "NA", value: "N/A" }
+                }))
+            ),
+            person: usuarios.map((user: any, userIndex: number) => {
+                console.log(`🔍 User ${userIndex} inside Form ${formIndex}:`, user);
+                return {
+                    document: user.dui || "NA",
+                    surName: user.nombre || "NA",
+                    lastName: user.apellido || "NA",
+                    uid: user.uid || "NA",
+                    mail: user.correo || "unknown@example.com",
+                    phoneNumber: user.telefono || '',
+                    mobile: user.movil || '',
+                    fullName: `${user.nombre || ''} ${user.apellido || ''}`.trim(),
+                    organizationCode: "DGA Externo",
+                    state: "PENDING",
+                    userType: "Externo",
+                };
+            })
+        };
+    });
+
+    console.log("🚀 FINAL FORM DATA TO BE SENT:", JSON.stringify(requests, null, 2));
+
+    return {
+        id: "NA",
+        status: "PENDING",
+        createdOn: Date.now().toString(),
+        createdBy: currentUserLogin,
+        modifiedOn: Date.now().toString(),
+        modifiedBy: currentUserLogin,
         closed: false,
         step: "-",
-        requests: [
-          {
-            id: "Pendiente de guardar",
-            typeRequest: { id: "TYREQ-1", value: "Nuevo Usuario" },
-            state: "PENDIENTE DE ASIGNAR",
-            createBy: "011615402",
-            createOn: "1739997483193",
-            profiles: [{}],
-            resources: [{}],
-            systems: [
-              {
-                id: "CATSYS-12",
-                status: "PENDIENTE DE ASIGNAR",
-                group: { id: "CATGRP-78", value: "PAGOES", status: "ENABLED" },
-                custom: {},
-                endDate: "1740700800000",
-                type: "Externo",
-                startDate: "1739923200000"
-              }
-            ],
-            others: [{}],
-            flow: [{}],
-            person: {
-              document: "0963783311",
-              mail: "test300@gmail.com",
-              uid: "test.test",
-              position: {},
-              levelOne: {},
-              levelTwo: {},
-              levelThree: {},
-              levelFour: {},
-              attribute: {},
-              fullName: "null ",
-              lastName: "test",
-              surName: "test300",
-              organizationCode: "DGA Externo",
-              phoneNumber: "78787878",
-              mobile: "89898989"
-            }
-          }
-        ],
+        requests: requests,
+        comment: "",
         applicant: {
-          document: "011615402",
-          position: {},
-          attribute: {},
-          externalType: { id: "PERSONAL", value: "Persona Natural", status: "ENABLED" },
-          name: "SANDRA GABRIELLA CRUZ CHAVEZ",
-          externalName: "SANDRA GABRIELLA CRUZ CHAVEZ",
-          mail: "test7@gmail.com"
+            document: applicantData.dui || "NA",
+            name: applicantData.nombre || "Unknown",
+            mail: applicantData.correo || "unknown@example.com",
+            externalType: {
+                id: "PERSONAL",
+                status: "ENABLED",
+                value: "Persona Natural"
+            },
+            position: {
+                id: "NA",
+                value: applicantData.cargo || "Unknown",
+                status: "ENABLED"
+            },
+            attribute: {
+                id: "NA",
+                value: "N/A",
+                status: "ENABLED"
+            },
+            externalRepLegal: "N/A",
+            externalCodeDeclarant: "N/A",
+            id: applicantData.uid || "NA"
         },
         applicantViewer: "-",
         file1: "",
-        status: "PENDING",
-        formType: "Externo",
-        createdName: "SANDRA GABRIELLA CRUZ CHAVEZ"
-      };
+        file2: "",
+        file3: "",
+        file4: "",
+        file5: "",
+        file6: "",
+    };
+}
 
-      console.log("🚀 Step 1: Sending Initial Form...");
-      const formResponse = await this.apiService.request('POST', 'dga/form', { body: burntFormData }).toPromise();
-      console.log('✅ Step 1 Success:', formResponse);
 
-      // 🔥 Ensure `formId` is retrieved
-      const formId = (formResponse as any)?.id;
-      if (!formId) throw new Error('❌ Form submission failed: No form ID returned.');
 
-      // 🔥 Burnt Data for Testing (Step 2)
-      const burntRequestData = {
-        id: "Pendiente de guardar",
-        typeRequest: { id: "TYREQ-1", value: "Nuevo Usuario" },
-        state: "PENDING",
-        createBy: "NA",
-        createOn: "1739997483193",
-        profiles: [{}],
-        resources: [{}],
-        systems: [
-          {
-            id: "CATSYS-12",
-            status: "PENDIENTE DE ASIGNAR",
-            group: { id: "CATGRP-78", value: "PAGOES", status: "ENABLED" },
-            custom: {},
-            endDate: "1740700800000",
-            type: "Externo",
-            startDate: "1739923200000"
-          }
-        ],
-        others: [{}],
-        flow: [{}],
-        person: {
-          document: "0963783311",
-          mail: "test7@gmail.com",
-          uid: "test.test",
-          position: {},
-          levelOne: {},
-          levelTwo: {},
-          levelThree: {},
-          levelFour: {},
-          attribute: {},
-          fullName: "null ",
-          lastName: "test",
-          surName: "test6",
-          organizationCode: "DGA Externo",
-          phoneNumber: "78787878",
-          mobile: "89898989"
-        }
-      };
+async enviarFormulario(): Promise<void> {
+  try {
+    Swal.fire({ title: 'Procesando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-      console.log(`🚀 Step 2: Sending Form Request for Form ID: ${formId}...`);
-      const requestResponse = await this.apiService.request('POST', `dga/form/request/${formId}`, { body: burntRequestData }).toPromise();
-      console.log('✅ Step 2 Success:', requestResponse);
+    const formData = this.buildFormData();
 
-      // 🔥 Ensure `requestId` is retrieved correctly
-      let requestId = (requestResponse as any)?.id;
-      if (!requestId && (requestResponse as any)?.source?.id) {
-        requestId = (requestResponse as any).source.id; // Handle nested response
-      }
-      if (!requestId) throw new Error('❌ Request submission failed: No request ID returned.');
+    // 🔥 Debugging: Check JSON before sending
+    console.log("🚀 FINAL FORM DATA TO BE SENT:", JSON.stringify(formData, null, 2));
 
-      // 🔥 Burnt Data for Testing (Step 3)
-      const burntSystemData = {
-        id: "CATSYS-12",
-        status: "PENDIENTE DE ASIGNAR",
-        group: { id: "CATGRP-78", value: "PAGOES", status: "ENABLED" },
-        temporal: true,
-        custom: {},
-        endDate: "1740700800000",
-        type: "Externo",
-        startDate: "1739923200000"
-      };
+    const formResponse = await this.procesoFormulario.iniciarProceso(formData);
 
-      console.log(`🚀 Step 3: Assigning System to Request ID: ${requestId}...`);
-      const systemResponse = await this.apiService.request('POST', `dga/form/request/system/${requestId}`, { body: burntSystemData }).toPromise();
-      console.log('✅ Step 3 Success:', systemResponse);
-
-      // 🔥 Step 4: Commit the Form
-      console.log(`🚀 Step 4: Committing Form for Request ID: ${requestId}...`);
-      const commitResponse = await this.apiService.request('POST', `dga/flow?requestId=${requestId}&processId=NA`).toPromise();
-      console.log('✅ Step 4 Success: Form committed', commitResponse);
-
-      // 🔥 Step 5: Send Email Notification
-      console.log(`🚀 Step 5: Sending Email Notification for Request ID: ${requestId}...`);
-      const emailResponse = await this.apiService.request('GET', `dga/flow/email?requestId=${requestId}`).toPromise();
-      console.log('✅ Step 5 Success: Email sent', emailResponse);
-
-      Swal.fire({
-        title: 'Éxito',
-        text: 'El formulario ha sido enviado exitosamente.',
-        icon: 'success'
-      });
-
-    } catch (error: any) {
-      console.error('❌ Error Sending Form:', error);
-      Swal.fire({
-        title: 'Error',
-        text: 'Ocurrió un problema al enviar el formulario. Revisa la consola para más detalles.',
-        icon: 'error'
-      });
-    }
+    Swal.fire('Éxito', 'El formulario ha sido enviado exitosamente.', 'success');
+  } catch (error) {
+    Swal.fire('Error', 'Ocurrió un problema al enviar el formulario.', 'error');
   }
+}
+
 
   
   

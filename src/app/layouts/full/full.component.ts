@@ -52,7 +52,7 @@ export class FullComponent implements OnInit {
   @ViewChild('leftsidenav') public sidenav: MatSidenav;
   @ViewChild('content', { static: true }) content!: MatSidenavContent;
 
-  navItems: NavItem[] = []; // ✅ FIX: Define `navItems` to prevent errors
+  navItems: NavItem[] = [];
   resView = false;
   options = this.settings.getOptions();
   private layoutChangesSubscription = Subscription.EMPTY;
@@ -89,18 +89,14 @@ export class FullComponent implements OnInit {
         this.resView = state.breakpoints[BELOWMONITOR];
       });
 
-    // Initialize project theme with options
     this.receiveOptions(this.options);
-
-    // Ensure nav items are loaded on startup
     this.loadUserNavItems();
 
-    // This is for scroll to top
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
         this.content.scrollTo({ top: 0 });
-        this.loadUserNavItems(); // ✅ Ensure nav items update on navigation
+        this.loadUserNavItems();
       });
   }
 
@@ -147,26 +143,13 @@ export class FullComponent implements OnInit {
     }
   }
 
-  /**
-   * ✅ Load the correct navigation items based on the user type
-   */
   private loadUserNavItems() {
-    // Parse the localStorage value
     const storedData = JSON.parse(localStorage.getItem('tipo-usuario') || '{}');
-  
-    // Extract userType correctly for both cases
     const userType =
-      typeof storedData?.value === 'string' // Case: NOAFPA (flat structure)
+      typeof storedData?.value === 'string'
         ? storedData.value
-        : storedData?.value?.value; // Case: AFPA & INTERNO (nested structure)
-  
-    console.log('User Type for Nav Items:', userType); // Debugging output
-  
-    // Load nav items based on the user type
+        : storedData?.value?.value;
+
     this.navItems = navItemsByUserType[userType] || [];
-  
-    console.log('Loaded Nav Items:', this.navItems);
   }
-  
-  
 }
