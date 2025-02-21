@@ -19,6 +19,7 @@ import {MatInput} from "@angular/material/input";
 import {MatIcon, MatIconModule} from "@angular/material/icon";
 import {MockAprobacionesService} from "../../../../services/mock-aprobaciones.service";
 import {MatIconButton} from "@angular/material/button";
+import {first} from "rxjs";
 
 
 export interface ELEMENT_DATA {
@@ -80,7 +81,9 @@ export class AprobacionesComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.mockService.getAllRequests().subscribe((response) => {
+    this.mockService.getAllRequests()
+      .pipe(first())
+      .subscribe((response) => {
       console.log('Solicitudes obtenidas:', response);
       this.dataSource.data = response.map(item => ({
         DGA: item.id,

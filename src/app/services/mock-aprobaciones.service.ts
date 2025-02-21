@@ -377,7 +377,7 @@ export class MockAprobacionesService {
       return of([]);
     }
 
-    const url = `dga/dashboard/pending/${roles}/${uid}`;
+    const url = `dga/dashboard/pending/${roles},-/${uid}`;
     return this.api.request<any>(Request.GET, url);
   }
 
@@ -392,5 +392,25 @@ export class MockAprobacionesService {
     const url = `/util/account/${requestId}`;
     return this.api.request<any>(Request.GET, url);
   }
+
+
+
+  updateFlow(flowData: any): Observable<any> {
+    // The endpoint you mentioned: PUT /flow
+    // If your backend is behind a certain path (e.g., 'dga/flow'), update accordingly.
+    const url = '/flow';
+
+
+
+    return this.api.request<any>(Request.PUT, url, {
+      body: flowData
+    });
+  }
+
+
+
+
+
+
 
 }
