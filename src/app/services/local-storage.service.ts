@@ -6,7 +6,7 @@ export class LocalStorageService {
     const expirationDate = new Date(
       Date.now() + expirationInMinutes * 60000
     ).toISOString();
-    
+
     const item = { value, expirationDate };
     localStorage.setItem(key, JSON.stringify(item));
   }
@@ -20,7 +20,7 @@ export class LocalStorageService {
 
   try {
     console.log(`🔍 Raw Data from Local Storage (${key}):`, item);
-    
+
     const parsed = JSON.parse(item);
     console.log("✅ Parsed Data:", parsed);
 

@@ -4,15 +4,16 @@ import {HttpClient} from "@angular/common/http";
 import {Request} from "../enums/request.enum";
 import {ApiService} from "./api.service";
 import {TipoUsuarioService} from "./tipo-usuario.service";
+import {AuthService} from "./auth.service";
+import {LocalStorageService} from "./local-storage.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MockAprobacionesService {
 
-  constructor(private http: HttpClient, private api: ApiService, private tipoUsuarioService: TipoUsuarioService) {
+  constructor(private http: HttpClient, private api: ApiService, private tipoUsuarioService: TipoUsuarioService, private localStorageService: LocalStorageService) {
   }
-
 
 
   getSolicitudes(): Observable<any[]> {
@@ -364,19 +365,21 @@ export class MockAprobacionesService {
   }
 
 
-
-
-
   getAllRequests(): Observable<any[]> {
-
     const roles = this.tipoUsuarioService.getTipoUsuario();
 
-    // const url = `dga/dashboard/pending/USC,ELABORADOR,APROBADOR,SERVICIO_AL_CLIENTE,null,-/KOBE.BRYANT`;
-    const url = `dga/dashboard/pending/${roles}/KOBE.BRYANT`;
-    // const url = `dga/dashboard/pending/${rol}/${uuid}`;
+    const storedItem = this.localStorageService.getItem<{ value: { value: string } }>('userUID');
+
+    const uid = storedItem?.value?.value;
+
+    if (!uid) {
+      console.warn('⚠️ No UID found in Local Storage. Returning empty array.');
+      return of([]);
+    }
+
+    const url = `dga/dashboard/pending/${roles}/${uid}`;
     return this.api.request<any>(Request.GET, url);
   }
-
 
 
   getSolicitudDetalle(defaultId: any): Observable<any> {
