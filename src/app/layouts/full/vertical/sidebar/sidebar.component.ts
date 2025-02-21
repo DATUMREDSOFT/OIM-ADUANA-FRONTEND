@@ -31,25 +31,18 @@ export class SidebarComponent implements OnInit {
 
   private loadUserType(): void {
     if (!this.localStorageService || typeof this.localStorageService.getItem !== 'function') {
-      console.error('❌ LocalStorageService is not available!');
       return;
     }
 
     const storedUser = this.localStorageService.getItem('tipo-usuario') as { value?: string } | null;
-    console.log('Stored User Type:', storedUser);
 
     if (storedUser && storedUser.value) {
       this.userType = storedUser.value;
       this.loadMenu();
-    } else {
-      console.warn('⚠️ User type not found in local storage.');
     }
   }
 
   private loadMenu(): void {
-    console.log('Loading menu for user type:', this.userType);
-
     this.menuItems = navItemsByUserType[this.userType] || defaultNavItems;
-    console.log('✅ Loaded Menu Items:', this.menuItems);
   }
 }

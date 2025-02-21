@@ -83,39 +83,48 @@
                            id="usuario-{{i}}-{{j}}">
                         <ng-container *ngIf="usuario as usuarioForm">
                           <ng-container [ngSwitch]="formulario.get('childComponent')?.value">
-                            <app-solicitud-nuevo-usuario *ngSwitchCase="'TYREQ-1'"
-                                                         [formGroup]="asFormGroup(usuarioForm)"
-                                                         [userIndex]="j" [sistemas]="sistemas()"
-                                       [perfiles]="perfiles()"
-                                       [aduanas]="aduanas()"></app-solicitud-nuevo-usuario>
-                            <app-solicitud-modificar-usuario *ngSwitchCase="'TYREQ-2'"
-                                                             [formGroup]="asFormGroup(usuarioForm)"
-                                                             [userIndex]="j"></app-solicitud-modificar-usuario>
+                            <app-solicitud-nuevo-usuario 
+                              *ngSwitchCase="'TYREQ-1'"
+                              [formGroup]="asFormGroup(usuarioForm)" 
+                              [formIndex]="i" 
+                              [userIndex]="j" 
+                              [sistemas]="sistemas()" 
+                              [perfiles]="perfiles()" 
+                              [aduanas]="aduanas()"
+                              (userDataUpdated)="onUserDataUpdated($event)">
+                            </app-solicitud-nuevo-usuario>
+                    
+                            <app-solicitud-modificar-usuario 
+                              *ngSwitchCase="'TYREQ-2'"
+                              [formGroup]="asFormGroup(usuarioForm)"  
+                              [userIndex]="j">
+                            </app-solicitud-modificar-usuario>
                           </ng-container>
-
+                    
                           <button *ngIf="j === getUsuarios($any(formulario)).length - 1" mat-flat-button color="primary"
                                   (click)="addUsuario(i)">
                             Agregar Usuario
                           </button>
-                          <!-- Remove User Button -->
+                    
                           <button *ngIf="getUsuarios($any(formulario)).length > 1" mat-flat-button
                                   (click)="removeUsuario(i, j)" color="warn"
                                   [class.m-l-16]="j === getUsuarios($any(formulario)).length - 1">
                             Borrar usuario {{ j + 1 }}
                           </button>
-
+                    
                           <button *ngIf="formularios.length !== 1" mat-flat-button color="warn" style="float: right;"
                                   (click)="removeFormulario(i)">
                             Borrar formulario
                           </button>
                         </ng-container>
                       </div>
-                      <!-- Show when no users are present -->
+                    
                       <button *ngIf="getUsuarios($any(formulario)).length === 0 && formulario.get('tipo')?.value"
                               mat-flat-button color="primary" (click)="addUsuario(i)">
                         Agregar Usuario
                       </button>
                     </div>
+                    
                   </form>
 
                   <mat-divider *ngIf="i < formularios.length - 1" class="m-t-16"></mat-divider>

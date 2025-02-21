@@ -16,7 +16,7 @@ import {TablerIconsModule} from 'angular-tabler-icons';
   templateUrl: './solicitud-modificar-usuario.component.html',
   standalone: true,
   providers: [DatePipe],
-  imports: [MaterialModule, MatCardModule, FormsModule, ReactiveFormsModule, CommonModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, MatTable, MatTabsModule],
+  imports: [MaterialModule, MatCardModule, FormsModule, ReactiveFormsModule, CommonModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, MatTabsModule],
 })
 export class AppSolicitudModificarUsuarioComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;

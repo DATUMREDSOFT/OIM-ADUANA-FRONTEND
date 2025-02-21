@@ -6,7 +6,7 @@ import {AppDashboardInternoComponent} from './dasboard-interno/dashboard-interno
 import {AppDashboardAfpaComponent} from './dashboard-afpa/dashboard-afpa.component';
 import {AppDashboardExternoComponent} from './dashboard_externo/dashboard-externo.component';
 import {AppSolicitudBaseComponent} from './solicitud-base/solicitud-base.component';
-import {AprobacionesComponent} from "./aprobaciones/aprobaciones/aprobaciones.component";
+//import {AprobacionesComponent} from "./aprobaciones/aprobaciones.component";
 import {BaseAprobacionesComponent} from "./aprobaciones/base-aprobaciones.component";
 
 
