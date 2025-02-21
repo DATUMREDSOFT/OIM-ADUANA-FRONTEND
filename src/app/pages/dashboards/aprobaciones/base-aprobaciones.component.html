@@ -1,10 +1,11 @@
-@if (verDetalle) {
+<!-- base-aprobaciones.component.html -->
+<ng-container *ngIf="!verDetalle">
+  <app-aprobaciones (verDetalle)="mostrarDetalles($event)"></app-aprobaciones>
+</ng-container>
+
+<ng-container *ngIf="verDetalle">
   <app-detalles-aprobaciones
     [elemento]="elementoSeleccionado"
     (cerrarDetalle)="cerrarDetalles()">
   </app-detalles-aprobaciones>
-} @else {
-  <app-aprobaciones
-    (verDetalle)="mostrarDetalles($event)">
-  </app-aprobaciones>
-}
+</ng-container>

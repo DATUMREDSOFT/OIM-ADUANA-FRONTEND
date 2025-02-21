@@ -1,6 +1,4 @@
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
-import {MatButton} from "@angular/material/button";
-import {MatCard, MatCardContent} from "@angular/material/card";
 import {
   MatCell,
   MatCellDef,
@@ -22,9 +20,13 @@ import {MatCheckbox} from "@angular/material/checkbox";
 import {SelectionModel} from "@angular/cdk/collections";
 
 import {MatIconModule} from "@angular/material/icon";
-import {MatDivider} from "@angular/material/divider";
-import {MatBadge} from "@angular/material/badge";
+
 import {ReactiveFormsModule} from "@angular/forms";
+import {MatCard, MatCardContent} from "@angular/material/card";
+import {MatButton} from "@angular/material/button";
+import {MatBadge} from "@angular/material/badge";
+import {MatDivider} from "@angular/material/divider";
+import {MockAprobacionesService} from "../../../../services/mock-aprobaciones.service";
 
 
 export interface Aprobacion {
@@ -39,11 +41,8 @@ export interface Aprobacion {
   selector: 'app-detalles-aprobaciones',
   standalone: true,
   imports: [
-    MatButton,
-    MatCardContent,
     MatHeaderRow,
     MatColumnDef,
-
     MatTable,
     MatHeaderCell,
     MatCell,
@@ -52,14 +51,16 @@ export interface Aprobacion {
     MatRowDef,
     MatHeaderRowDef,
     MatRow,
-    MatCard,
     NgApexchartsModule,
     TablerIconsModule,
     MatCheckbox,
     MatIconModule,
-    MatDivider,
-    MatBadge,
     ReactiveFormsModule,
+    MatCardContent,
+    MatButton,
+    MatBadge,
+    MatDivider,
+    MatCard,
   ],
   templateUrl: './detalles-aprobaciones.component.html',
 })
@@ -70,14 +71,28 @@ export class DetallesAprobacionesComponent {
   @Input() elemento: any;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  dataSource = new MatTableDataSource<Aprobacion>();
-  selection = new SelectionModel<Aprobacion>(true, []);
-  displayedColumnsPerfiles: string[] = ['select', 'nombre', 'apellido', 'cargo', 'fecha de creacion', 'fecha de eliminacion'];
+  constructor(private mockAprobacionesService: MockAprobacionesService) {
+  }
+
+  dataSource = new MatTableDataSource<any>();
+  selection = new SelectionModel<any>(true, []);
+
+  displayedColumnsPerfiles: string[] = [
+    'select',
+    'ID',
+    'Fecha de solicitud',
+    'Usuario',
+    'Estado',
+    'Resumen'
+  ];
+
 
   ngOnInit() {
-    if (this.elemento?.perfiles) {
-      this.dataSource.data = this.elemento.perfiles;
-    }
+
+    this.mockAprobacionesService.getSolicitudDetalle(this.elemento.id).subscribe((data) => {
+      this.dataSource.data = data.requests;
+    });
+
   }
 
 
