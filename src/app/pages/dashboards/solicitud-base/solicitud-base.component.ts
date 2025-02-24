@@ -1,35 +1,45 @@
-import { Component, OnInit, SimpleChanges, inject, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { TablerIconsModule } from 'angular-tabler-icons';
+import {
+  Component,
+  OnInit,
+  SimpleChanges,
+  inject,
+  ViewChild,
+  ElementRef,
+  ChangeDetectorRef,
+  NgIterable
+} from '@angular/core';
+import {FormBuilder, FormGroup, FormArray, Validators, AbstractControl, ReactiveFormsModule} from '@angular/forms';
+import {CommonModule} from '@angular/common';
+import {MatCardModule} from '@angular/material/card';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {TablerIconsModule} from 'angular-tabler-icons';
 import Swal from 'sweetalert2';
 
-import { ApiService } from '../../../services/api.service';
-import { ProcesoFormularioService } from '../../../services/proceso-formulario.service';
-import { UserService } from '../../../services/user.service';
-import { LocalStorageService } from '../../../services/local-storage.service';
-import { DropdownDataService } from 'src/app/services/dropdown-data.service';
+import {ApiService} from '../../../services/api.service';
+import {ProcesoFormularioService} from '../../../services/proceso-formulario.service';
+import {UserService} from '../../../services/user.service';
+import {LocalStorageService} from '../../../services/local-storage.service';
+import {DropdownDataService} from 'src/app/services/dropdown-data.service';
 
-import { TipoSolicitud } from '../solicitud-base/models/tipo-solicitud.model';
-import { FormularioExterno } from './models/formulario-externo.model';
+import {TipoSolicitud} from '../solicitud-base/models/tipo-solicitud.model';
+import {FormularioExterno} from './models/formulario-externo.model';
 
-import { MaterialModule } from '../../../material.module';
+import {MaterialModule} from '../../../material.module';
 import {
   AppSolicitudModificarUsuarioComponent
 } from './solicitud-modificar-usuario/solicitud-modificar-usuario.component';
-import { AppSolicitudNuevoUsuarioComponent } from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
-import { Roles } from '../../../enums/roles.enum';
-import { CommonAttribute } from 'src/app/models/common-attribute.model';
-import { Applicant } from './models/applicant.model';
+import {AppSolicitudNuevoUsuarioComponent} from "./solicitud-nuevo-usuario/solicitud-nuevo-usuario.component";
+import {Roles} from '../../../enums/roles.enum';
+import {CommonAttribute} from 'src/app/models/common-attribute.model';
+import {Applicant} from './models/applicant.model';
+import {SolicitudActivarUsuarioComponent} from "./solicitud-activaciones/solicitud-activar-usuario/solicitud-activar-usuario.component";
 
 @Component({
   selector: 'app-solicitud-base',
   templateUrl: './solicitud-base.component.html',
   standalone: true,
-  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent, AppSolicitudModificarUsuarioComponent],
+  imports: [CommonModule, MaterialModule, MatCardModule, MatNativeDateModule, MatExpansionModule, TablerIconsModule, ReactiveFormsModule, AppSolicitudNuevoUsuarioComponent, AppSolicitudModificarUsuarioComponent, SolicitudActivarUsuarioComponent],
 })
 export class AppSolicitudBaseComponent implements OnInit {
   solicitudForm: FormGroup;
@@ -49,6 +59,7 @@ export class AppSolicitudBaseComponent implements OnInit {
 
   @ViewChild('fileInput') fileInput: ElementRef;
   selectedFile: File | null = null;
+  tipoCuenta: (NgIterable<unknown> & NgIterable<any>) | undefined | null;
 
   constructor() {
     this.solicitudForm = this.fb.group({
@@ -77,41 +88,41 @@ export class AppSolicitudBaseComponent implements OnInit {
 
   onUserDataUpdated(event: { formIndex: number; userIndex: number; data: any }) {
     console.log('📢 Received user data update:', event);
-  
+
     if (event.formIndex === undefined || event.userIndex === undefined) {
       console.error('❌ Missing `formIndex` or `userIndex` in userDataUpdated event!', event);
       return;
     }
-  
+
     const formulario = this.formularios.at(event.formIndex) as FormGroup;
     if (!formulario) {
       console.error(`❌ Formulario at index ${event.formIndex} does not exist.`);
       return;
     }
-  
+
     const usuarios = this.getUsuarios(formulario);
     if (event.userIndex >= usuarios.length) {
       console.error(`❌ User index ${event.userIndex} out of bounds for form ${event.formIndex}.`);
       return;
     }
-  
+
     const usuario = usuarios.at(event.userIndex) as FormGroup;
     if (!usuario) {
       console.error(`❌ User at index ${event.userIndex} not found.`);
       return;
     }
-  
+
     console.log(`✅ Updating Form ${event.formIndex}, User ${event.userIndex}:`, event.data);
-  
+
     // ✅ Apply the new data
     usuario.patchValue(event.data);
-  
+
     // ✅ Ensure UI is updated
     this.cdr.detectChanges();
-  
+
     console.log(`✅ User ${event.userIndex} in Formulario ${event.formIndex} updated successfully.`);
   }
-  
+
   private loadTiposSolicitudFromStorage(): void {
     let storedData: any;
     const rawStoredData = localStorage.getItem('tipo-solicitud');
@@ -146,84 +157,84 @@ export class AppSolicitudBaseComponent implements OnInit {
 
   private createFormulario(): FormGroup {
     return this.fb.group({
-        tipo: ['', Validators.required],
-        childComponent: [null],
-        form: this.fb.group({
-            uid: [''],
-            nombre: [''],
-            apellido: [''],
-            correo: [''],
-            telefono: [''],
-            movil: [''],
-            correoAlternativo: [''],
-            fechaInicioSolicitud: [''],
-            fechaFinSolicitud: [''],
-            tipo: [''],
-            rol: [''],
-            cargo: [''],
-            nivel1: [''],
-            nivel2: [''],
-            nivel3: [''],
-            nivel4: [''],
-            fechaInicio: [''],
-            fechaFin: [''],
-            sistema: [''],
-            fechaInicioSistema: [''],
-            fechaFinSistema: [''],
-            perfil: [''],
-            aduanaPerfil: [''],
-            fechaInicioPerfil: [''],
-            fechaFinPerfil: ['']
-        }),
-        usuarios: this.fb.array([]) // 🔥 ✅ Ensure usuarios is ALWAYS initialized
+      tipo: ['', Validators.required],
+      childComponent: [null],
+      form: this.fb.group({
+        uid: [''],
+        nombre: [''],
+        apellido: [''],
+        correo: [''],
+        telefono: [''],
+        movil: [''],
+        correoAlternativo: [''],
+        fechaInicioSolicitud: [''],
+        fechaFinSolicitud: [''],
+        tipo: [''],
+        rol: [''],
+        cargo: [''],
+        nivel1: [''],
+        nivel2: [''],
+        nivel3: [''],
+        nivel4: [''],
+        fechaInicio: [''],
+        fechaFin: [''],
+        sistema: [''],
+        fechaInicioSistema: [''],
+        fechaFinSistema: [''],
+        perfil: [''],
+        aduanaPerfil: [''],
+        fechaInicioPerfil: [''],
+        fechaFinPerfil: ['']
+      }),
+      usuarios: this.fb.array([]) // 🔥 ✅ Ensure usuarios is ALWAYS initialized
     });
-}
+  }
 
 
-private createUsuarioForm(): FormGroup {
-  return this.fb.group({
-    // ✅ Core user details
-    document: [{ value: '', disabled: false }],  // DUI/NIT
-    uid: [{ value: '', disabled: true }],
-    surName: [{ value: '', disabled: true }],  // First name
-    lastName: [{ value: '', disabled: true }], // Last name
-    fullName: [{ value: '', disabled: true }],
-    mail: [{ value: '', disabled: true }, Validators.required],
-    phoneNumber: [{ value: '', disabled: true }],
-    mobile: [{ value: '', disabled: true }],
-    alternativeMail: ['', Validators.email],
+  private createUsuarioForm(): FormGroup {
+    return this.fb.group({
+      // ✅ Core user details
+      document: [{value: '', disabled: false}],  // DUI/NIT
+      uid: [{value: '', disabled: true}],
+      surName: [{value: '', disabled: true}],  // First name
+      lastName: [{value: '', disabled: true}], // Last name
+      fullName: [{value: '', disabled: true}],
+      mail: [{value: '', disabled: true}, Validators.required],
+      phoneNumber: [{value: '', disabled: true}],
+      mobile: [{value: '', disabled: true}],
+      alternativeMail: ['', Validators.email],
 
-    // ✅ Dates
-    fechaInicioSolicitud: [''],
-    fechaFinSolicitud: [''],
-    startDate: [''],
-    endDate: [''],
+      // ✅ Dates
+      fechaInicioSolicitud: [''],
+      fechaFinSolicitud: [''],
+      startDate: [''],
+      endDate: [''],
 
-    // ✅ Job Information
-    position: this.fb.group({
-      id: [''],
-      value: [''],
-      status: ['']
-    }),
+      // ✅ Job Information
+      position: this.fb.group({
+        id: [''],
+        value: [''],
+        status: ['']
+      }),
 
-    // ✅ Organizational Levels
-    levelOne: this.fb.group({ id: [''], value: [''], status: [''] }),
-    levelTwo: this.fb.group({ id: [''], value: [''], status: [''] }),
-    levelThree: this.fb.group({ id: [''], value: [''], status: [''] }),
-    levelFour: this.fb.group({ id: [''], value: [''], status: [''] }),
+      // ✅ Organizational Levels
+      levelOne: this.fb.group({id: [''], value: [''], status: ['']}),
+      levelTwo: this.fb.group({id: [''], value: [''], status: ['']}),
+      levelThree: this.fb.group({id: [''], value: [''], status: ['']}),
+      levelFour: this.fb.group({id: [''], value: [''], status: ['']}),
 
-    // ✅ User Type Information
-    userType: [''],
-    OrganizationCode: ['DGA Externo'],
-    state: ['PENDING'],
-    resolution: [''],
-    approveAFPA: [''],
+      // ✅ User Type Information
+      userType: [''],
+      OrganizationCode: ['DGA Externo'],
+      state: ['PENDING'],
+      resolution: [''],
+      approveAFPA: [''],
 
-    // ✅ Assigned Profiles & Systems
-    profiles: this.fb.array([]), // 🔥 This will be dynamically populated
-    systems: this.fb.array([]),  // 🔥 This will be dynamically populated
-  });
-}
+      // ✅ Assigned Profiles & Systems
+      profiles: this.fb.array([]), // 🔥 This will be dynamically populated
+      systems: this.fb.array([]),  // 🔥 This will be dynamically populated
+    });
+  }
 
 
   generateUID(index: number) {
@@ -245,33 +256,30 @@ private createUsuarioForm(): FormGroup {
     }
     return formulario.get('usuarios') as FormArray;
   }
-  
+
 
   addUsuario(index: number): void {
     const formulario = this.formularios.at(index) as FormGroup;
     const usuarios = this.getUsuarios(formulario);
-  
+
     if (usuarios.length > 0) {
       const lastUser = usuarios.at(usuarios.length - 1).value;
-      
+
       // 🔍 Check if the last user is empty before adding a new one
       if (!lastUser.dui && !lastUser.correo) {
         Swal.fire("Advertencia", "Complete el usuario actual antes de agregar otro.", "warning");
         return;
       }
     }
-  
+
     const newUser = this.createUsuarioForm();
     usuarios.push(newUser);
-  
+
     console.log(`✅ Added user at index ${usuarios.length - 1}:`, newUser.value);
     console.log(`📌 Current users in Formulario #${index}:`, usuarios.value);
-    
+
     this.cdr.detectChanges();
   }
-  
-  
-
 
 
   removeUsuario(formularioIndex: number, userIndex: number): void {
@@ -335,8 +343,8 @@ private createUsuarioForm(): FormGroup {
       case 'TYREQ-2':
         componentToLoad = 'TYREQ-2';
         break;
-      case 'TYREQ-3':
-        componentToLoad = null;
+      case 'TYREQ-4':
+        componentToLoad = 'TYREQ-4';
         break;
       default:
         return;
@@ -359,7 +367,7 @@ private createUsuarioForm(): FormGroup {
           this.clearFormulario(formulario);
           this.loadComponent(formulario, componentToLoad, index);
         } else {
-          formulario.get('tipo')?.setValue(currentChild, { emitEvent: false });
+          formulario.get('tipo')?.setValue(currentChild, {emitEvent: false});
         }
       });
     } else {
@@ -368,7 +376,7 @@ private createUsuarioForm(): FormGroup {
   }
 
   private loadComponent(formulario: FormGroup, componentToLoad: string | null, index: number) {
-    formulario.patchValue({ childComponent: componentToLoad });
+    formulario.patchValue({childComponent: componentToLoad});
     this.cdr.detectChanges();
 
     if (componentToLoad) {
@@ -411,7 +419,7 @@ private createUsuarioForm(): FormGroup {
   scrollToForm(index: number) {
     const form = document.getElementById(`form-${index}`);
     if (form) {
-      form.scrollIntoView({ behavior: 'smooth' });
+      form.scrollIntoView({behavior: 'smooth'});
     }
   }
 
@@ -429,22 +437,22 @@ private createUsuarioForm(): FormGroup {
 
   private buildFormData(): any {
     const formulario = this.solicitudForm.value;
-  
+
     console.log("🔍 Form Data Before Sending:", JSON.stringify(formulario, null, 2));
-  
+
     if (!formulario.formularios || formulario.formularios.length === 0) {
       console.error("❌ Error: No formularios found.");
       return {};
     }
-  
+
     // ✅ Get the applicant (who is sending the request)
     const applicantData = formulario.formularios[0].form || {};
     const currentUserLogin = this.localStorageService.getItem<{ value: string }>('tipo-usuario')?.value || 'NA';
-  
+
     // ✅ Generate the request array for multiple users
     const requests = formulario.formularios.map((f: any, formIndex: number) => {
       const usuarios = f.usuarios || [];
-  
+
       return {
         id: "Pendiente de guardar",
         typeRequest: {
@@ -455,7 +463,7 @@ private createUsuarioForm(): FormGroup {
         state: "PENDIENTE DE ASIGNAR",
         createBy: currentUserLogin,
         createOn: Date.now().toString(),
-  
+
         // ✅ Convert users into the correct structure
         person: usuarios.map((user: any) => ({
           document: user.document || "NA",
@@ -469,7 +477,7 @@ private createUsuarioForm(): FormGroup {
           organizationCode: "DGA Externo",
           state: "PENDING",
           userType: user.userType || "Externo",
-  
+
           // ✅ Nested Attributes
           position: user.position || {},
           levelOne: user.levelOne || {},
@@ -478,12 +486,12 @@ private createUsuarioForm(): FormGroup {
           levelFour: user.levelFour || {},
           attribute: user.attribute || {},
           typeAFPA: user.typeAFPA || {},
-  
+
           // ✅ Resolutions (if AFPA)
           resolution: user.resolution || null,
           approveAFPA: user.approveAFPA || null,
         })),
-  
+
         // ✅ Assigned Systems
         systems: usuarios.flatMap((user: any) =>
           (user.systems || []).map((sistema: any) => ({
@@ -503,7 +511,7 @@ private createUsuarioForm(): FormGroup {
         )
       };
     });
-  
+
     // ✅ Construct final payload
     return {
       id: "NA",
@@ -515,7 +523,7 @@ private createUsuarioForm(): FormGroup {
       closed: false,
       step: "-",
       requests: requests,
-  
+
       // ✅ Applicant information
       applicant: {
         document: applicantData.document || "NA",
@@ -546,23 +554,23 @@ private createUsuarioForm(): FormGroup {
     try {
       // ✅ Ensure all form updates are done
       this.cdr.detectChanges();
-  
-      Swal.fire({ title: 'Procesando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-  
+
+      Swal.fire({title: 'Procesando...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+
       const formData = this.buildFormData();
-  
+
       console.log("🚀 FINAL FORM DATA TO BE SENT:", JSON.stringify(formData, null, 2));
-  
+
       const formResponse = await this.procesoFormulario.iniciarProceso(formData);
-  
+
       Swal.fire('Éxito', 'El formulario ha sido enviado exitosamente.', 'success');
     } catch (error) {
       Swal.fire('Error', 'Ocurrió un problema al enviar el formulario.', 'error');
     }
   }
-  
 
 
-  
-  
+  applyFilter() {
+
+  }
 }

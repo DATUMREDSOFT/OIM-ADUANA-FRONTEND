@@ -1,13 +1,15 @@
 import {Routes} from '@angular/router';
 import {AuthGuard} from 'src/app/guards/auth.guard';
 
-// dashboards
 import {AppDashboardInternoComponent} from './dasboard-interno/dashboard-interno.component';
 import {AppDashboardAfpaComponent} from './dashboard-afpa/dashboard-afpa.component';
 import {AppDashboardExternoComponent} from './dashboard_externo/dashboard-externo.component';
 import {AppSolicitudBaseComponent} from './solicitud-base/solicitud-base.component';
-//import {AprobacionesComponent} from "./aprobaciones/aprobaciones.component";
+
 import {BaseAprobacionesComponent} from "./aprobaciones/base-aprobaciones.component";
+import {
+  SolicitudActivarUsuarioComponent
+} from "./solicitud-base/solicitud-activaciones/solicitud-activar-usuario/solicitud-activar-usuario.component";
 
 
 export const DashboardsRoutes: Routes = [
@@ -79,6 +81,20 @@ export const DashboardsRoutes: Routes = [
           ],
         },
       },
+      {
+        path: 'administracion',
+        component: SolicitudActivarUsuarioComponent,
+        canActivate: [AuthGuard],
+        data: {
+          role: 'AFPA',
+          title: 'Analytical',
+          urls: [
+            {title: 'Dashboard', url: '/dashboards/administracion'},
+            {title: 'Analytical'},
+          ],
+        },
+      },
+
       {
         path: 'solicitudes-externo',
         component: AppSolicitudBaseComponent,

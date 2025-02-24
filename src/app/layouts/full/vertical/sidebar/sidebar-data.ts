@@ -1,4 +1,4 @@
-import { NavItem } from './nav-item/nav-item';
+import {NavItem} from './nav-item/nav-item';
 
 export const navItemsByUserType: { [key: string]: NavItem[] } = {
   NOAFPA: [
@@ -36,6 +36,13 @@ export const navItemsByUserType: { [key: string]: NavItem[] } = {
       iconName: 'file',
       route: '/dashboards/solicitudes-afpa',
     },
+
+    {
+      displayName: 'Administracion',
+      iconName: 'file',
+      route: '/dashboards/administracion',
+    },
+
   ],
   INTERNO: [
     {
